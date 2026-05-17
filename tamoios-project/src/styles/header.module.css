@@ -1,0 +1,6 @@
+.header {
+  display: flex;
+  background: yellow;
+  padding: 10px;
+  width: 100%;
+}

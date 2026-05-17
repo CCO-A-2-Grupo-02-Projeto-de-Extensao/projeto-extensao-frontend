@@ -1,0 +1,9 @@
+.input {
+  padding: 10px;
+  border: 2px solid #000000;
+  font-family: "Inter", sans-serif;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin: 10px 0;
+  font-size: 16px;
+}
