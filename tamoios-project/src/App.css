@@ -1,7 +1,15 @@
+#center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
 .modal {
   display: flex;
   flex-direction: column;
-  width: 75%;
+  width: max-content;
   box-shadow: 5px 5px 5px #888;
   padding: 1rem;
+  align-items: center;
 }

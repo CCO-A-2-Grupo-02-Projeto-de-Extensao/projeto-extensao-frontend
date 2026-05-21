@@ -1,8 +1,6 @@
-import { useState } from "react";
 import aranduLogoImg from "../assets/arandu_logo.png";
 import tamoiosLogoImg from "../assets/clube_tamoios_logo.webp";
 import "../App.css";
-import Dashboard from "./Dashboard.jsx";
 import { Button } from "./Button/Button.jsx";
 import { Input } from "./Input/Input.jsx";
 
@@ -29,9 +27,12 @@ function Login() {
         <br />
         <Input type="password" placeholder="Sua senha" />
         <br />
-        <Button>Esqueceu a senha ?</Button>
+        <Button
+          texto={"Esqueceu a senha ?"}
+          pagina={"esqueceuSenhaPage"}
+        ></Button>
         <br />
-        <Button>Entrar</Button>
+        <Button texto={"Entrar"} pagina={"dashboard"}></Button>
       </div>
     </section>
   );

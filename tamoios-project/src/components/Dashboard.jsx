@@ -1,7 +1,7 @@
 import "../App.css";
 
 function Dashboard() {
-  return <Header nome={nome} idade={idade} isAdmin={isAdmin} />;
+  return <h1>Dashboard</h1>;
 }
 
 export default Dashboard;
