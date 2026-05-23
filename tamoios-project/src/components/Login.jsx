@@ -2,11 +2,12 @@ import desbravadoresLogoImg from "../assets/desbravadores_logo.png";
 import "../App.css";
 import { Button } from "./Button/Button.jsx";
 import { Input } from "./Input/Input.jsx";
+import { Modal } from "./Modal/MOdal.jsx";
 
 function Login() {
   return (
     <section id="center">
-      <div className="modal">
+      <Modal>
         <div className="hero">
           <img
             src={desbravadoresLogoImg}
@@ -26,7 +27,7 @@ function Login() {
         ></Button>
         <br />
         <Button texto={"Entrar"} pagina={"dashboard"}></Button>
-      </div>
+      </Modal>
     </section>
   );
 }

@@ -1,11 +1,4 @@
-#center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.modal {
+div.modal {
   display: flex;
   flex-direction: column;
   width: max-content;
