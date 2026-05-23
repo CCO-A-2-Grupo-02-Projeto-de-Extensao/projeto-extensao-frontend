@@ -1,5 +1,4 @@
-import aranduLogoImg from "../assets/arandu_logo.png";
-import tamoiosLogoImg from "../assets/clube_tamoios_logo.webp";
+import desbravadoresLogoImg from "../assets/desbravadores_logo.png";
 import "../App.css";
 import { Button } from "./Button/Button.jsx";
 import { Input } from "./Input/Input.jsx";
@@ -10,16 +9,10 @@ function Login() {
       <div className="modal">
         <div className="hero">
           <img
-            src={aranduLogoImg}
+            src={desbravadoresLogoImg}
             className="base"
-            alt=""
-            style={{ width: "200px" }}
-          />
-          <img
-            src={tamoiosLogoImg}
-            className="base"
-            alt=""
-            style={{ width: "200px" }}
+            alt="Logo dos Desbravadores"
+            style={{ width: "90px", height: "auto" }}
           />
         </div>
         <h1>Portal de Gestão - Clube Tamoios</h1>

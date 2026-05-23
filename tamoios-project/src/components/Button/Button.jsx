@@ -9,7 +9,10 @@ export function Button(props) {
   };
 
   return (
-    <button className="styles.button" onClick={handleClick}>
+    <button
+      className={{ ...styles.button, ...props.style }}
+      onClick={handleClick}
+    >
       {props.texto}
     </button>
   );
