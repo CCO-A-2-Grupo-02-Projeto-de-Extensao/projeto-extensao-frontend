@@ -1,8 +1,8 @@
 import desbravadoresLogoImg from "../assets/desbravadores_logo.png";
 import "../App.css";
-import { Button } from "./Button/Button.jsx";
-import { Input } from "./Input/Input.jsx";
-import { Modal } from "./Modal/MOdal.jsx";
+import { Button } from "../components/Button/Button.jsx";
+import { Input } from "../components/Input/Input.jsx";
+import { Modal } from "../components/Modal/MOdal.jsx";
 
 function Login() {
   return (

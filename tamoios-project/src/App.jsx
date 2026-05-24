@@ -1,9 +1,9 @@
 import { useState } from "react";
 import "./App.css";
-import Login from "./components/login.jsx";
-import Dashboard from "./components/Dashboard.jsx";
+import Login from "./pages/login.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import EsqueceuSenhaPage from "./components/EsqueceuSenhaPage.jsx";
+import EsqueceuSenhaPage from "./pages/EsqueceuSenhaPage.jsx";
 
 function App() {
   return (
