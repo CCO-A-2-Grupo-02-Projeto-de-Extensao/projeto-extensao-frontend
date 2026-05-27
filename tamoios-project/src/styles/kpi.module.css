@@ -1,0 +1,23 @@
+/* KPIs */
+
+.box_kpi {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 7px;
+  width: max-content;
+  border-left: 4px solid var(--vinhoEscuro);
+  transition-duration: 0.3s;
+  transform: scale(1);
+}
+
+.box_kpi:hover {
+  background-color: var(--cinza);
+  transition-duration: 0.3s;
+  transform: scale(1.05);
+}
+
+img {
+  max-width: 75px;
+}

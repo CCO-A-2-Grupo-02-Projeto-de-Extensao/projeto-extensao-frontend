@@ -6,7 +6,6 @@
   list-style: none;
   border: none;
   text-decoration: none;
-  background-color: var(--cremeClaro);
 }
 
 :root {
@@ -16,6 +15,7 @@
   --azul: #2a4e9e;
   --cremeClaro: #fff9f2;
   --creme: #f2ebe0;
+  --cinza: #d7d7d7;
   --vinhoEscuro: #5c1612;
   --carvao: #221510;
   font-family: "Fredoka", "Inter", sans-serif;
@@ -26,4 +26,8 @@ h1 {
   font-weight: 700;
   font-size: 24px;
   color: var(--vinhoEscuro);
+}
+
+#center {
+  background-color: var(--cremeClaro);
 }
