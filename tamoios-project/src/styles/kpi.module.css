@@ -3,6 +3,9 @@
 .box_kpi {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   padding: 20px;
   background-color: #fff;
   border-radius: 7px;
@@ -19,5 +22,5 @@
 }
 
 img {
-  max-width: 75px;
+  height: 70px;
 }
