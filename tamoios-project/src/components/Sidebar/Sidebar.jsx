@@ -1,3 +1,4 @@
+import styles from "../../styles/sidebar.module.css";
 import {
   Drawer,
   List,
@@ -14,6 +15,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DescriptionIcon from "@mui/icons-material/Description";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -26,7 +28,7 @@ export function Sidebar() {
     <div>
       <Drawer variant="permanent" anchor="left">
         <List>
-          <ListItem button>
+          <ListItem style={{ justifyContent: "center", padding: "20px 0" }}>
             <img
               src={desbravadoresLogoImg}
               className="base"
@@ -48,6 +50,15 @@ export function Sidebar() {
               <PeopleAltIcon />
             </ListItemIcon>
             <ListItemText primary="Desbravadores" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => handleNavigate("/dashboard/cadastrar-usuario")}
+          >
+            <ListItemIcon>
+              <PersonAddIcon />
+            </ListItemIcon>
+            <ListItemText primary="Cadastrar Usuário" />
           </ListItem>
           <ListItem button onClick={() => handleNavigate("/dashboard/chamada")}>
             <ListItemIcon>
