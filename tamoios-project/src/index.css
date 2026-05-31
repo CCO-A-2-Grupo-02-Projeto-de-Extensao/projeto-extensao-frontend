@@ -31,3 +31,9 @@ h1 {
 #center {
   background-color: var(--cremeClaro);
 }
+
+label {
+  font-weight: 600;
+  color: var(--vinhoEscuro);
+  font-size: 24px;
+}

@@ -5,7 +5,11 @@ export function Button(props) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(props.pagina);
+    if (props.pagina === undefined) {
+      alert(props.mensagemAlert);
+    } else {
+      navigate(props.pagina);
+    }
   };
 
   return (
