@@ -25,7 +25,7 @@ export function Sidebar() {
   };
 
   return (
-    <div>
+    <div className={styles.sidebar}>
       <Drawer variant="permanent" anchor="left">
         <List>
           <ListItem style={{ justifyContent: "center", padding: "20px 0" }}>
@@ -36,13 +36,24 @@ export function Sidebar() {
               style={{ width: "90px", height: "auto" }}
             />
           </ListItem>
-          <ListItem button onClick={() => handleNavigate("/dashboard")}>
+          <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
+            button
+            onClick={() => handleNavigate("/dashboard")}
+          >
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
             <ListItemText primary="Início" />
           </ListItem>
           <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
             button
             onClick={() => handleNavigate("/dashboard/desbravadores")}
           >
@@ -52,6 +63,10 @@ export function Sidebar() {
             <ListItemText primary="Desbravadores" />
           </ListItem>
           <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
             button
             onClick={() => handleNavigate("/dashboard/cadastrar-usuario")}
           >
@@ -60,19 +75,37 @@ export function Sidebar() {
             </ListItemIcon>
             <ListItemText primary="Cadastrar Usuário" />
           </ListItem>
-          <ListItem button onClick={() => handleNavigate("/dashboard/chamada")}>
+          <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
+            button
+            onClick={() => handleNavigate("/dashboard/chamada")}
+          >
             <ListItemIcon>
               <ContentPasteIcon />
             </ListItemIcon>
             <ListItemText primary="Chamada" />
           </ListItem>
-          <ListItem button onClick={() => handleNavigate("/dashboard/classe")}>
+          <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
+            button
+            onClick={() => handleNavigate("/dashboard/classe")}
+          >
             <ListItemIcon>
               <MenuBookIcon />
             </ListItemIcon>
             <ListItemText primary="Classes" />
           </ListItem>
           <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
             button
             onClick={() => handleNavigate("/dashboard/especialidades")}
           >
@@ -82,6 +115,10 @@ export function Sidebar() {
             <ListItemText primary="Especialidades" />
           </ListItem>
           <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
             button
             onClick={() => handleNavigate("/dashboard/documentos")}
           >
@@ -90,7 +127,14 @@ export function Sidebar() {
             </ListItemIcon>
             <ListItemText primary="Documentos" />
           </ListItem>
-          <ListItem button onClick={() => handleNavigate("/")}>
+          <ListItem
+            sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
+            button
+            onClick={() => handleNavigate("/")}
+          >
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>

@@ -1,8 +1,9 @@
 import "../App.css";
 import Kpi from "../components/Kpi/Kpi";
 import { DashboardLayout } from "../layout/DashboardLayout";
-import { Button } from "../components/Button/Button.jsx";
+import { Card } from "../components/Card/Card.jsx";
 import pizzaImg from "../assets/grafico_pizza.png";
+import calendarioImg from "../assets/calendario.png";
 
 function Dashboard() {
   return (
@@ -26,17 +27,40 @@ function Dashboard() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-around",
-          flexWrap: "wrap",
+          width: "100%",
         }}
       >
-        <div>
-          <input type="date" />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "50%",
+          }}
+        >
+          <img
+            src={calendarioImg}
+            alt="Imagem do calendário"
+            style={{ width: "80%", height: "auto" }}
+          />
         </div>
-        <div>
-          <Button texto={"Entrar"} pagina={"dashboard"}></Button>
-          <Button texto={"Entrar"} pagina={"dashboard"}></Button>
-          <Button texto={"Entrar"} pagina={"dashboard"}></Button>
-          <Button texto={"Entrar"} pagina={"dashboard"}></Button>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            flexWrap: "wrap",
+          }}
+        >
+          <Card
+            titulo="Adicionar Eventos"
+            imagemUrl="iconCalendario.png"
+          ></Card>
+          <Card
+            titulo="Consultar Especialidade"
+            imagemUrl="iconEspecialidade.png"
+          ></Card>
+          <Card titulo="Consultar Classes" imagemUrl="iconEducacao.png"></Card>
+          <Card titulo="Listar Desbravadores" imagemUrl="iconGrupo.png"></Card>
         </div>
       </div>
       <div
