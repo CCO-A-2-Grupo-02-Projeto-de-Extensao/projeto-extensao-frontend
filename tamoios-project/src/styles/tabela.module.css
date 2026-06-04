@@ -1,0 +1,25 @@
+table {
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background-color: var(--vinhoEscuro);
+  color: var(--cremeClaro);
+}
+
+th {
+  padding: 10px;
+  font-weight: 500;
+}
+
+td {
+  padding: 10px;
+}
+
+tbody tr:hover {
+  background-color: var(--cinza);
+}
