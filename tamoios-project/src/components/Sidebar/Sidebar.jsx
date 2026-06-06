@@ -117,7 +117,7 @@ export function Sidebar() {
               "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
-            onClick={() => handleNavigate("/dashboard/classe")}
+            onClick={() => handleNavigate("/dashboard/classes")}
           >
             <ListItemIcon>
               <MenuBookIcon className={styles.customIcon} />

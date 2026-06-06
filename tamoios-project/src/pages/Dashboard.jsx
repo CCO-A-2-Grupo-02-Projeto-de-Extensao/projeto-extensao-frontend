@@ -64,16 +64,19 @@ function Dashboard() {
             titulo="Consultar Especialidade"
             imagemUrl="iconEspecialidade.png"
             mensagemAlert="Funcionalidade em desenvolvimento"
+            pagina="/dashboard/especialidades"
           ></Card>
           <Card
             titulo="Consultar Classes"
             imagemUrl="iconEducacao.png"
             mensagemAlert="Funcionalidade em desenvolvimento"
+            pagina="/dashboard/classes"
           ></Card>
           <Card
             titulo="Listar Desbravadores"
             imagemUrl="iconGrupo.png"
             mensagemAlert="Funcionalidade em desenvolvimento"
+            pagina="/dashboard/desbravadores"
           ></Card>
         </div>
       </div>
@@ -99,7 +102,7 @@ function Dashboard() {
             <CalendarMonthIcon></CalendarMonthIcon>
             <h1>02/04/2026</h1>
           </span>
-          <Tabela></Tabela>
+          <Tabela mensagemAlert="Funcionalidade em desenvolvimento"></Tabela>
         </div>
         <div
           style={{
