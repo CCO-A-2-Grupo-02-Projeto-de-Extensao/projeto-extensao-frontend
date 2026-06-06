@@ -7,12 +7,13 @@
   justify-content: center;
   flex-wrap: wrap;
   padding: 20px;
-  background-color: #fff;
+  background-color: var(--branco);
   border-radius: 7px;
   width: max-content;
   border-left: 4px solid var(--vinhoEscuro);
   transition-duration: 0.3s;
   transform: scale(1);
+  gap: 20px;
 }
 
 .box_kpi:hover {
@@ -21,6 +22,7 @@
   transform: scale(1.05);
 }
 
-img {
-  height: 70px;
+.customIcon {
+  fill: #000000 !important;
+  font-size: 3rem !important;
 }

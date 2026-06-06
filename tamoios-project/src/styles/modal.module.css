@@ -7,4 +7,5 @@ div.modal {
   align-items: center;
   max-width: 100%;
   border-radius: 5px;
+  background-color: var(--branco);
 }

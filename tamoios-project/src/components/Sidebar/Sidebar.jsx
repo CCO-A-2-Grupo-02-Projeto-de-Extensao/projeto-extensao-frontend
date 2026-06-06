@@ -25,8 +25,19 @@ export function Sidebar() {
   };
 
   return (
-    <div className={styles.sidebar}>
-      <Drawer variant="permanent" anchor="left">
+    <div
+      className={styles.sidebar}
+      style={{ backgroundColor: "var(--vinhoEscuro)" }}
+    >
+      <Drawer
+        variant="permanent"
+        anchor="left"
+        slotProps={{
+          paper: {
+            className: styles.customDrawerPaper,
+          },
+        }}
+      >
         <List>
           <ListItem style={{ justifyContent: "center", padding: "20px 0" }}>
             <img
@@ -39,106 +50,130 @@ export function Sidebar() {
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/dashboard")}
           >
             <ListItemIcon>
-              <HomeIcon />
+              <HomeIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Início" />
+            <ListItemText
+              primary="Início"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/dashboard/desbravadores")}
           >
             <ListItemIcon>
-              <PeopleAltIcon />
+              <PeopleAltIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Desbravadores" />
+            <ListItemText
+              primary="Desbravadores"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/dashboard/cadastrar-usuario")}
           >
             <ListItemIcon>
-              <PersonAddIcon />
+              <PersonAddIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Cadastrar Usuário" />
+            <ListItemText
+              primary="Cadastrar Usuário"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/dashboard/chamada")}
           >
             <ListItemIcon>
-              <ContentPasteIcon />
+              <ContentPasteIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Chamada" />
+            <ListItemText
+              primary="Chamada"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/dashboard/classe")}
           >
             <ListItemIcon>
-              <MenuBookIcon />
+              <MenuBookIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Classes" />
+            <ListItemText
+              primary="Classes"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/dashboard/especialidades")}
           >
             <ListItemIcon>
-              <BookmarkIcon />
+              <BookmarkIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Especialidades" />
+            <ListItemText
+              primary="Especialidades"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/dashboard/documentos")}
           >
             <ListItemIcon>
-              <DescriptionIcon />
+              <DescriptionIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Documentos" />
+            <ListItemText
+              primary="Documentos"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: "action.hover" },
+              "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
             onClick={() => handleNavigate("/")}
           >
             <ListItemIcon>
-              <LogoutIcon />
+              <LogoutIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText primary="Sair" />
+            <ListItemText
+              primary="Sair"
+              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
+            />
           </ListItem>
         </List>
       </Drawer>

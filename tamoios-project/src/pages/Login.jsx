@@ -5,6 +5,7 @@ import "../App.css";
 import { Button } from "../components/Button/Button.jsx";
 import { Input } from "../components/Input/Input.jsx";
 import { Modal } from "../components/Modal/MOdal.jsx";
+import estiloBotao from "../styles/button.module.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -30,9 +31,7 @@ function Login() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || "Email ou senha inválidos."
-        );
+        throw new Error(errorData.message || "Email ou senha inválidos.");
       }
 
       const data = await response.json();
@@ -90,17 +89,11 @@ function Login() {
           ></Button>
           <br />
           <button
+            className={estiloBotao.button}
             type="submit"
             disabled={loading}
             style={{
-              padding: "10px 20px",
-              backgroundColor: loading ? "#ccc" : "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
               cursor: loading ? "not-allowed" : "pointer",
-              fontSize: "16px",
-              width: "100%",
             }}
           >
             {loading ? "Entrando..." : "Entrar"}

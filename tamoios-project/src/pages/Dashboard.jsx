@@ -20,13 +20,14 @@ function Dashboard() {
           flexWrap: "wrap",
         }}
       >
-        <Kpi valor="52" texto="Desbravadores"></Kpi>
-        <Kpi valor="34" texto="Especialidades"></Kpi>
-        <Kpi valor="11" texto="Instrutores"></Kpi>
-        <Kpi valor="02" texto="Feriados (Mês)"></Kpi>
+        <Kpi icone="pessoa" valor="52" texto="Desbravadores"></Kpi>
+        <Kpi icone="livros" valor="34" texto="Especialidades"></Kpi>
+        <Kpi icone="chapeuEscola" valor="11" texto="Instrutores"></Kpi>
+        <Kpi icone="calendario" valor="02" texto="Feriados (Mês)"></Kpi>
       </div>
       <div
         style={{
+          marginTop: "30px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-around",
@@ -86,7 +87,14 @@ function Dashboard() {
           margin: "30px 0",
         }}
       >
-        <div style={{ width: "45%" }}>
+        <div
+          style={{
+            width: "45%",
+            backgroundColor: "var(--branco)",
+            padding: "20px",
+            borderRadius: "8px",
+          }}
+        >
           <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <CalendarMonthIcon></CalendarMonthIcon>
             <h1>02/04/2026</h1>
@@ -100,6 +108,9 @@ function Dashboard() {
             alignContent: "center",
             justifyContent: "space-around",
             alignItems: "center",
+            backgroundColor: "var(--branco)",
+            padding: "20px",
+            borderRadius: "8px",
           }}
         >
           <div

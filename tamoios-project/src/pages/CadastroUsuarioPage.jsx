@@ -1,7 +1,6 @@
 import NomePagina from "../components/NomePagina/NomePagina";
 import { DashboardLayout } from "../layout/DashboardLayout";
 import { Input } from "../components/Input/Input.jsx";
-import desbravadoresLogoImg from "../assets/desbravadores_logo.png";
 import Select from "../components/Select/Select.jsx";
 import { Button } from "../components/Button/Button.jsx";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -16,6 +15,7 @@ export function CadastroUsuarioPage() {
       <section
         style={{
           marginTop: "20px",
+          marginBottom: "20px",
           display: "flex",
           gap: "20px",
           alignItems: "center",

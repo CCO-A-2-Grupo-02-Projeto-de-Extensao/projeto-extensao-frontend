@@ -1,3 +1,9 @@
-div.sidebar {
-  background-color: var(--vinhoEscuro);
+.customDrawerPaper {
+  background-color: var(--vinhoEscuro) !important;
+  color: var(--ambarOuro) !important;
+}
+
+.customIcon {
+  fill: var(--ambarOuro) !important;
+  font-size: 2rem;
 }
