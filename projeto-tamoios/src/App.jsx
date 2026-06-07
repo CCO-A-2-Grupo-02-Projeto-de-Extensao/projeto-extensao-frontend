@@ -1,5 +1,5 @@
 import "./App.css";
-import Login from "./pages/login.jsx";
+import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EsqueceuSenhaPage from "./pages/EsqueceuSenhaPage.jsx";
