@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'tamoios-project/**'
+      - 'projeto-tamoios/**'
 
 jobs:
   build-and-push:
@@ -25,6 +25,6 @@ jobs:
       - name: Build e push da imagem
         uses: docker/build-push-action@v5
         with:
-          context: ./tamoios-project
+          context: ./projeto-tamoios
           push: true
           tags: pedrobarbosa996/arandu_digital:frontend

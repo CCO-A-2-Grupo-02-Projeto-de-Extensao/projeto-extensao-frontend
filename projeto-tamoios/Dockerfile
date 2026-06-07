@@ -1,4 +1,6 @@
-FROM node:22-alpine AS build
+# slim (glibc) em vez de alpine (musl): evita o bug do npm que falha em
+# baixar os binários nativos do Rollup/esbuild em musl ao rodar `vite build`
+FROM node:22-slim AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
