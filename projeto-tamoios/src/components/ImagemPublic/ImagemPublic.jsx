@@ -4,7 +4,7 @@ export function ImagemPublic({ nomeImagem }) {
   return (
     <img
       className={styles.imagemPublic}
-      src={`/public/${nomeImagem}`}
+      src={`/${nomeImagem}`}
       alt={`Imagem ${nomeImagem}`}
     />
   );
