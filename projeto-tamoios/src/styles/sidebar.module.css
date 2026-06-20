@@ -1,9 +1,9 @@
 .customDrawerPaper {
   background-color: var(--vinhoEscuro) !important;
-  color: var(--ambarOuro) !important;
+  color: var(--creme) !important;
 }
 
 .customIcon {
-  fill: var(--ambarOuro) !important;
+  fill: var(--creme) !important;
   font-size: 2rem;
 }
