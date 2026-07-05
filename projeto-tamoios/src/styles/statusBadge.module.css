@@ -1,0 +1,14 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.completo {
+  color: var(--verde);
+}
+
+.incompleto {
+  color: var(--ambarOuro);
+}

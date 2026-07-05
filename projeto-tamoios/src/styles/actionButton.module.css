@@ -1,0 +1,26 @@
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 0;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: var(--text);
+  border: 1.5px solid var(--vinhoEscuro);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: "Fredoka", "Inter", sans-serif;
+  transition: background-color 0.15s ease;
+}
+
+.actionButton:hover {
+  background-color: var(--cinza);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--carvao);
+}
