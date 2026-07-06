@@ -2,12 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
+import RestoreIcon from "@mui/icons-material/Restore";
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { NomePagina } from "../components/NomePagina/NomePagina.jsx";
 import { ActionButton } from "../components/ActionButton/ActionButton.jsx";
 import { MemberFilters } from "../components/MemberFilters/MemberFilters.jsx";
 import { MemberTable } from "../components/MemberTable/MemberTable.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
+import { RemoverDesbravadorModal } from "../components/RemoverDesbravadorModal/RemoverDesbravadorModal.jsx";
+import { ReativarDesbravadorModal } from "../components/ReativarDesbravadorModal/ReativarDesbravadorModal.jsx";
+import { CadastroDesbravadorModal } from "../components/CadastroDesbravadorModal/CadastroDesbravadorModal.jsx";
 import { getMembros, CATEGORIAS } from "../services/membrosService.js";
 import styles from "../styles/desbravadoresPage.module.css";
 
@@ -28,6 +32,9 @@ export function DesbravadoresPage() {
   const [categoria, setCategoria] = useState(CATEGORIAS.TODOS);
   const [busca, setBusca] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
+  const [modalReativarAberto, setModalReativarAberto] = useState(false);
+  const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -63,10 +70,20 @@ export function DesbravadoresPage() {
     setPaginaAtual(1);
   };
 
+  const membrosAtivos = useMemo(
+    () => membros.filter((membro) => membro.ativo),
+    [membros]
+  );
+
+  const membrosInativos = useMemo(
+    () => membros.filter((membro) => !membro.ativo),
+    [membros]
+  );
+
   const membrosFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
 
-    return membros
+    return membrosAtivos
       .filter((membro) => membro.nome.toLowerCase().includes(termo))
       .filter(
         (membro) =>
@@ -77,7 +94,32 @@ export function DesbravadoresPage() {
           ? a.nome.localeCompare(b.nome)
           : b.nome.localeCompare(a.nome)
       );
-  }, [membros, busca, categoria, ordenacao]);
+  }, [membrosAtivos, busca, categoria, ordenacao]);
+
+  const aoConfirmarDesativacao = (selecionados) => {
+    const idsSelecionados = new Set(selecionados.map((membro) => membro.id));
+    setMembros((atual) =>
+      atual.map((membro) =>
+        idsSelecionados.has(membro.id) ? { ...membro, ativo: false } : membro
+      )
+    );
+  };
+
+  const aoConfirmarReativacao = (selecionados) => {
+    const idsSelecionados = new Set(selecionados.map((membro) => membro.id));
+    setMembros((atual) =>
+      atual.map((membro) =>
+        idsSelecionados.has(membro.id) ? { ...membro, ativo: true } : membro
+      )
+    );
+  };
+
+  const aoCadastrarMembro = (novoMembro) => {
+    setMembros((atual) => {
+      const proximoId = Math.max(0, ...atual.map((m) => m.id)) + 1;
+      return [...atual, { id: proximoId, ...novoMembro }];
+    });
+  };
 
   const totalPaginas = Math.max(
     1,
@@ -110,8 +152,18 @@ export function DesbravadoresPage() {
         <ActionButton
           icon={<PersonAddIcon />}
           texto="Cadastrar desbravadores"
+          onClick={() => setModalCadastroAberto(true)}
         />
-        <ActionButton icon={<PersonOffIcon />} texto="Desativar desbravadores" />
+        <ActionButton
+          icon={<PersonOffIcon />}
+          texto="Desativar desbravadores"
+          onClick={() => setModalRemoverAberto(true)}
+        />
+        <ActionButton
+          icon={<RestoreIcon />}
+          texto="Reativar desbravadores"
+          onClick={() => setModalReativarAberto(true)}
+        />
       </div>
 
       <h2 className={styles.tituloSecao}>Membros</h2>
@@ -162,6 +214,26 @@ export function DesbravadoresPage() {
           onPaginaChange={setPaginaAtual}
         />
       )}
+
+      <RemoverDesbravadorModal
+        aberto={modalRemoverAberto}
+        membros={membrosAtivos}
+        onFechar={() => setModalRemoverAberto(false)}
+        onConfirmar={aoConfirmarDesativacao}
+      />
+
+      <ReativarDesbravadorModal
+        aberto={modalReativarAberto}
+        membros={membrosInativos}
+        onFechar={() => setModalReativarAberto(false)}
+        onConfirmar={aoConfirmarReativacao}
+      />
+
+      <CadastroDesbravadorModal
+        aberto={modalCadastroAberto}
+        onFechar={() => setModalCadastroAberto(false)}
+        onCadastrar={aoCadastrarMembro}
+      />
     </DashboardLayout>
   );
 }
