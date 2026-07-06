@@ -219,9 +219,31 @@ const ETAPAS = [
   },
 ];
 
+function calcularSpans(campos) {
+  const resultado = campos.map((campo) => ({ ...campo, spanEfetivo: 1 }));
+  let inicioSegmento = 0;
+
+  const fecharSegmento = (fim) => {
+    if ((fim - inicioSegmento) % 2 === 1) {
+      resultado[fim - 1].spanEfetivo = 2;
+    }
+  };
+
+  resultado.forEach((campo, indice) => {
+    if (campo.span === 2) {
+      fecharSegmento(indice);
+      campo.spanEfetivo = 2;
+      inicioSegmento = indice + 1;
+    }
+  });
+  fecharSegmento(resultado.length);
+
+  return resultado;
+}
+
 function renderCampo(campo, formData, aoMudarCampo, erro, campoComErro) {
   const valor = formData[campo.name] ?? "";
-  const classeCampo = campo.span === 2 ? styles.campoSpan2 : styles.campo;
+  const classeCampo = campo.spanEfetivo === 2 ? styles.campoSpan2 : styles.campo;
   const emErro = campo.name === campoComErro;
 
   return (
@@ -498,7 +520,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
               <section className={styles.secao}>
                 <h3 className={styles.secaoTitulo}>{etapa.titulo}</h3>
                 <div className={styles.grid}>
-                  {etapa.campos.map((campo) =>
+                  {calcularSpans(etapa.campos).map((campo) =>
                     renderCampo(campo, formData, aoMudarCampo, erro, campoComErro)
                   )}
                 </div>
