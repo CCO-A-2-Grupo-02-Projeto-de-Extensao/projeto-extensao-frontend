@@ -49,7 +49,7 @@ export function RemoverDesbravadorModal({ aberto, membros, onFechar, onConfirmar
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.colunaEsquerda}>
-          <h2 className={styles.titulo}>Remover Desbravador</h2>
+          <h2 className={styles.titulo}>Desativar Desbravador</h2>
 
           <div className={styles.filtros}>
             <Select
@@ -90,7 +90,7 @@ export function RemoverDesbravadorModal({ aberto, membros, onFechar, onConfirmar
 
         <div className={styles.colunaDireita}>
           <h2 className={styles.tituloDireita}>
-            Desbravadores a serem removidos
+            Desbravadores a serem desativados
           </h2>
 
           <ul className={styles.listaSelecionados}>
@@ -127,7 +127,7 @@ export function RemoverDesbravadorModal({ aberto, membros, onFechar, onConfirmar
               className={styles.botaoRemover}
               onClick={aoRemover}
             >
-              Remover
+              Desativar
             </button>
           </div>
         </div>

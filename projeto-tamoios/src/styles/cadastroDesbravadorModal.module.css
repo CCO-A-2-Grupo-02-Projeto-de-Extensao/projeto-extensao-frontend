@@ -12,7 +12,7 @@
 .modal {
   display: flex;
   flex-direction: column;
-  width: 90vw;
+  width: min(680px, 94vw);
   height: 90vh;
   border-radius: 12px;
   overflow: hidden;
@@ -70,7 +70,7 @@
 
 .painelWrapper {
   width: 100%;
-  max-width: 880px;
+  max-width: 100%;
 }
 
 .stepper {
@@ -129,7 +129,14 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--vinhoEscuro);
-  margin-bottom: 24px;
+  margin-bottom: 6px;
+}
+
+.camposLegenda {
+  font-size: 12px;
+  color: var(--carvao);
+  opacity: 0.75;
+  margin-bottom: 20px;
 }
 
 .avatarArea {
@@ -137,9 +144,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding-bottom: 24px;
-  margin-bottom: 28px;
-  border-bottom: 1px dashed var(--cinza);
+  padding: 12px 0 4px;
 }
 
 .avatarCirculo {
@@ -222,6 +227,13 @@
   color: var(--vermelho);
 }
 
+.opcional {
+  color: var(--carvao);
+  opacity: 0.55;
+  font-weight: 400;
+  font-size: 11px;
+}
+
 .campoErro {
   font-size: 12px;
   font-weight: 500;
@@ -239,7 +251,7 @@
 
 .documentosGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
   align-content: start;
 }

@@ -28,6 +28,71 @@ const OPCOES_CLASSE = [
   "Guia",
 ].map((valor) => ({ value: valor, label: valor }));
 
+const somenteDigitos = (valor) => valor.replace(/\D/g, "");
+
+function mascararTelefone(valor) {
+  const digitos = somenteDigitos(valor).slice(0, 11);
+  if (digitos.length > 10) {
+    return digitos.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  }
+  if (digitos.length > 5) {
+    return digitos.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+  }
+  if (digitos.length > 2) {
+    return digitos.replace(/(\d{2})(\d{0,5})/, "($1) $2");
+  }
+  return digitos.replace(/(\d{0,2})/, "($1");
+}
+
+function mascararCpf(valor) {
+  return somenteDigitos(valor)
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+function mascararRg(valor) {
+  return valor
+    .toUpperCase()
+    .replace(/[^0-9X]/g, "")
+    .slice(0, 9)
+    .replace(/(\d{2})(\w)/, "$1.$2")
+    .replace(/(\d{3})(\w)/, "$1.$2")
+    .replace(/(\d{3})([\dX]{1,2})$/, "$1-$2");
+}
+
+function telefoneValido(valor) {
+  const digitos = somenteDigitos(valor);
+  return digitos.length === 10 || digitos.length === 11;
+}
+
+function rgValido(valor) {
+  return somenteDigitos(valor).length >= 7;
+}
+
+function cpfValido(valor) {
+  const cpf = somenteDigitos(valor);
+  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+  let soma = 0;
+  for (let i = 0; i < 9; i++) soma += Number(cpf[i]) * (10 - i);
+  let digitoVerificador1 = (soma * 10) % 11;
+  if (digitoVerificador1 === 10) digitoVerificador1 = 0;
+  if (digitoVerificador1 !== Number(cpf[9])) return false;
+
+  soma = 0;
+  for (let i = 0; i < 10; i++) soma += Number(cpf[i]) * (11 - i);
+  let digitoVerificador2 = (soma * 10) % 11;
+  if (digitoVerificador2 === 10) digitoVerificador2 = 0;
+  return digitoVerificador2 === Number(cpf[10]);
+}
+
+function dataNascimentoValida(valor) {
+  const data = new Date(valor);
+  return !Number.isNaN(data.getTime()) && data <= new Date();
+}
+
 const DOCUMENTOS = [
   { id: "certidaoNascimento", titulo: "Certidão de Nascimento" },
   { id: "cartaoSus", titulo: "Cartão SUS" },
@@ -42,13 +107,31 @@ const DOCUMENTOS = [
 
 const ETAPAS = [
   {
+    titulo: "Foto",
+    tipo: "foto",
+  },
+  {
     titulo: "Dados pessoais",
     tipo: "formulario",
     campos: [
       { name: "nome", label: "Nome completo", type: "text", span: 2, obrigatorio: true },
-      { name: "dataNascimento", label: "Data de nascimento", type: "date" },
+      {
+        name: "dataNascimento",
+        label: "Data de nascimento",
+        type: "date",
+        obrigatorio: true,
+        validar: dataNascimentoValida,
+        mensagemErro: "Data de nascimento inválida — não pode ser no futuro.",
+      },
       { name: "genero", label: "Gênero", type: "select", opcoes: OPCOES_GENERO },
-      { name: "telefone", label: "Telefone", type: "tel" },
+      {
+        name: "telefone",
+        label: "Telefone",
+        type: "tel",
+        mascara: mascararTelefone,
+        validar: telefoneValido,
+        mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
+      },
     ],
   },
   {
@@ -73,9 +156,30 @@ const ETAPAS = [
     tipo: "formulario",
     campos: [
       { name: "nomeResponsavel1", label: "Nome", type: "text", span: 2 },
-      { name: "telefoneResponsavel1", label: "Telefone", type: "tel" },
-      { name: "rgResponsavel1", label: "RG", type: "text" },
-      { name: "cpfResponsavel1", label: "CPF", type: "text" },
+      {
+        name: "telefoneResponsavel1",
+        label: "Telefone",
+        type: "tel",
+        mascara: mascararTelefone,
+        validar: telefoneValido,
+        mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
+      },
+      {
+        name: "rgResponsavel1",
+        label: "RG",
+        type: "text",
+        mascara: mascararRg,
+        validar: rgValido,
+        mensagemErro: "RG inválido.",
+      },
+      {
+        name: "cpfResponsavel1",
+        label: "CPF",
+        type: "text",
+        mascara: mascararCpf,
+        validar: cpfValido,
+        mensagemErro: "CPF inválido.",
+      },
     ],
   },
   {
@@ -83,9 +187,30 @@ const ETAPAS = [
     tipo: "formulario",
     campos: [
       { name: "nomeResponsavel2", label: "Nome", type: "text", span: 2 },
-      { name: "telefoneResponsavel2", label: "Telefone", type: "tel" },
-      { name: "rgResponsavel2", label: "RG", type: "text" },
-      { name: "cpfResponsavel2", label: "CPF", type: "text" },
+      {
+        name: "telefoneResponsavel2",
+        label: "Telefone",
+        type: "tel",
+        mascara: mascararTelefone,
+        validar: telefoneValido,
+        mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
+      },
+      {
+        name: "rgResponsavel2",
+        label: "RG",
+        type: "text",
+        mascara: mascararRg,
+        validar: rgValido,
+        mensagemErro: "RG inválido.",
+      },
+      {
+        name: "cpfResponsavel2",
+        label: "CPF",
+        type: "text",
+        mascara: mascararCpf,
+        validar: cpfValido,
+        mensagemErro: "CPF inválido.",
+      },
     ],
   },
   {
@@ -94,23 +219,27 @@ const ETAPAS = [
   },
 ];
 
-function renderCampo(campo, formData, aoMudarCampo, erro) {
+function renderCampo(campo, formData, aoMudarCampo, erro, campoComErro) {
   const valor = formData[campo.name] ?? "";
   const classeCampo = campo.span === 2 ? styles.campoSpan2 : styles.campo;
-  const emErro = Boolean(campo.obrigatorio && erro);
+  const emErro = campo.name === campoComErro;
 
   return (
     <div key={campo.name} className={classeCampo}>
       <label className={styles.campoLabel} htmlFor={campo.name}>
         {campo.label}
-        {campo.obrigatorio && <span className={styles.obrigatorio}> *</span>}
+        {campo.obrigatorio ? (
+          <span className={styles.obrigatorio}> *</span>
+        ) : (
+          <span className={styles.opcional}> (opcional)</span>
+        )}
       </label>
 
       {campo.type === "select" ? (
         <Select
           id={campo.name}
           value={valor}
-          onChange={(e) => aoMudarCampo(campo.name, e.target.value)}
+          onChange={(e) => aoMudarCampo(campo, e.target.value)}
         >
           <option value="">Selecione...</option>
           {campo.opcoes.map((opcao) => (
@@ -124,7 +253,7 @@ function renderCampo(campo, formData, aoMudarCampo, erro) {
           id={campo.name}
           type={campo.type}
           value={valor}
-          onChange={(e) => aoMudarCampo(campo.name, e.target.value)}
+          onChange={(e) => aoMudarCampo(campo, e.target.value)}
           required={campo.obrigatorio}
           style={emErro ? { borderColor: "var(--vermelho)" } : undefined}
         />
@@ -143,6 +272,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [etapaAtual, setEtapaAtual] = useState(0);
   const [erro, setErro] = useState("");
+  const [campoComErro, setCampoComErro] = useState(null);
 
   const primeiraEtapa = etapaAtual === 0;
   const ultimaEtapa = etapaAtual === ETAPAS.length - 1;
@@ -161,9 +291,13 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     };
   }, [fotoPreviewUrl]);
 
-  const aoMudarCampo = (nome, valor) => {
-    setFormData((atual) => ({ ...atual, [nome]: valor }));
-    if (nome === "nome" && erro) setErro("");
+  const aoMudarCampo = (campo, valorDigitado) => {
+    const valor = campo.mascara ? campo.mascara(valorDigitado) : valorDigitado;
+    setFormData((atual) => ({ ...atual, [campo.name]: valor }));
+    if (campo.name === campoComErro) {
+      setErro("");
+      setCampoComErro(null);
+    }
   };
 
   const resetarTudo = () => {
@@ -177,6 +311,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     setIsUploadOpen(false);
     setEtapaAtual(0);
     setErro("");
+    setCampoComErro(null);
   };
 
   const aoFechar = () => {
@@ -185,16 +320,31 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   };
 
   const aoAvancar = () => {
-    if (primeiraEtapa && !formData.nome?.trim()) {
-      setErro("Preencha o nome completo para continuar.");
-      return;
+    if (etapa.tipo === "formulario") {
+      for (const campo of etapa.campos) {
+        const valor = String(formData[campo.name] ?? "").trim();
+
+        if (campo.obrigatorio && !valor) {
+          setErro(`Preencha o campo "${campo.label}" para continuar.`);
+          setCampoComErro(campo.name);
+          return;
+        }
+
+        if (valor && campo.validar && !campo.validar(valor)) {
+          setErro(campo.mensagemErro ?? `Campo "${campo.label}" inválido.`);
+          setCampoComErro(campo.name);
+          return;
+        }
+      }
     }
     setErro("");
+    setCampoComErro(null);
     setEtapaAtual((atual) => Math.min(atual + 1, ETAPAS.length - 1));
   };
 
   const aoVoltar = () => {
     setErro("");
+    setCampoComErro(null);
     setEtapaAtual((atual) => Math.max(atual - 1, 0));
   };
 
@@ -303,53 +453,61 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
             <p className={styles.stepperLegenda}>
               Etapa {etapaAtual + 1} de {ETAPAS.length} · {etapa.titulo}
             </p>
+            {etapa.tipo === "formulario" && (
+              <p className={styles.camposLegenda}>
+                <span className={styles.obrigatorio}>*</span> campos obrigatórios —
+                os demais são opcionais.
+              </p>
+            )}
 
-            {etapa.tipo === "formulario" ? (
-              <>
-                {primeiraEtapa && (
-                  <div className={styles.avatarArea}>
-                    <div className={styles.avatarCirculo}>
-                      {fotoPreviewUrl ? (
-                        <img
-                          src={fotoPreviewUrl}
-                          alt="Pré-visualização da foto"
-                          className={styles.avatarImagem}
-                        />
-                      ) : (
-                        <PersonIcon sx={{ fontSize: 64, color: "var(--carvao)" }} />
-                      )}
-                    </div>
-                    <input
-                      ref={fotoInputRef}
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
-                    />
-                    <button
-                      type="button"
-                      className={styles.botaoFoto}
-                      onClick={() => fotoInputRef.current?.click()}
-                    >
-                      {foto ? "Trocar foto" : "Adicionar foto"}
-                    </button>
-                  </div>
-                )}
-
-                <section className={styles.secao}>
-                  <h3 className={styles.secaoTitulo}>{etapa.titulo}</h3>
-                  <div className={styles.grid}>
-                    {etapa.campos.map((campo) =>
-                      renderCampo(campo, formData, aoMudarCampo, erro)
+            {etapa.tipo === "foto" ? (
+              <section className={styles.secao}>
+                <h3 className={styles.secaoTitulo}>Foto do desbravador</h3>
+                <p className={styles.documentosSubtitulo}>
+                  Adicione uma foto de perfil (opcional).
+                </p>
+                <div className={styles.avatarArea}>
+                  <div className={styles.avatarCirculo}>
+                    {fotoPreviewUrl ? (
+                      <img
+                        src={fotoPreviewUrl}
+                        alt="Pré-visualização da foto"
+                        className={styles.avatarImagem}
+                      />
+                    ) : (
+                      <PersonIcon sx={{ fontSize: 64, color: "var(--carvao)" }} />
                     )}
                   </div>
-                </section>
-              </>
+                  <input
+                    ref={fotoInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
+                  />
+                  <button
+                    type="button"
+                    className={styles.botaoFoto}
+                    onClick={() => fotoInputRef.current?.click()}
+                  >
+                    {foto ? "Trocar foto" : "Adicionar foto"}
+                  </button>
+                </div>
+              </section>
+            ) : etapa.tipo === "formulario" ? (
+              <section className={styles.secao}>
+                <h3 className={styles.secaoTitulo}>{etapa.titulo}</h3>
+                <div className={styles.grid}>
+                  {etapa.campos.map((campo) =>
+                    renderCampo(campo, formData, aoMudarCampo, erro, campoComErro)
+                  )}
+                </div>
+              </section>
             ) : (
               <section className={styles.secao}>
                 <h3 className={styles.secaoTitulo}>Documentos</h3>
                 <p className={styles.documentosSubtitulo}>
-                  Anexe os documentos do desbravador.
+                  Anexe os documentos do desbravador (opcional).
                 </p>
 
                 <div className={styles.documentosGrid}>
