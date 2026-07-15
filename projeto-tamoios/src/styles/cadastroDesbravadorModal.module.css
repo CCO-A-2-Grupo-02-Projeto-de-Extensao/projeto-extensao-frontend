@@ -186,10 +186,6 @@
   margin-bottom: 28px;
 }
 
-.secao:last-child {
-  margin-bottom: 0;
-}
-
 .secaoTitulo {
   font-size: 14px;
   font-weight: 700;

@@ -56,6 +56,10 @@
   background-color: var(--cinza);
 }
 
+.linhaClicavel {
+  cursor: pointer;
+}
+
 @media (max-width: 640px) {
   .tabela {
     display: block;

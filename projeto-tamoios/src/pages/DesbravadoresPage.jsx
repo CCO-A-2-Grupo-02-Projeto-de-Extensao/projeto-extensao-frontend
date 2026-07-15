@@ -12,6 +12,8 @@ import { Pagination } from "../components/Pagination/Pagination.jsx";
 import { RemoverDesbravadorModal } from "../components/RemoverDesbravadorModal/RemoverDesbravadorModal.jsx";
 import { ReativarDesbravadorModal } from "../components/ReativarDesbravadorModal/ReativarDesbravadorModal.jsx";
 import { CadastroDesbravadorModal } from "../components/CadastroDesbravadorModal/CadastroDesbravadorModal.jsx";
+import { DetalhesDesbravadorModal } from "../components/DetalhesDesbravadorModal/DetalhesDesbravadorModal.jsx";
+import { EditarDesbravadorModal } from "../components/EditarDesbravadorModal/EditarDesbravadorModal.jsx";
 import { getMembros, CATEGORIAS } from "../services/membrosService.js";
 import styles from "../styles/desbravadoresPage.module.css";
 
@@ -35,6 +37,9 @@ export function DesbravadoresPage() {
   const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
   const [modalReativarAberto, setModalReativarAberto] = useState(false);
   const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
+  const [membroSelecionado, setMembroSelecionado] = useState(null);
+  const [modalDetalhesAberto, setModalDetalhesAberto] = useState(false);
+  const [modalEditarAberto, setModalEditarAberto] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -121,6 +126,33 @@ export function DesbravadoresPage() {
     });
   };
 
+  const aoSelecionarMembro = (membro) => {
+    setMembroSelecionado(membro);
+    setModalDetalhesAberto(true);
+  };
+
+  const aoAbrirEdicao = (membro) => {
+    setModalDetalhesAberto(false);
+    setMembroSelecionado(membro);
+    setModalEditarAberto(true);
+  };
+
+  const aoAlterarStatusMembro = (membro) => {
+    setMembros((atual) =>
+      atual.map((m) => (m.id === membro.id ? { ...m, ativo: !m.ativo } : m))
+    );
+    setModalDetalhesAberto(false);
+    setMembroSelecionado(null);
+  };
+
+  const aoSalvarEdicao = (membroAtualizado) => {
+    setMembros((atual) =>
+      atual.map((m) => (m.id === membroAtualizado.id ? membroAtualizado : m))
+    );
+    setModalEditarAberto(false);
+    setMembroSelecionado(null);
+  };
+
   const totalPaginas = Math.max(
     1,
     Math.ceil(membrosFiltrados.length / TAMANHO_PAGINA)
@@ -203,6 +235,7 @@ export function DesbravadoresPage() {
                 key={grupo.categoria}
                 titulo={grupo.titulo}
                 membros={grupo.membros}
+                onSelecionarMembro={aoSelecionarMembro}
               />
             )
         )}
@@ -233,6 +266,21 @@ export function DesbravadoresPage() {
         aberto={modalCadastroAberto}
         onFechar={() => setModalCadastroAberto(false)}
         onCadastrar={aoCadastrarMembro}
+      />
+
+      <DetalhesDesbravadorModal
+        aberto={modalDetalhesAberto}
+        membro={membroSelecionado}
+        onFechar={() => setModalDetalhesAberto(false)}
+        onEditar={aoAbrirEdicao}
+        onAlterarStatus={aoAlterarStatusMembro}
+      />
+
+      <EditarDesbravadorModal
+        aberto={modalEditarAberto}
+        membro={membroSelecionado}
+        onFechar={() => setModalEditarAberto(false)}
+        onSalvar={aoSalvarEdicao}
       />
     </DashboardLayout>
   );

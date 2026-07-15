@@ -1,7 +1,7 @@
 import { StatusBadge } from "../StatusBadge/StatusBadge.jsx";
 import styles from "../../styles/memberTable.module.css";
 
-export function MemberTable({ titulo, membros }) {
+export function MemberTable({ titulo, membros, onSelecionarMembro }) {
   return (
     <section className={styles.grupoTabela}>
       {titulo && <h3 className={styles.tituloGrupo}>{titulo}</h3>}
@@ -16,7 +16,11 @@ export function MemberTable({ titulo, membros }) {
         </thead>
         <tbody>
           {membros.map((membro) => (
-            <tr key={membro.id}>
+            <tr
+              key={membro.id}
+              className={styles.linhaClicavel}
+              onClick={() => onSelecionarMembro?.(membro)}
+            >
               <td>{membro.nome}</td>
               <td>{membro.papel}</td>
               <td>
