@@ -1,19 +1,28 @@
 import NomePagina from "../components/NomePagina/NomePagina.jsx";
 import emConstrucao from "../assets/construcao.png";
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+import Documento from "../components/Documento/Documento.jsx";
+import styles from "../styles/documentoPage.module.css";
 
 export function DocumentosPage() {
   return (
     <DashboardLayout>
       <NomePagina
         titulo="Documentos"
-        subtitulo="Principais documentos relacionados aos desbravadores."
+        subtitulo="Principais documentos do clube"
       ></NomePagina>
-      <img
-        src={emConstrucao}
-        alt="Página em construção..."
-        style={{ margin: "1.5rem 15rem", width: "45rem" }}
-      />
+      <li className={styles.listaDocumento}>
+        <ul>
+          <Documento nome="Documento A - teste A"></Documento>
+        </ul>
+        <ul>
+          <Documento nome="Documento B - teste B"></Documento>
+        </ul>
+        <ul>
+          <Documento nome="Documento C - teste C"></Documento>
+        </ul>
+      </li>
     </DashboardLayout>
   );
 }
