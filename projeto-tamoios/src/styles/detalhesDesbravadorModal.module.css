@@ -169,6 +169,45 @@
   filter: brightness(0.9);
 }
 
+.cardAcao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background-color: var(--branco);
+  border: 1px solid var(--cinza);
+  cursor: pointer;
+  text-align: left;
+  font-family: "Fredoka", "Inter", sans-serif;
+}
+
+.cardAcao:hover {
+  border-color: var(--vinhoEscuro);
+  background-color: var(--creme);
+}
+
+.iconeNavegacao {
+  color: var(--vinhoEscuro);
+  flex-shrink: 0;
+}
+
+.iconeSeta {
+  color: var(--carvao);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* Compensa um bug do Chrome: containers flex com overflow-y:auto ignoram o
+   próprio padding-bottom quando o conteúdo estoura o scroll — sem isso, a
+   última seção fica colada no rodapé do modal. */
+.espacoInferior {
+  height: 24px;
+}
+
 @media (max-width: 560px) {
   .perfil {
     flex-direction: column;

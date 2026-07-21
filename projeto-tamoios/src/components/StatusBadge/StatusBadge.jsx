@@ -7,7 +7,7 @@ export function StatusBadge({ completo }) {
     return (
       <span className={`${styles.badge} ${styles.completo}`}>
         <SentimentSatisfiedAltIcon fontSize="small" />
-        Completa
+        Documentação completa
       </span>
     );
   }
@@ -15,7 +15,7 @@ export function StatusBadge({ completo }) {
   return (
     <span className={`${styles.badge} ${styles.incompleto}`}>
       <SentimentDissatisfiedIcon fontSize="small" />
-      Incompleta
+      Documentação incompleta
     </span>
   );
 }

@@ -4,31 +4,39 @@ import PersonIcon from "@mui/icons-material/Person";
 import CheckIcon from "@mui/icons-material/Check";
 import { DocumentCard } from "../DocumentCard/DocumentCard.jsx";
 import { UploadDocumentoModal } from "../UploadDocumentoModal/UploadDocumentoModal.jsx";
-import { CATEGORIAS } from "../../services/membrosService.js";
+import { useCatalogos } from "../../hooks/useCatalogos.js";
+import { criarPessoa, criarUsuario } from "../../services/membrosService.js";
+import { enviarDocumento } from "../../services/documentosService.js";
 import {
   CAMPO_NOME,
   DOCUMENTOS,
-  SECOES_FORMULARIO,
   calcularSpans,
+  criarSecoesFormulario,
   renderCampo,
-  rotuloCargo,
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/cadastroDesbravadorModal.module.css";
 
-const ETAPAS = [
+const CAMPOS_ACESSO = [
   {
-    titulo: "Foto e nome",
-    tipo: "foto",
-    campos: [CAMPO_NOME],
+    name: "email",
+    label: "E-mail de acesso",
+    type: "email",
+    obrigatorio: true,
+    validar: (valor) => /\S+@\S+\.\S+/.test(valor),
+    mensagemErro: "E-mail inválido.",
   },
-  ...SECOES_FORMULARIO.map((secao) => ({ ...secao, tipo: "formulario" })),
   {
-    titulo: "Documentos",
-    tipo: "documentos",
+    name: "senha",
+    label: "Senha",
+    type: "password",
+    obrigatorio: true,
+    validar: (valor) => valor.length >= 6,
+    mensagemErro: "A senha deve ter ao menos 6 caracteres.",
   },
 ];
 
 export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
+  const catalogos = useCatalogos();
   const [formData, setFormData] = useState({});
   const [foto, setFoto] = useState(null);
   const [documents, setDocuments] = useState({});
@@ -37,10 +45,36 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   const [etapaAtual, setEtapaAtual] = useState(0);
   const [erro, setErro] = useState("");
   const [campoComErro, setCampoComErro] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+  const [erroSubmissao, setErroSubmissao] = useState("");
+
+  const secoesFormulario = useMemo(
+    () => criarSecoesFormulario(catalogos),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- catalogos é um objeto novo a cada render; comparamos pelas listas em si
+    [catalogos.cargos, catalogos.classes, catalogos.generos, catalogos.unidades]
+  );
+
+  const cargoSelecionado = catalogos.cargos.find(
+    (cargo) => String(cargo.id) === formData.cargo
+  );
+  const precisaAcesso = Boolean(cargoSelecionado) && cargoSelecionado.nome !== "Desbravador";
+
+  const ETAPAS = useMemo(() => {
+    const formularioEtapas = secoesFormulario.map((secao) => ({ ...secao, tipo: "formulario" }));
+    const etapas = [
+      { titulo: "Foto e nome", tipo: "foto", campos: [CAMPO_NOME] },
+      ...formularioEtapas.slice(0, 2),
+    ];
+    if (precisaAcesso) {
+      etapas.push({ titulo: "Acesso ao sistema", tipo: "formulario", campos: CAMPOS_ACESSO });
+    }
+    etapas.push(...formularioEtapas.slice(2), { titulo: "Documentos", tipo: "documentos" });
+    return etapas;
+  }, [secoesFormulario, precisaAcesso]);
 
   const primeiraEtapa = etapaAtual === 0;
   const ultimaEtapa = etapaAtual === ETAPAS.length - 1;
-  const etapa = ETAPAS[etapaAtual];
+  const etapa = ETAPAS[Math.min(etapaAtual, ETAPAS.length - 1)];
 
   const fotoInputRef = useRef(null);
   const preservarArquivosRef = useRef(false);
@@ -83,6 +117,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     setEtapaAtual(0);
     setErro("");
     setCampoComErro(null);
+    setErroSubmissao("");
   };
 
   const aoFechar = () => {
@@ -132,6 +167,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
       return {
         ...atual,
         [selectedDocument.id]: {
+          arquivo,
           nome: arquivo.name,
           tamanho: arquivo.size,
           tipo: arquivo.type,
@@ -152,25 +188,47 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     });
   };
 
-  const aoCadastrar = () => {
-    if (!formData.nome?.trim()) return;
+  const aoCadastrar = async () => {
+    if (!formData.nome?.trim() || enviando) return;
 
-    const categoria = formData.cargo || CATEGORIAS.ALUNO;
+    setEnviando(true);
+    setErroSubmissao("");
 
-    const novoMembro = {
-      ...formData,
-      nome: formData.nome.trim(),
-      categoria,
-      papel: formData.classe || rotuloCargo(categoria),
-      documentacao: DOCUMENTOS.every((doc) => documents[doc.id]),
-      documentos: documents,
-      fotoUrl: fotoPreviewUrl,
-      ativo: true,
-    };
+    try {
+      const novoMembro = await criarPessoa(formData);
 
-    onCadastrar?.(novoMembro);
-    resetarTudo(true);
-    onFechar();
+      if (precisaAcesso) {
+        await criarUsuario({
+          idPessoa: novoMembro.id,
+          idCargo: Number(formData.cargo),
+          email: formData.email,
+          senha: formData.senha,
+        });
+      }
+
+      if (foto) {
+        await enviarDocumento(novoMembro.id, "foto", foto);
+      }
+
+      for (const documento of DOCUMENTOS) {
+        const arquivo = documents[documento.id]?.arquivo;
+        if (arquivo) {
+          await enviarDocumento(novoMembro.id, documento.id, arquivo);
+        }
+      }
+
+      onCadastrar?.(novoMembro);
+      resetarTudo(true);
+      onFechar();
+    } catch (erroRequisicao) {
+      const dados = erroRequisicao.response?.data;
+      const mensagem =
+        dados?.erro ?? (dados && Object.values(dados)[0]) ??
+        "Não foi possível cadastrar o desbravador. Tente novamente.";
+      setErroSubmissao(mensagem);
+    } finally {
+      setEnviando(false);
+    }
   };
 
   if (!aberto) return null;
@@ -231,7 +289,9 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
               </p>
             )}
 
-            {etapa.tipo === "foto" ? (
+            {catalogos.carregandoCatalogos ? (
+              <p className={styles.documentosSubtitulo}>Carregando formulário...</p>
+            ) : etapa.tipo === "foto" ? (
               <section className={styles.secao}>
                 <h3 className={styles.secaoTitulo}>Foto e nome</h3>
                 <p className={styles.documentosSubtitulo}>
@@ -274,6 +334,12 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
             ) : etapa.tipo === "formulario" ? (
               <section className={styles.secao}>
                 <h3 className={styles.secaoTitulo}>{etapa.titulo}</h3>
+                {etapa.titulo === "Acesso ao sistema" && (
+                  <p className={styles.documentosSubtitulo}>
+                    Como o cargo escolhido tem acesso ao sistema, defina o e-mail e a
+                    senha de login.
+                  </p>
+                )}
                 <div className={styles.grid}>
                   {calcularSpans(etapa.campos).map((campo) =>
                     renderCampo(campo, formData, aoMudarCampo, erro, campoComErro, styles)
@@ -302,6 +368,12 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
                     />
                   ))}
                 </div>
+
+                {erroSubmissao && (
+                  <p className={styles.campoErro} style={{ marginTop: "16px" }}>
+                    {erroSubmissao}
+                  </p>
+                )}
               </section>
             )}
           </div>
@@ -312,6 +384,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
             type="button"
             className={styles.botaoCancelar}
             onClick={primeiraEtapa ? aoFechar : aoVoltar}
+            disabled={enviando}
           >
             {primeiraEtapa ? "Cancelar" : "Voltar"}
           </button>
@@ -319,8 +392,9 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
             type="button"
             className={styles.botaoCadastrar}
             onClick={ultimaEtapa ? aoCadastrar : aoAvancar}
+            disabled={enviando || catalogos.carregandoCatalogos}
           >
-            {ultimaEtapa ? "Cadastrar Desbravador" : "Avançar"}
+            {ultimaEtapa ? (enviando ? "Cadastrando..." : "Cadastrar Desbravador") : "Avançar"}
           </button>
         </footer>
       </div>

@@ -1,45 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
 import { DocumentCard } from "../DocumentCard/DocumentCard.jsx";
 import { UploadDocumentoModal } from "../UploadDocumentoModal/UploadDocumentoModal.jsx";
-import { CATEGORIAS } from "../../services/membrosService.js";
+import { useCatalogos } from "../../hooks/useCatalogos.js";
+import { atualizarPessoa } from "../../services/membrosService.js";
+import {
+  enviarDocumento,
+  listarDocumentosDaPessoa,
+  removerDocumento,
+  substituirDocumento,
+} from "../../services/documentosService.js";
 import {
   CAMPO_NOME,
   DOCUMENTOS,
-  SECOES_FORMULARIO,
   calcularSpans,
+  criarSecoesFormulario,
   renderCampo,
-  rotuloCargo,
   validarCampos,
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/cadastroDesbravadorModal.module.css";
 
+const DOCUMENTO_FOTO = { id: "foto", titulo: "Foto" };
+
 export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
+  const catalogos = useCatalogos();
   const [formData, setFormData] = useState({});
-  const [foto, setFoto] = useState(null);
-  const [fotoUrlExistente, setFotoUrlExistente] = useState(null);
   const [documents, setDocuments] = useState({});
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [erro, setErro] = useState("");
   const [campoComErro, setCampoComErro] = useState(null);
+  const [salvando, setSalvando] = useState(false);
 
-  const fotoInputRef = useRef(null);
+  const secoesFormulario = useMemo(
+    () => criarSecoesFormulario(catalogos),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- comparamos pelas listas em si, não pelo objeto novo a cada render
+    [catalogos.cargos, catalogos.classes, catalogos.generos, catalogos.unidades]
+  );
 
   useEffect(() => {
     if (aberto && membro) {
-      setFormData({ ...membro });
-      setFoto(null);
-      setFotoUrlExistente(membro.fotoUrl ?? null);
-      setDocuments(membro.documentos ?? {});
+      setFormData({
+        ...membro,
+        cargo: membro.idCargo != null ? String(membro.idCargo) : "",
+        classe: membro.idClasse != null ? String(membro.idClasse) : "",
+        genero: membro.idGenero != null ? String(membro.idGenero) : "",
+        unidade: membro.idUnidade != null ? String(membro.idUnidade) : "",
+      });
       setErro("");
       setCampoComErro(null);
+      listarDocumentosDaPessoa(membro.id).then(setDocuments);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- só reabastece ao (re)abrir para o mesmo/outro membro
   }, [aberto, membro?.id]);
 
-  const fotoPreviewUrl = foto ? URL.createObjectURL(foto) : fotoUrlExistente;
+  const fotoPreviewUrl = documents.foto?.url ?? null;
 
   const aoMudarCampo = (campo, valorDigitado) => {
     const valor = campo.mascara ? campo.mascara(valorDigitado) : valorDigitado;
@@ -55,21 +71,21 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
     setIsUploadOpen(true);
   };
 
-  const aoSalvarDocumento = (arquivo) => {
-    setDocuments((atual) => ({
-      ...atual,
-      [selectedDocument.id]: {
-        nome: arquivo.name,
-        tamanho: arquivo.size,
-        tipo: arquivo.type,
-        url: URL.createObjectURL(arquivo),
-      },
-    }));
+  const aoSalvarDocumento = async (arquivo) => {
+    const existente = documents[selectedDocument.id];
+    const salvo = existente
+      ? await substituirDocumento(existente.idDocumento, arquivo)
+      : await enviarDocumento(membro.id, selectedDocument.id, arquivo);
+
+    setDocuments((atual) => ({ ...atual, [selectedDocument.id]: salvo }));
     setIsUploadOpen(false);
     setSelectedDocument(null);
   };
 
-  const aoRemoverDocumento = (docId) => {
+  const aoRemoverDocumento = async (docId) => {
+    const existente = documents[docId];
+    if (!existente) return;
+    await removerDocumento(existente.idDocumento);
     setDocuments((atual) => {
       const copia = { ...atual };
       delete copia[docId];
@@ -83,8 +99,8 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
     onFechar();
   };
 
-  const aoSalvar = () => {
-    const todosCampos = [CAMPO_NOME, ...SECOES_FORMULARIO.flatMap((s) => s.campos)];
+  const aoSalvar = async () => {
+    const todosCampos = [CAMPO_NOME, ...secoesFormulario.flatMap((s) => s.campos)];
     const resultado = validarCampos(todosCampos, formData);
     if (resultado) {
       setErro(resultado.mensagem);
@@ -92,21 +108,20 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
       return;
     }
 
-    const categoria = formData.cargo || CATEGORIAS.ALUNO;
-
-    const membroAtualizado = {
-      ...membro,
-      ...formData,
-      nome: formData.nome.trim(),
-      categoria,
-      papel: formData.classe || rotuloCargo(categoria),
-      documentacao: DOCUMENTOS.every((doc) => documents[doc.id]),
-      documentos: documents,
-      fotoUrl: fotoPreviewUrl,
-    };
-
-    onSalvar?.(membroAtualizado);
-    onFechar();
+    setSalvando(true);
+    try {
+      const membroAtualizado = await atualizarPessoa(membro.id, {
+        ...formData,
+        nome: formData.nome.trim(),
+      });
+      onSalvar?.({ ...membroAtualizado, documentacao: DOCUMENTOS.every((doc) => documents[doc.id]) });
+      onFechar();
+    } catch (erroRequisicao) {
+      const dados = erroRequisicao.response?.data;
+      setErro(dados?.erro ?? (dados && Object.values(dados)[0]) ?? "Não foi possível salvar as alterações.");
+    } finally {
+      setSalvando(false);
+    }
   };
 
   if (!aberto || !membro) return null;
@@ -150,17 +165,10 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
                     <PersonIcon sx={{ fontSize: 64, color: "var(--carvao)" }} />
                   )}
                 </div>
-                <input
-                  ref={fotoInputRef}
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
-                />
                 <button
                   type="button"
                   className={styles.botaoFoto}
-                  onClick={() => fotoInputRef.current?.click()}
+                  onClick={() => aoAbrirUpload(DOCUMENTO_FOTO)}
                 >
                   {fotoPreviewUrl ? "Trocar foto" : "Adicionar foto"}
                 </button>
@@ -172,7 +180,7 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
               </div>
             </section>
 
-            {SECOES_FORMULARIO.map((secao) => (
+            {secoesFormulario.map((secao) => (
               <section key={secao.titulo} className={styles.secao}>
                 <h3 className={styles.secaoTitulo}>{secao.titulo}</h3>
                 <div className={styles.grid}>
@@ -186,7 +194,8 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
             <section className={styles.secao}>
               <h3 className={styles.secaoTitulo}>Documentos</h3>
               <p className={styles.documentosSubtitulo}>
-                Anexe ou substitua os documentos do desbravador (opcional).
+                Anexe ou substitua os documentos do desbravador (opcional). Os
+                arquivos são salvos assim que enviados.
               </p>
 
               <div className={styles.documentosGrid}>
@@ -213,6 +222,7 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
             type="button"
             className={styles.botaoCancelar}
             onClick={aoCancelar}
+            disabled={salvando}
           >
             Cancelar
           </button>
@@ -220,8 +230,9 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
             type="button"
             className={styles.botaoCadastrar}
             onClick={aoSalvar}
+            disabled={salvando}
           >
-            Salvar alterações
+            {salvando ? "Salvando..." : "Salvar alterações"}
           </button>
         </footer>
       </div>

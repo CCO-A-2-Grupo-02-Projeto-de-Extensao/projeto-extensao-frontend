@@ -14,7 +14,12 @@ import { ReativarDesbravadorModal } from "../components/ReativarDesbravadorModal
 import { CadastroDesbravadorModal } from "../components/CadastroDesbravadorModal/CadastroDesbravadorModal.jsx";
 import { DetalhesDesbravadorModal } from "../components/DetalhesDesbravadorModal/DetalhesDesbravadorModal.jsx";
 import { EditarDesbravadorModal } from "../components/EditarDesbravadorModal/EditarDesbravadorModal.jsx";
-import { getMembros, CATEGORIAS } from "../services/membrosService.js";
+import {
+  getMembros,
+  CATEGORIAS,
+  desativarPessoa,
+  reativarPessoa,
+} from "../services/membrosService.js";
 import styles from "../styles/desbravadoresPage.module.css";
 
 const TAMANHO_PAGINA = 10;
@@ -41,23 +46,23 @@ export function DesbravadoresPage() {
   const [modalDetalhesAberto, setModalDetalhesAberto] = useState(false);
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
 
-  useEffect(() => {
-    let ativo = true;
-
-    getMembros()
+  const carregarMembros = () => {
+    setCarregando(true);
+    return getMembros()
       .then((dados) => {
-        if (ativo) setMembros(dados);
+        setMembros(dados);
+        setErro(null);
       })
       .catch(() => {
-        if (ativo) setErro("Não foi possível carregar os membros.");
+        setErro("Não foi possível carregar os membros.");
       })
       .finally(() => {
-        if (ativo) setCarregando(false);
+        setCarregando(false);
       });
+  };
 
-    return () => {
-      ativo = false;
-    };
+  useEffect(() => {
+    carregarMembros();
   }, []);
 
   const aoMudarOrdenacao = (valor) => {
@@ -101,29 +106,18 @@ export function DesbravadoresPage() {
       );
   }, [membrosAtivos, busca, categoria, ordenacao]);
 
-  const aoConfirmarDesativacao = (selecionados) => {
-    const idsSelecionados = new Set(selecionados.map((membro) => membro.id));
-    setMembros((atual) =>
-      atual.map((membro) =>
-        idsSelecionados.has(membro.id) ? { ...membro, ativo: false } : membro
-      )
-    );
+  const aoConfirmarDesativacao = async (selecionados) => {
+    await Promise.all(selecionados.map((membro) => desativarPessoa(membro.id)));
+    await carregarMembros();
   };
 
-  const aoConfirmarReativacao = (selecionados) => {
-    const idsSelecionados = new Set(selecionados.map((membro) => membro.id));
-    setMembros((atual) =>
-      atual.map((membro) =>
-        idsSelecionados.has(membro.id) ? { ...membro, ativo: true } : membro
-      )
-    );
+  const aoConfirmarReativacao = async (selecionados) => {
+    await Promise.all(selecionados.map((membro) => reativarPessoa(membro.id)));
+    await carregarMembros();
   };
 
-  const aoCadastrarMembro = (novoMembro) => {
-    setMembros((atual) => {
-      const proximoId = Math.max(0, ...atual.map((m) => m.id)) + 1;
-      return [...atual, { id: proximoId, ...novoMembro }];
-    });
+  const aoCadastrarMembro = () => {
+    carregarMembros();
   };
 
   const aoSelecionarMembro = (membro) => {
@@ -137,20 +131,21 @@ export function DesbravadoresPage() {
     setModalEditarAberto(true);
   };
 
-  const aoAlterarStatusMembro = (membro) => {
-    setMembros((atual) =>
-      atual.map((m) => (m.id === membro.id ? { ...m, ativo: !m.ativo } : m))
-    );
+  const aoAlterarStatusMembro = async (membro) => {
+    if (membro.ativo) {
+      await desativarPessoa(membro.id);
+    } else {
+      await reativarPessoa(membro.id);
+    }
     setModalDetalhesAberto(false);
     setMembroSelecionado(null);
+    await carregarMembros();
   };
 
-  const aoSalvarEdicao = (membroAtualizado) => {
-    setMembros((atual) =>
-      atual.map((m) => (m.id === membroAtualizado.id ? membroAtualizado : m))
-    );
+  const aoSalvarEdicao = () => {
     setModalEditarAberto(false);
     setMembroSelecionado(null);
+    carregarMembros();
   };
 
   const totalPaginas = Math.max(

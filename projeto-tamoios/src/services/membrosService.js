@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars -- usado quando o endpoint real for integrado, ver getMembros()
 import { api } from "./api";
 
 export const CATEGORIAS = {
@@ -8,46 +7,89 @@ export const CATEGORIAS = {
   ALUNO: "aluno",
 };
 
-const MOCK_DELAY_MS = 400;
-
-const MOCK_MEMBROS = [
-  { id: 1, nome: "Ademar Teste", papel: "Teste", categoria: CATEGORIAS.ADMINISTRATIVO, documentacao: false, ativo: true },
-  { id: 2, nome: "Fernanda Alves", papel: "Tesoureira", categoria: CATEGORIAS.ADMINISTRATIVO, documentacao: true, ativo: true },
-  { id: 3, nome: "Maria Souza", papel: "Secretária", categoria: CATEGORIAS.ADMINISTRATIVO, documentacao: true, ativo: true },
-
-  { id: 4, nome: "Bruno Lima", papel: "Instrutor", categoria: CATEGORIAS.INSTRUTOR, documentacao: true, ativo: true },
-  { id: 5, nome: "Carla Nunes", papel: "Instrutor", categoria: CATEGORIAS.INSTRUTOR, documentacao: true, ativo: true },
-  { id: 6, nome: "Diego Martins", papel: "Instrutor", categoria: CATEGORIAS.INSTRUTOR, documentacao: true, ativo: true },
-  { id: 7, nome: "Elaine Rocha", papel: "Instrutor", categoria: CATEGORIAS.INSTRUTOR, documentacao: true, ativo: true },
-  { id: 8, nome: "Fábio Teixeira", papel: "Instrutor", categoria: CATEGORIAS.INSTRUTOR, documentacao: true, ativo: true },
-
-  { id: 9, nome: "Gabriel Santos", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 10, nome: "Helena Costa", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 11, nome: "Igor Farias", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 12, nome: "Julia Pereira", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: false, ativo: true },
-  { id: 13, nome: "Kauã Ribeiro", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 14, nome: "Larissa Mendes", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 15, nome: "Miguel Oliveira", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 16, nome: "Natália Barbosa", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 17, nome: "Otávio Cardoso", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 18, nome: "Patrícia Gomes", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 19, nome: "Rafael Dias", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 20, nome: "Sabrina Rocha", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 21, nome: "Thiago Almeida", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: false, ativo: true },
-  { id: 22, nome: "Vitória Nascimento", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 23, nome: "William Correia", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 24, nome: "Yasmin Freitas", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 25, nome: "André Monteiro", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-  { id: 26, nome: "Beatriz Cavalcanti", papel: "Aluno", categoria: CATEGORIAS.ALUNO, documentacao: true, ativo: true },
-];
+function paraMembro(pessoa) {
+  return {
+    id: pessoa.idPessoa,
+    nome: pessoa.nome,
+    papel: pessoa.nomeCargo,
+    categoria: pessoa.categoria,
+    ativo: pessoa.ativo,
+    documentacao: false, // recalculado depois de carregar os documentos reais (ver documentosService)
+    classe: pessoa.nomeClasse,
+    idClasse: pessoa.idClasse,
+    genero: pessoa.nomeGenero,
+    idGenero: pessoa.idGenero,
+    unidade: pessoa.nomeUnidade,
+    idUnidade: pessoa.idUnidade,
+    idCargo: pessoa.idCargo,
+    dataNascimento: pessoa.dataNascimento,
+    telefone: pessoa.telefone,
+    cpf: pessoa.cpf,
+    rg: pessoa.rg,
+    escola: pessoa.escola,
+    turma: pessoa.serieEscolar,
+    isDesbravador: pessoa.isDesbravador,
+    nomeResponsavel1: pessoa.nomeResponsavel1,
+    telefoneResponsavel1: pessoa.telefoneResponsavel1,
+    rgResponsavel1: pessoa.rgResponsavel1,
+    cpfResponsavel1: pessoa.cpfResponsavel1,
+    nomeResponsavel2: pessoa.nomeResponsavel2,
+    telefoneResponsavel2: pessoa.telefoneResponsavel2,
+    rgResponsavel2: pessoa.rgResponsavel2,
+    cpfResponsavel2: pessoa.cpfResponsavel2,
+  };
+}
 
 export async function getMembros() {
-  // Integração futura: quando o endpoint existir no backend, basta remover o
-  // mock abaixo e descomentar a chamada real via axios.
-  // const { data } = await api.get("/membros");
-  // return data;
+  const { data } = await api.get("/pessoas");
+  return data.map(paraMembro);
+}
 
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(MOCK_MEMBROS), MOCK_DELAY_MS);
-  });
+// Converte o formData produzido pelo formulário (ver
+// utils/desbravadorForm.jsx) — onde cargo/classe/genero/unidade guardam o id
+// real como string — no formato que o backend espera em PessoaCadastroRequest.
+export function construirPessoaRequest(formData) {
+  return {
+    nome: formData.nome?.trim(),
+    dataNascimento: formData.dataNascimento,
+    telefone: formData.telefone || null,
+    idClasse: formData.classe ? Number(formData.classe) : null,
+    idGenero: formData.genero ? Number(formData.genero) : null,
+    idUnidade: formData.unidade ? Number(formData.unidade) : null,
+    idCargo: formData.cargo ? Number(formData.cargo) : null,
+    escola: formData.escola || null,
+    serieEscolar: formData.turma || null,
+    nomeResponsavel1: formData.nomeResponsavel1 || null,
+    telefoneResponsavel1: formData.telefoneResponsavel1 || null,
+    rgResponsavel1: formData.rgResponsavel1 || null,
+    cpfResponsavel1: formData.cpfResponsavel1 || null,
+    nomeResponsavel2: formData.nomeResponsavel2 || null,
+    telefoneResponsavel2: formData.telefoneResponsavel2 || null,
+    rgResponsavel2: formData.rgResponsavel2 || null,
+    cpfResponsavel2: formData.cpfResponsavel2 || null,
+  };
+}
+
+export async function criarPessoa(formData) {
+  const { data } = await api.post("/pessoas", construirPessoaRequest(formData));
+  return paraMembro(data);
+}
+
+export async function atualizarPessoa(idPessoa, formData) {
+  const { data } = await api.put(`/pessoas/${idPessoa}`, construirPessoaRequest(formData));
+  return paraMembro(data);
+}
+
+export async function desativarPessoa(idPessoa) {
+  await api.patch(`/pessoas/${idPessoa}/desativar`);
+}
+
+export async function reativarPessoa(idPessoa) {
+  await api.patch(`/pessoas/${idPessoa}/reativar`);
+}
+
+// Só é chamado quando o cargo escolhido tem login (Administrativo/Instrutor).
+export async function criarUsuario({ idPessoa, idCargo, email, senha }) {
+  const { data } = await api.post("/usuarios", { idPessoa, idCargo, email, senha });
+  return data;
 }

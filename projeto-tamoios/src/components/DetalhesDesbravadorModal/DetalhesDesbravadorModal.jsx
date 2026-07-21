@@ -1,9 +1,16 @@
+import { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import SchoolIcon from "@mui/icons-material/School";
+import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { StatusBadge } from "../StatusBadge/StatusBadge.jsx";
-import { DOCUMENTOS, rotuloCargo } from "../../utils/desbravadorForm.jsx";
+import { HistoricoEscolarModal } from "../HistoricoEscolarModal/HistoricoEscolarModal.jsx";
+import { DesempenhoClubeModal } from "../DesempenhoClubeModal/DesempenhoClubeModal.jsx";
+import { listarDocumentosDaPessoa } from "../../services/documentosService.js";
+import { DOCUMENTOS } from "../../utils/desbravadorForm.jsx";
 import modalStyles from "../../styles/cadastroDesbravadorModal.module.css";
 import styles from "../../styles/detalhesDesbravadorModal.module.css";
 
@@ -64,9 +71,18 @@ export function DetalhesDesbravadorModal({
   onEditar,
   onAlterarStatus,
 }) {
-  if (!aberto || !membro) return null;
+  const [modalHistoricoAberto, setModalHistoricoAberto] = useState(false);
+  const [modalDesempenhoAberto, setModalDesempenhoAberto] = useState(false);
+  const [documentos, setDocumentos] = useState({});
 
-  const documentos = membro.documentos ?? {};
+  useEffect(() => {
+    if (aberto && membro) {
+      listarDocumentosDaPessoa(membro.id).then(setDocumentos);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- só recarrega ao (re)abrir para o mesmo/outro membro
+  }, [aberto, membro?.id]);
+
+  if (!aberto || !membro) return null;
 
   return (
     <div className={modalStyles.overlay}>
@@ -93,9 +109,9 @@ export function DetalhesDesbravadorModal({
             <section className={modalStyles.secao}>
               <div className={styles.perfil}>
                 <div className={styles.perfilAvatar}>
-                  {membro.fotoUrl ? (
+                  {documentos.foto?.url ? (
                     <img
-                      src={membro.fotoUrl}
+                      src={documentos.foto.url}
                       alt={`Foto de ${membro.nome}`}
                       className={styles.perfilAvatarImagem}
                     />
@@ -106,9 +122,7 @@ export function DetalhesDesbravadorModal({
                 <div>
                   <h3 className={styles.perfilNome}>{membro.nome}</h3>
                   <div className={styles.perfilBadges}>
-                    <span className={styles.tagPapel}>
-                      {membro.papel ?? rotuloCargo(membro.categoria)}
-                    </span>
+                    <span className={styles.tagPapel}>{membro.papel}</span>
                     <span
                       className={`${styles.tagStatus} ${
                         membro.ativo ? styles.tagStatusAtivo : styles.tagStatusInativo
@@ -137,10 +151,7 @@ export function DetalhesDesbravadorModal({
             <section className={modalStyles.secao}>
               <h3 className={modalStyles.secaoTitulo}>Informações do clube</h3>
               <div className={modalStyles.grid}>
-                <CampoLeitura
-                  label="Cargo"
-                  valor={rotuloCargo(membro.categoria)}
-                />
+                <CampoLeitura label="Cargo" valor={membro.papel} />
                 <CampoLeitura label="Classe" valor={membro.classe} />
                 <CampoLeitura label="Unidade" valor={membro.unidade} />
               </div>
@@ -194,6 +205,36 @@ export function DetalhesDesbravadorModal({
                 })}
               </div>
             </section>
+
+            <section className={modalStyles.secao}>
+              <h3 className={modalStyles.secaoTitulo}>Histórico Escolar e Desempenho</h3>
+              <div className={modalStyles.documentosGrid}>
+                <button
+                  type="button"
+                  className={styles.cardAcao}
+                  onClick={() => setModalHistoricoAberto(true)}
+                >
+                  <div className={styles.documentoInfo}>
+                    <SchoolIcon fontSize="small" className={styles.iconeNavegacao} />
+                    <span className={styles.documentoTitulo}>Histórico Escolar</span>
+                  </div>
+                  <ChevronRightIcon fontSize="small" className={styles.iconeSeta} />
+                </button>
+                <button
+                  type="button"
+                  className={styles.cardAcao}
+                  onClick={() => setModalDesempenhoAberto(true)}
+                >
+                  <div className={styles.documentoInfo}>
+                    <MilitaryTechIcon fontSize="small" className={styles.iconeNavegacao} />
+                    <span className={styles.documentoTitulo}>Desempenho no Clube</span>
+                  </div>
+                  <ChevronRightIcon fontSize="small" className={styles.iconeSeta} />
+                </button>
+              </div>
+            </section>
+
+            <div className={styles.espacoInferior} />
           </div>
         </div>
 
@@ -221,6 +262,20 @@ export function DetalhesDesbravadorModal({
           </button>
         </footer>
       </div>
+
+      <HistoricoEscolarModal
+        aberto={modalHistoricoAberto}
+        membro={membro}
+        onFechar={() => setModalHistoricoAberto(false)}
+        onSalvar={() => setModalHistoricoAberto(false)}
+      />
+
+      <DesempenhoClubeModal
+        aberto={modalDesempenhoAberto}
+        membro={membro}
+        onFechar={() => setModalDesempenhoAberto(false)}
+        onSalvar={() => setModalDesempenhoAberto(false)}
+      />
     </div>
   );
 }

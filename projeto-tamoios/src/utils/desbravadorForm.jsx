@@ -2,24 +2,11 @@ import { Select } from "../components/Select/Select.jsx";
 import { Input } from "../components/Input/Input.jsx";
 import { CATEGORIAS } from "../services/membrosService.js";
 
-export const OPCOES_CARGO = [
-  { value: CATEGORIAS.ADMINISTRATIVO, label: "Administrativo" },
-  { value: CATEGORIAS.INSTRUTOR, label: "Instrutor" },
-  { value: CATEGORIAS.ALUNO, label: "Aluno" },
-];
-
-export const OPCOES_GENERO = ["Masculino", "Feminino", "Prefiro não informar"].map(
-  (valor) => ({ value: valor, label: valor })
-);
-
-export const OPCOES_CLASSE = [
-  "Amigo",
-  "Companheiro",
-  "Pesquisador",
-  "Pioneiro",
-  "Excursionista",
-  "Guia",
-].map((valor) => ({ value: valor, label: valor }));
+const ROTULOS_CATEGORIA = {
+  [CATEGORIAS.ADMINISTRATIVO]: "Administrativo",
+  [CATEGORIAS.INSTRUTOR]: "Instrutor",
+  [CATEGORIAS.ALUNO]: "Aluno",
+};
 
 const somenteDigitos = (valor) => valor.replace(/\D/g, "");
 
@@ -94,7 +81,6 @@ export const DOCUMENTOS = [
   { id: "comprovanteEndereco", titulo: "Comprovante de Endereço" },
   { id: "fichaMedica", titulo: "Ficha Médica" },
   { id: "receitaMedica", titulo: "Receita Médica" },
-  { id: "desempenhoEscolar", titulo: "Desempenho Escolar" },
   { id: "autorizacaoClube", titulo: "Autorização do Clube" },
 ];
 
@@ -106,44 +92,58 @@ export const CAMPO_NOME = {
   obrigatorio: true,
 };
 
-export const SECOES_FORMULARIO = [
-  {
-    titulo: "Dados pessoais",
-    campos: [
-      {
-        name: "dataNascimento",
-        label: "Data de nascimento",
-        type: "date",
-        obrigatorio: true,
-        validar: dataNascimentoValida,
-        mensagemErro: "Data de nascimento inválida — não pode ser no futuro.",
-      },
-      { name: "genero", label: "Gênero", type: "select", opcoes: OPCOES_GENERO },
-      {
-        name: "telefone",
-        label: "Telefone",
-        type: "tel",
-        mascara: mascararTelefone,
-        validar: telefoneValido,
-        mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
-      },
-    ],
-  },
-  {
-    titulo: "Informações do clube",
-    campos: [
-      { name: "cargo", label: "Cargo", type: "select", opcoes: OPCOES_CARGO },
-      { name: "classe", label: "Classe", type: "select", opcoes: OPCOES_CLASSE },
-      { name: "unidade", label: "Unidade", type: "text" },
-    ],
-  },
-  {
-    titulo: "Dados escolares",
-    campos: [
-      { name: "escola", label: "Escola", type: "text" },
-      { name: "turma", label: "Turma", type: "text" },
-    ],
-  },
+function paraOpcoes(lista) {
+  return lista.map((item) => ({ value: String(item.id), label: item.nome }));
+}
+
+// Monta as seções do formulário com as opções reais vindas do backend
+// (Cargo/Classe/Gênero/Unidade — ver useCatalogos). O `value` de cada opção
+// é o id numérico (como string, formato padrão de <select>), resolvido de
+// volta pra número na hora de montar o request (ver membrosService).
+export function criarSecoesFormulario({ cargos, classes, generos, unidades }) {
+  const opcoesGenero = [
+    ...paraOpcoes(generos),
+    { value: "", label: "Prefiro não informar" },
+  ];
+
+  return [
+    {
+      titulo: "Dados pessoais",
+      campos: [
+        {
+          name: "dataNascimento",
+          label: "Data de nascimento",
+          type: "date",
+          obrigatorio: true,
+          validar: dataNascimentoValida,
+          mensagemErro: "Data de nascimento inválida — não pode ser no futuro.",
+        },
+        { name: "genero", label: "Gênero", type: "select", opcoes: opcoesGenero },
+        {
+          name: "telefone",
+          label: "Telefone",
+          type: "tel",
+          mascara: mascararTelefone,
+          validar: telefoneValido,
+          mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
+        },
+      ],
+    },
+    {
+      titulo: "Informações do clube",
+      campos: [
+        { name: "cargo", label: "Cargo", type: "select", opcoes: paraOpcoes(cargos) },
+        { name: "classe", label: "Classe", type: "select", opcoes: paraOpcoes(classes) },
+        { name: "unidade", label: "Unidade", type: "select", opcoes: paraOpcoes(unidades) },
+      ],
+    },
+    {
+      titulo: "Dados escolares",
+      campos: [
+        { name: "escola", label: "Escola", type: "text" },
+        { name: "turma", label: "Turma", type: "text" },
+      ],
+    },
   {
     titulo: "Responsável 1",
     campos: [
@@ -203,8 +203,9 @@ export const SECOES_FORMULARIO = [
         mensagemErro: "CPF inválido.",
       },
     ],
-  },
-];
+    },
+  ];
+}
 
 export function calcularSpans(campos) {
   const resultado = campos.map((campo) => ({ ...campo, spanEfetivo: 1 }));
@@ -295,5 +296,5 @@ export function validarCampos(campos, formData) {
 }
 
 export function rotuloCargo(categoria) {
-  return OPCOES_CARGO.find((opcao) => opcao.value === categoria)?.label ?? "Aluno";
+  return ROTULOS_CATEGORIA[categoria] ?? "Aluno";
 }
