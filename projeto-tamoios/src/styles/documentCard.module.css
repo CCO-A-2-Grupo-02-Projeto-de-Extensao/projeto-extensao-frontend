@@ -1,0 +1,87 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--branco);
+  border: 1px solid var(--cinza);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--carvao);
+  line-height: 1.3;
+}
+
+.iconePendente {
+  color: var(--carvao);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.iconeEnviado {
+  color: var(--verde);
+  flex-shrink: 0;
+}
+
+.statusPendente {
+  font-size: 13px;
+  color: var(--ambarOuro);
+}
+
+.statusEnviado {
+  font-size: 13px;
+  color: var(--verde);
+  font-weight: 500;
+}
+
+.botaoAdicionar {
+  width: 100%;
+  margin: auto 0 0;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--vinhoEscuro);
+  background-color: var(--branco);
+  color: var(--vinhoEscuro);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "Fredoka", "Inter", sans-serif;
+}
+
+.botaoAdicionar:hover {
+  background-color: var(--cinza);
+}
+
+.acoes {
+  margin-top: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.botaoIcone {
+  flex: 1;
+  width: auto;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid var(--cinza);
+  background-color: var(--cremeClaro);
+  color: var(--carvao);
+  cursor: pointer;
+}
+
+.botaoIcone:hover {
+  background-color: var(--cinza);
+}

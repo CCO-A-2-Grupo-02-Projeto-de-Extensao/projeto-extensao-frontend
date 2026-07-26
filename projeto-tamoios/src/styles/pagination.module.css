@@ -1,0 +1,38 @@
+.paginacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 32px 0;
+}
+
+.paginaBotao,
+.setaBotao {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  border: 1px solid var(--vinhoEscuro);
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.paginaBotao:hover,
+.setaBotao:hover:not(:disabled) {
+  background-color: var(--cinza);
+}
+
+.paginaAtiva {
+  background-color: var(--vinhoEscuro);
+  color: var(--cremeClaro);
+}
+
+.setaBotao:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

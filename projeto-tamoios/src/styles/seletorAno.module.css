@@ -1,0 +1,54 @@
+.seletorAno {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.anoItem {
+  width: auto;
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--vinhoEscuro);
+  background-color: var(--branco);
+  color: var(--vinhoEscuro);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Fredoka", "Inter", sans-serif;
+}
+
+.anoItem:hover {
+  background-color: var(--creme);
+}
+
+.anoItemAtivo {
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+}
+
+.anoItemAtivo:hover {
+  background-color: var(--vinhoEscuro);
+}
+
+.botaoAdicionarAno {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--cinza);
+  background-color: var(--branco);
+  color: var(--carvao);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.botaoAdicionarAno:hover {
+  background-color: var(--cinza);
+}

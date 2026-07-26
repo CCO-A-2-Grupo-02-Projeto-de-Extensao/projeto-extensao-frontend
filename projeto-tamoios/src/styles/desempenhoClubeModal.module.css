@@ -1,0 +1,176 @@
+.mensagemCarregando {
+  font-size: 14px;
+  color: var(--carvao);
+  text-align: center;
+  padding: 24px 0;
+}
+
+.mensagemVazia {
+  font-size: 14px;
+  color: var(--carvao);
+  opacity: 0.75;
+}
+
+.listaEspecialidades {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.especialidadeItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--carvao);
+  cursor: pointer;
+}
+
+.especialidadeItem input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--vinhoEscuro);
+  cursor: pointer;
+}
+
+.listaOcorrencias {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ocorrenciaItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: var(--creme);
+}
+
+.ocorrenciaData {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+}
+
+.ocorrenciaDescricao {
+  font-size: 14px;
+  color: var(--carvao);
+  margin-top: 2px;
+}
+
+.botaoRemoverOcorrencia {
+  width: auto;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--vermelho);
+  background-color: var(--branco);
+  color: var(--vermelho);
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.botaoRemoverOcorrencia:hover {
+  background-color: var(--vermelho);
+  color: var(--branco);
+}
+
+.novaOcorrencia {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inputData,
+.inputDescricao {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--cinza);
+  background-color: var(--branco);
+  color: var(--text);
+  font-size: 14px;
+  font-family: "Fredoka", "Inter", sans-serif;
+}
+
+.inputData {
+  width: 160px;
+}
+
+.inputDescricao {
+  flex: 1;
+  min-width: 200px;
+}
+
+.botaoAdicionarOcorrencia {
+  width: auto;
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 5px;
+  border: 1px solid var(--vinhoEscuro);
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+  font-size: 14px;
+  cursor: pointer;
+  font-family: "Fredoka", "Inter", sans-serif;
+}
+
+.botaoAdicionarOcorrencia:hover {
+  background-color: var(--vermelho);
+}
+
+.insigniaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.insigniaApto {
+  background-color: rgba(46, 125, 50, 0.15);
+  color: var(--verde);
+}
+
+.insigniaNaoApto {
+  background-color: rgba(212, 146, 10, 0.15);
+  color: var(--ambarOuro);
+}
+
+.listaCriterios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.criterioItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--carvao);
+}
+
+.criterioIconeOk {
+  color: var(--verde);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.criterioIconePendente {
+  color: var(--cinza);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
