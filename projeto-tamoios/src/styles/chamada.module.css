@@ -1,0 +1,289 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: var(--cinza);
+  border-radius: 4px;
+}
+
+.toolbarButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--vinhoEscuro);
+  border-radius: 8px;
+  background: var(--branco);
+  color: var(--carvao);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.toolbarButton:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.toolbarButtonIcon {
+  font-size: 1.2rem !important;
+}
+
+.filtersRow {
+  display: grid;
+  grid-template-columns: minmax(16rem, 18rem) minmax(8rem, 10rem) 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.filterSelectWrap,
+.filterSelectWrapSmall,
+.searchWrap {
+  min-width: 0;
+}
+
+.searchWrap :global(.input) {
+  margin: 0;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24rem;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.tableCard {
+  background: var(--branco);
+  border: 1px solid rgba(92, 22, 18, 0.2);
+  overflow: hidden;
+}
+
+.attendanceTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.attendanceTable thead th {
+  padding: 0.55rem 0.75rem;
+  background: var(--vinhoEscuro);
+  color: var(--branco);
+  text-align: left;
+  font-size: 1rem;
+}
+
+.attendanceTable tbody td {
+  padding: 0.35rem 0.75rem;
+  border-bottom: 1px solid rgba(92, 22, 18, 0.25);
+  color: var(--carvao);
+  font-size: 0.95rem;
+}
+
+.attendanceTable tbody tr:hover {
+  background: rgba(92, 22, 18, 0.03);
+}
+
+.attendanceTable th:first-child,
+.attendanceTable td:first-child {
+  width: 48%;
+}
+
+.attendanceTable th:nth-child(2),
+.attendanceTable td:nth-child(2) {
+  width: 26%;
+}
+
+.attendanceTable th:nth-child(3),
+.attendanceTable td:nth-child(3) {
+  width: 16%;
+  text-align: center;
+}
+
+.presentCell {
+  text-align: center;
+}
+
+.presentIcon {
+  color: #3cc51c;
+  font-size: 1.2rem !important;
+}
+
+.absentMark {
+  color: var(--vinhoEscuro);
+  font-weight: 700;
+}
+
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.calendarCard,
+.statCard {
+  background: var(--branco);
+  border: 1px solid rgba(92, 22, 18, 0.12);
+}
+
+.calendarCard {
+  padding: 0.6rem 0.75rem 0.85rem;
+}
+
+.calendarHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendarHeader small {
+  color: var(--carvao);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.monthSwitcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.monthSwitcher strong {
+  font-size: 1.1rem;
+  color: var(--carvao);
+}
+
+.monthSwitcher button {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(92, 22, 18, 0.35);
+  border-radius: 999px;
+  background: var(--cinza);
+  color: var(--carvao);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.monthSwitcher button svg {
+  font-size: 1rem;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  border: 1px solid rgba(92, 22, 18, 0.1);
+}
+
+.weekdayCell,
+.dayCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: 0.8rem;
+  border-right: 1px solid rgba(92, 22, 18, 0.08);
+  border-bottom: 1px solid rgba(92, 22, 18, 0.08);
+}
+
+.weekdayCell {
+  background: #faf6f1;
+  color: rgba(34, 21, 16, 0.8);
+  font-weight: 600;
+}
+
+.dayCell {
+  color: var(--carvao);
+  background: #fff;
+}
+
+.dayMuted {
+  color: rgba(34, 21, 16, 0.28);
+}
+
+.dayToday {
+  border-radius: 999px;
+  background: rgba(42, 78, 158, 0.08);
+  color: var(--azul);
+  box-shadow: inset 0 0 0 1px rgba(42, 78, 158, 0.55);
+}
+
+.statsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1rem;
+}
+
+.statIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  min-width: 3rem;
+  height: 3rem;
+  color: var(--carvao);
+}
+
+.statIcon {
+  font-size: 2.5rem !important;
+}
+
+.statText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.statText strong {
+  font-size: 2rem;
+  color: var(--carvao);
+}
+
+.statText span {
+  font-size: 0.95rem;
+  color: var(--carvao);
+}
+
+@media (max-width: 1280px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    max-width: 24rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .filtersRow {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    max-width: none;
+  }
+}

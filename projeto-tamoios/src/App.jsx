@@ -33,6 +33,7 @@ function App() {
           path="/dashboard/chamada"
           element={<ProtectedRoute element={<ChamadaPage />} />}
         />
+        <Route path="/preview/chamada" element={<ChamadaPage />} />
         <Route
           path="/dashboard/classes"
           element={<ProtectedRoute element={<ClassesPage />} />}
