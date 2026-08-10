@@ -4,6 +4,7 @@ import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import Documento from "../components/Documento/Documento.jsx";
 import styles from "../styles/documentoPage.module.css";
+import api from "../services/api.js";
 
 export function DocumentosPage() {
   return (
