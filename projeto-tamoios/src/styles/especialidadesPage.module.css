@@ -1,0 +1,19 @@
+.acoes {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.tituloSecao {
+  margin: 28px 0 18px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.mensagemEstado {
+  text-align: center;
+  padding: 50px 20px;
+  color: #777777;
+  font-size: 15px;
+}

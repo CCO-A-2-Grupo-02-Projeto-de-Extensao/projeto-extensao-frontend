@@ -1,0 +1,33 @@
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.campoOrdenacao {
+  width: 110px;
+}
+
+.campoCategoria {
+  width: 230px;
+}
+
+.campoBusca {
+  flex: 1;
+  max-width: 320px;
+}
+
+@media (max-width: 800px) {
+  .filtros {
+    flex-wrap: wrap;
+  }
+
+  .campoOrdenacao,
+  .campoCategoria,
+  .campoBusca {
+    width: 100%;
+    max-width: none;
+  }
+}

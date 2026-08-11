@@ -1,0 +1,145 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.cabecalho h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.fechar {
+  border: none;
+  background: transparent;
+  color: #777777;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fechar:hover {
+  color: #333333;
+}
+
+.formulario {
+  padding: 24px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.campo label {
+  margin-bottom: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444444;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dddddd;
+  border-radius: 7px;
+  padding: 11px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #333333;
+  background-color: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  border-color: var(--vinhoEscuro);
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.botoes button {
+  border: none;
+  border-radius: 7px;
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.botaoCancelar {
+  background-color: #eeeeee;
+  color: #555555;
+}
+
+.botaoCancelar:hover {
+  background-color: #e2e2e2;
+}
+
+.botaoSalvar {
+  background-color: var(--vinhoEscuro);
+  color: white;
+}
+
+.botaoSalvar:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .modal {
+    max-width: 100%;
+  }
+
+  .formulario {
+    padding: 18px;
+  }
+
+  .botoes {
+    flex-direction: column-reverse;
+  }
+
+  .botoes button {
+    width: 100%;
+  }
+}
