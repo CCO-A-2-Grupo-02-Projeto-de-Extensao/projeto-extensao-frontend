@@ -4,8 +4,14 @@ import api from "../../services/api";
 
 export function Documento(props) {
   const handleClick = async () => {
+    const idDocumento = props.idDocumento;
+
+    if (!idDocumento) {
+      return;
+    }
+
     try {
-      const response = await api.get("/documentos/1/visualizar", {
+      const response = await api.get(`/documentos/${idDocumento}/visualizar`, {
         responseType: "blob",
       });
 
