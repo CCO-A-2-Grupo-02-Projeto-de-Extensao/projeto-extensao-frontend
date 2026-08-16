@@ -4,6 +4,7 @@ import desbravadoresLogoImg from "../assets/desbravadores_logo.png";
 import "../App.css";
 import { Button } from "../components/Button/Button.jsx";
 import { Input } from "../components/Input/Input.jsx";
+import { InputSenha } from "../components/InputSenha/InputSenha.jsx";
 import { Modal } from "../components/Modal/Modal.jsx";
 import estiloBotao from "../styles/button.module.css";
 
@@ -74,8 +75,7 @@ function Login() {
             disabled={loading}
           />
           <br />
-          <Input
-            type="password"
+          <InputSenha
             placeholder="Sua senha"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
