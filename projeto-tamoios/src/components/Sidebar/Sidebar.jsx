@@ -24,6 +24,14 @@ export function Sidebar() {
     navigate(path);
   };
 
+  // Limpa a sessão antes de sair: sem isto o token continua no localStorage e
+  // basta voltar para /dashboard para entrar de novo.
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    navigate("/", { replace: true });
+  };
+
   return (
     <div
       className={styles.sidebar}
@@ -165,7 +173,7 @@ export function Sidebar() {
               "&:hover": { backgroundColor: "var(--vermelho)" },
             }}
             button
-            onClick={() => handleNavigate("/")}
+            onClick={handleLogout}
           >
             <ListItemIcon>
               <LogoutIcon className={styles.customIcon} />
