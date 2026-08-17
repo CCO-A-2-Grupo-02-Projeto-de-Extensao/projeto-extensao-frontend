@@ -1,4 +1,8 @@
-table {
+/* CSS Modules só escopam seletores de classe: `table`, `th` e `td` soltos saíam
+   sem hash e valiam para o app inteiro. O `text-align: center` daqui vazava para
+   as tabelas de Chamada e Especialidades, que alinham o cabeçalho à esquerda mas
+   não declaram alinhamento no corpo — daí a linha desencontrada do topo. */
+.tabela {
   width: 100%;
   text-align: center;
   border-collapse: collapse;
@@ -6,20 +10,20 @@ table {
   overflow: hidden;
 }
 
-thead {
+.tabela thead {
   background-color: var(--vinhoEscuro);
   color: var(--cremeClaro);
 }
 
-th {
+.tabela th {
   padding: 10px;
   font-weight: 500;
 }
 
-td {
+.tabela td {
   padding: 10px;
 }
 
-tbody tr:hover {
+.tabela tbody tr:hover {
   background-color: var(--cinza);
 }
