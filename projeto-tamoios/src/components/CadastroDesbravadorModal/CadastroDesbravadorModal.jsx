@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Tooltip } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import CheckIcon from "@mui/icons-material/Check";
 import { DocumentCard } from "../DocumentCard/DocumentCard.jsx";
@@ -34,6 +35,24 @@ const CAMPOS_ACESSO = [
   },
 ];
 
+const TOOLTIP_SLOT_PROPS = {
+  tooltip: {
+    sx: {
+      backgroundColor: "var(--vinhoEscuro)",
+      color: "var(--creme)",
+      fontFamily: '"Fredoka", "Inter", sans-serif',
+      fontSize: "13px",
+      fontWeight: 600,
+      padding: "6px 12px",
+      borderRadius: "6px",
+      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)",
+    },
+  },
+  arrow: {
+    sx: { color: "var(--vinhoEscuro)" },
+  },
+};
+
 export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   const catalogos = useCatalogos();
   const [formData, setFormData] = useState({});
@@ -42,6 +61,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [etapaAtual, setEtapaAtual] = useState(0);
+  const [etapasVisitadas, setEtapasVisitadas] = useState(() => new Set([0]));
   const [erro, setErro] = useState("");
   const [campoComErro, setCampoComErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
@@ -92,6 +112,33 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     };
   }, [fotoPreviewUrl]);
 
+  useEffect(() => {
+    setEtapasVisitadas((atual) => {
+      if (atual.has(etapaAtual)) return atual;
+      return new Set(atual).add(etapaAtual);
+    });
+  }, [etapaAtual]);
+
+  // Uma etapa só vira atalho clicável depois que o usuário passou por ela
+  // pelo menos uma vez e os campos obrigatórios dela já estão preenchidos —
+  // assim ele pode pular de volta sem risco de "perder o lugar".
+  const etapaClicavel = (indice) => {
+    if (!etapasVisitadas.has(indice)) return false;
+    const campos = ETAPAS[indice]?.campos;
+    if (!campos) return true;
+    return campos.every((campo) => {
+      if (!campo.obrigatorio) return true;
+      return String(formData[campo.name] ?? "").trim() !== "";
+    });
+  };
+
+  const aoClicarEtapa = (indice) => {
+    if (indice === etapaAtual || !etapaClicavel(indice)) return;
+    setErro("");
+    setCampoComErro(null);
+    setEtapaAtual(indice);
+  };
+
   const aoMudarCampo = (campo, valorDigitado) => {
     const valor = campo.mascara ? campo.mascara(valorDigitado) : valorDigitado;
     setFormData((atual) => ({ ...atual, [campo.name]: valor }));
@@ -114,6 +161,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     setSelectedDocument(null);
     setIsUploadOpen(false);
     setEtapaAtual(0);
+    setEtapasVisitadas(new Set([0]));
     setErro("");
     setCampoComErro(null);
     setErroSubmissao("");
@@ -242,24 +290,39 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
               Adicionar um novo desbravador ao clube.
             </p>
           </div>
-        </header>
-
-        <div className={styles.corpo}>
-          <div className={styles.painelWrapper}>
+          <div className={styles.stepperArea}>
             <div className={styles.stepper}>
               {ETAPAS.map((item, indice) => (
                 <div key={item.titulo} className={styles.stepperItem}>
-                  <div
-                    className={`${styles.stepperCirculo} ${
-                      indice === etapaAtual ? styles.stepperCirculoAtivo : ""
-                    } ${indice < etapaAtual ? styles.stepperCirculoCompleto : ""}`}
+                  <Tooltip
+                    title={item.titulo}
+                    placement="top"
+                    arrow
+                    slotProps={TOOLTIP_SLOT_PROPS}
                   >
-                    {indice < etapaAtual ? (
-                      <CheckIcon sx={{ fontSize: 16 }} />
-                    ) : (
-                      indice + 1
-                    )}
-                  </div>
+                    <div
+                      role={etapaClicavel(indice) ? "button" : undefined}
+                      tabIndex={etapaClicavel(indice) ? 0 : undefined}
+                      className={`${styles.stepperCirculo} ${
+                        indice === etapaAtual ? styles.stepperCirculoAtivo : ""
+                      } ${indice < etapaAtual ? styles.stepperCirculoCompleto : ""} ${
+                        etapaClicavel(indice) ? styles.stepperCirculoClicavel : ""
+                      }`}
+                      onClick={() => aoClicarEtapa(indice)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          aoClicarEtapa(indice);
+                        }
+                      }}
+                    >
+                      {indice < etapaAtual ? (
+                        <CheckIcon sx={{ fontSize: 16 }} />
+                      ) : (
+                        indice + 1
+                      )}
+                    </div>
+                  </Tooltip>
                   {indice < ETAPAS.length - 1 && (
                     <div
                       className={`${styles.stepperLinha} ${
@@ -273,6 +336,11 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
             <p className={styles.stepperLegenda}>
               Etapa {etapaAtual + 1} de {ETAPAS.length} · {etapa.titulo}
             </p>
+          </div>
+        </header>
+
+        <div className={styles.corpo}>
+          <div className={styles.painelWrapper}>
             {etapa.tipo === "formulario" && (
               <p className={styles.camposLegenda}>
                 <span className={styles.obrigatorio}>*</span> campos obrigatórios —

@@ -22,12 +22,20 @@
 
 .cabecalho {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 16px;
   padding: 24px 32px;
   border-bottom: 1px solid var(--cinza);
   background-color: var(--branco);
   flex-shrink: 0;
+}
+
+.stepperArea {
+  width: 100%;
+}
+
+.stepperArea .stepperLegenda {
+  margin-bottom: 0;
 }
 
 .titulo {
@@ -131,6 +139,18 @@
 .stepperCirculoCompleto {
   background-color: var(--verde);
   color: var(--branco);
+}
+
+.stepperCirculoClicavel {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stepperCirculoClicavel:hover,
+.stepperCirculoClicavel:focus-visible {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px var(--vinhoEscuro);
+  outline: none;
 }
 
 .stepperLinha {
