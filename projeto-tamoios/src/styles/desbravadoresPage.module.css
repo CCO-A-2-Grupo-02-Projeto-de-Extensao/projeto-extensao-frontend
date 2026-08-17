@@ -5,7 +5,8 @@
   background-color: var(--cinza);
   border-radius: 10px;
   padding: 20px;
-  margin: 24px 0;
+  /* Respiro maior embaixo: separa a faixa de ações da seção da lista de membros. */
+  margin: 24px 0 40px;
   flex-wrap: wrap;
 }
 

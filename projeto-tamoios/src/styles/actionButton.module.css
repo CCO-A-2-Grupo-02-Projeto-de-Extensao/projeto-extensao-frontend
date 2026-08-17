@@ -8,7 +8,9 @@
   background-color: #ffffff;
   color: var(--text);
   border: 1.5px solid var(--vinhoEscuro);
-  border-radius: 20px;
+  /* Mesmo raio do .toolbarButton da Chamada (chamada.module.css), que é a barra
+     de ações equivalente. Os botões de ação do app ficam entre 4px e 8px. */
+  border-radius: 8px;
   cursor: pointer;
   font-size: 15px;
   font-family: "Fredoka", "Inter", sans-serif;
