@@ -7,6 +7,12 @@ export const CATEGORIAS = {
   ALUNO: "aluno",
 };
 
+export const SITUACOES = {
+  ATIVOS: "ativos",
+  INATIVOS: "inativos",
+  TODOS: "todos",
+};
+
 function paraMembro(pessoa) {
   return {
     id: pessoa.idPessoa,

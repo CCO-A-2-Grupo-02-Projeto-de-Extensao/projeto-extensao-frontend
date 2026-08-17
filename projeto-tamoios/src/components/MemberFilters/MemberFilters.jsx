@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
-import { CATEGORIAS } from "../../services/membrosService.js";
+import { CATEGORIAS, SITUACOES } from "../../services/membrosService.js";
 import styles from "../../styles/memberFilters.module.css";
 
 const DEBOUNCE_MS = 350;
@@ -11,6 +11,8 @@ export function MemberFilters({
   onOrdenacaoChange,
   categoria,
   onCategoriaChange,
+  situacao,
+  onSituacaoChange,
   onBuscaChange,
 }) {
   const [textoBusca, setTextoBusca] = useState("");
@@ -46,6 +48,18 @@ export function MemberFilters({
           <option value={CATEGORIAS.ADMINISTRATIVO}>Administrativo</option>
           <option value={CATEGORIAS.INSTRUTOR}>Instrutores</option>
           <option value={CATEGORIAS.ALUNO}>Alunos</option>
+        </Select>
+      </div>
+
+      <div className={styles.campoSituacao}>
+        <Select
+          value={situacao}
+          onChange={(e) => onSituacaoChange(e.target.value)}
+          aria-label="Situação"
+        >
+          <option value={SITUACOES.ATIVOS}>Ativos</option>
+          <option value={SITUACOES.INATIVOS}>Desativados</option>
+          <option value={SITUACOES.TODOS}>Ativos e desativados</option>
         </Select>
       </div>
 

@@ -39,17 +39,22 @@
 
 .tabela th:nth-child(1),
 .tabela td:nth-child(1) {
-  width: 45%;
+  width: 37%;
 }
 
 .tabela th:nth-child(2),
 .tabela td:nth-child(2) {
-  width: 30%;
+  width: 24%;
 }
 
 .tabela th:nth-child(3),
 .tabela td:nth-child(3) {
-  width: 25%;
+  width: 16%;
+}
+
+.tabela th:nth-child(4),
+.tabela td:nth-child(4) {
+  width: 23%;
 }
 
 .tabela tbody tr:hover {
@@ -58,6 +63,26 @@
 
 .linhaClicavel {
   cursor: pointer;
+}
+
+/* Mesma linguagem das pílulas de status do modal de detalhes
+   (ver .tagStatus em detalhesDesbravadorModal.module.css). */
+.tagSituacao {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tagAtivo {
+  background-color: rgba(46, 125, 50, 0.15);
+  color: var(--verde);
+}
+
+.tagDesativado {
+  background-color: rgba(198, 40, 40, 0.12);
+  color: var(--vermelho);
 }
 
 @media (max-width: 640px) {

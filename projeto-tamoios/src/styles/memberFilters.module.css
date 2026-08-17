@@ -11,6 +11,12 @@
   flex-shrink: 0;
 }
 
+/* Mais largo que os outros: "Ativos e desativados" é a opção mais longa. */
+.campoSituacao {
+  width: 190px;
+  flex-shrink: 0;
+}
+
 .campoBusca {
   flex: 1;
 }
@@ -21,7 +27,8 @@
   }
 
   .campoOrdenacao,
-  .campoCategoria {
+  .campoCategoria,
+  .campoSituacao {
     width: calc(50% - 6px);
   }
 

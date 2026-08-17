@@ -17,6 +17,7 @@ import { EditarDesbravadorModal } from "../components/EditarDesbravadorModal/Edi
 import {
   getMembros,
   CATEGORIAS,
+  SITUACOES,
   desativarPessoa,
   reativarPessoa,
 } from "../services/membrosService.js";
@@ -37,6 +38,7 @@ export function DesbravadoresPage() {
 
   const [ordenacao, setOrdenacao] = useState("az");
   const [categoria, setCategoria] = useState(CATEGORIAS.TODOS);
+  const [situacao, setSituacao] = useState(SITUACOES.ATIVOS);
   const [busca, setBusca] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
@@ -80,6 +82,11 @@ export function DesbravadoresPage() {
     setPaginaAtual(1);
   };
 
+  const aoMudarSituacao = (valor) => {
+    setSituacao(valor);
+    setPaginaAtual(1);
+  };
+
   const membrosAtivos = useMemo(
     () => membros.filter((membro) => membro.ativo),
     [membros]
@@ -93,7 +100,15 @@ export function DesbravadoresPage() {
   const membrosFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
 
-    return membrosAtivos
+    // Parte de `membros` (todos), e não de `membrosAtivos`: quem decide se os
+    // desativados entram é o filtro de situação. As listas `membrosAtivos` e
+    // `membrosInativos` continuam servindo os modais de desativar/reativar em lote.
+    return membros
+      .filter((membro) => {
+        if (situacao === SITUACOES.ATIVOS) return membro.ativo;
+        if (situacao === SITUACOES.INATIVOS) return !membro.ativo;
+        return true;
+      })
       .filter((membro) => membro.nome.toLowerCase().includes(termo))
       .filter(
         (membro) =>
@@ -104,7 +119,7 @@ export function DesbravadoresPage() {
           ? a.nome.localeCompare(b.nome)
           : b.nome.localeCompare(a.nome)
       );
-  }, [membrosAtivos, busca, categoria, ordenacao]);
+  }, [membros, busca, categoria, ordenacao, situacao]);
 
   const aoConfirmarDesativacao = async (selecionados) => {
     await Promise.all(selecionados.map((membro) => desativarPessoa(membro.id)));
@@ -200,6 +215,8 @@ export function DesbravadoresPage() {
         onOrdenacaoChange={aoMudarOrdenacao}
         categoria={categoria}
         onCategoriaChange={aoMudarCategoria}
+        situacao={situacao}
+        onSituacaoChange={aoMudarSituacao}
         onBuscaChange={aoMudarBusca}
       />
 

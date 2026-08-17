@@ -11,6 +11,7 @@ export function MemberTable({ titulo, membros, onSelecionarMembro }) {
           <tr>
             <th>Nome/Sobrenome</th>
             <th>Papéis</th>
+            <th>Situação</th>
             <th>% Documentação</th>
           </tr>
         </thead>
@@ -23,6 +24,15 @@ export function MemberTable({ titulo, membros, onSelecionarMembro }) {
             >
               <td>{membro.nome}</td>
               <td>{membro.papel}</td>
+              <td>
+                <span
+                  className={`${styles.tagSituacao} ${
+                    membro.ativo ? styles.tagAtivo : styles.tagDesativado
+                  }`}
+                >
+                  {membro.ativo ? "Ativo" : "Desativado"}
+                </span>
+              </td>
               <td>
                 <StatusBadge completo={membro.documentacao} />
               </td>
