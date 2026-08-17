@@ -9,6 +9,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { StatusBadge } from "../StatusBadge/StatusBadge.jsx";
 import { HistoricoEscolarModal } from "../HistoricoEscolarModal/HistoricoEscolarModal.jsx";
 import { DesempenhoClubeModal } from "../DesempenhoClubeModal/DesempenhoClubeModal.jsx";
+import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { listarDocumentosDaPessoa } from "../../services/documentosService.js";
 import { DOCUMENTOS } from "../../utils/desbravadorForm.jsx";
 import modalStyles from "../../styles/cadastroDesbravadorModal.module.css";
@@ -73,6 +74,7 @@ export function DetalhesDesbravadorModal({
 }) {
   const [modalHistoricoAberto, setModalHistoricoAberto] = useState(false);
   const [modalDesempenhoAberto, setModalDesempenhoAberto] = useState(false);
+  const [confirmacaoAberta, setConfirmacaoAberta] = useState(false);
   const [documentos, setDocumentos] = useState({});
 
   useEffect(() => {
@@ -83,6 +85,20 @@ export function DetalhesDesbravadorModal({
   }, [aberto, membro?.id]);
 
   if (!aberto || !membro) return null;
+
+  // Reativar é reversível e segue direto; só a desativação pede confirmação.
+  const aoClicarAlterarStatus = () => {
+    if (membro.ativo) {
+      setConfirmacaoAberta(true);
+    } else {
+      onAlterarStatus?.(membro);
+    }
+  };
+
+  const confirmarDesativacao = () => {
+    setConfirmacaoAberta(false);
+    onAlterarStatus?.(membro);
+  };
 
   return (
     <div className={modalStyles.overlay}>
@@ -241,15 +257,8 @@ export function DetalhesDesbravadorModal({
         <footer className={modalStyles.rodape}>
           <button
             type="button"
-            className={modalStyles.botaoCancelar}
-            onClick={onFechar}
-          >
-            Fechar
-          </button>
-          <button
-            type="button"
             className={membro.ativo ? styles.botaoDesativar : styles.botaoReativar}
-            onClick={() => onAlterarStatus?.(membro)}
+            onClick={aoClicarAlterarStatus}
           >
             {membro.ativo ? "Desativar" : "Reativar"}
           </button>
@@ -275,6 +284,16 @@ export function DetalhesDesbravadorModal({
         membro={membro}
         onFechar={() => setModalDesempenhoAberto(false)}
         onSalvar={() => setModalDesempenhoAberto(false)}
+      />
+
+      <ConfirmacaoModal
+        aberto={confirmacaoAberta}
+        titulo="Desativar desbravador"
+        mensagem={`${membro.nome} deixará de aparecer nas listagens e chamadas do clube. É possível reativar depois.`}
+        textoConfirmar="Desativar"
+        perigo
+        onConfirmar={confirmarDesativacao}
+        onCancelar={() => setConfirmacaoAberta(false)}
       />
     </div>
   );

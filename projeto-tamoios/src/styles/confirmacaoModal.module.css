@@ -1,0 +1,94 @@
+/* Fica acima dos demais modais (o mais alto em uso é 1400, no upload de
+   documento), porque a confirmação sempre abre por cima de um modal já aberto. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1500;
+}
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  padding: 26px 28px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--vinhoEscuro);
+}
+
+.mensagem {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--carvao);
+}
+
+.botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+/* `width` explícito: button.module.css declara `button { width: 100% }` como
+   seletor de elemento, que o CSS Modules não escopa. */
+.botoes button {
+  width: auto;
+  margin: 0;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.18s ease, opacity 0.18s ease;
+}
+
+.botaoCancelar {
+  background-color: #eeeeee;
+  color: #555555;
+}
+
+.botaoCancelar:hover {
+  background-color: #e2e2e2;
+}
+
+.botaoConfirmar {
+  background-color: var(--vinhoEscuro);
+  color: white;
+}
+
+.botaoConfirmar:hover {
+  opacity: 0.9;
+}
+
+.botaoPerigo {
+  background-color: var(--vermelho);
+}
+
+.botoes button:focus-visible {
+  outline: 2px solid var(--vinhoEscuro);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .botoes {
+    flex-direction: column-reverse;
+  }
+
+  .botoes button {
+    width: 100%;
+  }
+}
