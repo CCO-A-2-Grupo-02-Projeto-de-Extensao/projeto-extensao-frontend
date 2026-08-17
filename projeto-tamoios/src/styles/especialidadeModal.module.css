@@ -33,18 +33,41 @@
   color: #333333;
 }
 
+/* button.module.css declara `button { width: 100%; margin: 10px 0 }` como seletor
+   de elemento, que o CSS Modules não escopa — sem as sobrescritas abaixo o × ocupa
+   a largura toda do cabeçalho e espreme o título em duas linhas. */
 .fechar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   border: none;
+  border-radius: 8px;
   background: transparent;
   color: #777777;
-  font-size: 28px;
+  font-size: 26px;
   line-height: 1;
   cursor: pointer;
   padding: 0;
+  margin: 0;
+  transition: background-color 0.18s ease, color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .fechar:hover {
-  color: #333333;
+  background-color: var(--vermelho);
+  color: var(--cremeClaro);
+  transform: scale(1.08);
+}
+
+.fechar:active {
+  transform: scale(0.94);
+}
+
+.fechar:focus-visible {
+  outline: 2px solid var(--vinhoEscuro);
+  outline-offset: 2px;
 }
 
 .formulario {
