@@ -268,9 +268,6 @@ export function DesempenhoClubeModal({ aberto, membro, onFechar, onSalvar }) {
         </div>
 
         <footer className={modalStyles.rodape}>
-          <button type="button" className={modalStyles.botaoCancelar} onClick={onFechar}>
-            Fechar
-          </button>
           <button
             type="button"
             className={modalStyles.botaoCadastrar}

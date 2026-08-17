@@ -41,23 +41,42 @@
   margin-top: 4px;
 }
 
+/* Mesmo botão de fechar do modal de especialidade — ver `.fechar` em
+   especialidadeModal.module.css. O `width`/`margin` explícitos também neutralizam
+   o `button { width: 100% }` que vaza de button.module.css. */
 .botaoFechar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   margin: 0;
-  border-radius: 50%;
+  padding: 0;
+  border-radius: 8px;
   border: none;
   background: transparent;
-  color: var(--carvao);
+  color: #777777;
+  font-size: 26px;
+  line-height: 1;
   cursor: pointer;
   flex-shrink: 0;
+  transition: background-color 0.18s ease, color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .botaoFechar:hover {
-  background-color: var(--cinza);
+  background-color: var(--vermelho);
+  color: var(--cremeClaro);
+  transform: scale(1.08);
+}
+
+.botaoFechar:active {
+  transform: scale(0.94);
+}
+
+.botaoFechar:focus-visible {
+  outline: 2px solid var(--vinhoEscuro);
+  outline-offset: 2px;
 }
 
 .corpo {

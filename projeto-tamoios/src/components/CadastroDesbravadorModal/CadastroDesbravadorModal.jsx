@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
 import CheckIcon from "@mui/icons-material/Check";
 import { DocumentCard } from "../DocumentCard/DocumentCard.jsx";
@@ -243,14 +242,6 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
               Adicionar um novo desbravador ao clube.
             </p>
           </div>
-          <button
-            type="button"
-            className={styles.botaoFechar}
-            onClick={aoFechar}
-            aria-label="Fechar"
-          >
-            <CloseIcon />
-          </button>
         </header>
 
         <div className={styles.corpo}>
