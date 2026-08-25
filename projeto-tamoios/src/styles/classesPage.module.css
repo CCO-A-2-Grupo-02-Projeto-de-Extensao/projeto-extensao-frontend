@@ -15,10 +15,15 @@
   flex: 1;
 }
 
+/* Três colunas fixas, e não auto-fill: com auto-fill a tela larga encaixava
+   quatro cards na primeira linha e dois na segunda. O max-width impede que os
+   cards estiquem em monitores grandes, e o margin auto centraliza a grade. */
 .grade {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 28px;
+  max-width: 940px;
+  margin: 0 auto;
   padding-bottom: 32px;
 }
 
@@ -36,6 +41,12 @@
   font-size: 15px;
 }
 
+@media (max-width: 900px) {
+  .grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 800px) {
   .filtros {
     flex-wrap: wrap;
@@ -44,5 +55,11 @@
   .campoOrdenacao,
   .campoBusca {
     width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
