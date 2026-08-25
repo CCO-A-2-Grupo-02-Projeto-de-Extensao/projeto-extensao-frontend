@@ -1,0 +1,64 @@
+/* button.module.css declara `button { width: 100%; margin: 10px 0 }` como seletor
+   de elemento, que o CSS Modules não escopa — por isso o card zera margin e fixa
+   o próprio tamanho. */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--vinhoEscuro);
+  outline-offset: 2px;
+}
+
+.placa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--creme);
+  /* As placas são SVGs de 260x103; a proporção evita o card pular de altura
+     enquanto a imagem carrega. */
+  aspect-ratio: 260 / 103;
+}
+
+.placa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.semPlaca {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--vinhoEscuro);
+}
+
+.rodape {
+  padding: 16px 18px;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+}
+
+.nome {
+  font-size: 15px;
+  color: #333333;
+}

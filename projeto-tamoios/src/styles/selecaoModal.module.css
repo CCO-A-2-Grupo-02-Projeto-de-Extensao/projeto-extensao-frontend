@@ -1,0 +1,249 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal {
+  display: grid;
+  /* Painel da lista fluido, painel da seleção fixo — é a proporção dos mockups. */
+  grid-template-columns: minmax(0, 1fr) 300px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 88vh;
+  background-color: var(--cremeClaro);
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.painelLista {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px 22px 22px;
+}
+
+.titulo {
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--carvao);
+  margin-bottom: 14px;
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.campoOrdenacao {
+  width: 92px;
+  flex-shrink: 0;
+}
+
+.campoFiltro {
+  width: 118px;
+  flex-shrink: 0;
+}
+
+.campoBusca {
+  flex: 1;
+  min-width: 0;
+}
+
+.lista {
+  flex: 1;
+  min-height: 240px;
+  overflow-y: auto;
+  border: 1px solid var(--cinza);
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid #ededed;
+  font-size: 13px;
+  color: #333333;
+  cursor: pointer;
+}
+
+.linha:last-child {
+  border-bottom: none;
+}
+
+.linha:hover {
+  background-color: #fafafa;
+}
+
+.checkbox {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--verde);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.linhaNome {
+  flex: 1;
+  min-width: 0;
+}
+
+.linhaDetalhe {
+  padding-left: 12px;
+  border-left: 1px solid var(--cinza);
+  color: #777777;
+  white-space: nowrap;
+}
+
+.vazio {
+  padding: 28px 12px;
+  text-align: center;
+  color: #999999;
+  font-size: 13px;
+}
+
+.painelSelecionados {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 22px;
+  background-color: var(--cinza);
+}
+
+.fechar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #555555;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fechar:hover {
+  background-color: var(--vermelho);
+  color: var(--cremeClaro);
+}
+
+.tituloSelecionados {
+  margin: 6px 0 14px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--carvao);
+}
+
+.caixaSelecionados {
+  flex: 1;
+  min-height: 200px;
+  overflow-y: auto;
+  border: 2px solid transparent;
+  border-radius: 4px;
+}
+
+.caixaRemover {
+  border-color: #e8189b;
+}
+
+.selecionado {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  margin-bottom: 3px;
+  background-color: #c9c9c9;
+  font-size: 13px;
+  color: #333333;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  background-color: var(--verde);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.botoes {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.botoes button {
+  width: auto;
+  margin: 0;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.botaoCancelar {
+  background-color: #ffffff;
+  color: #444444;
+  border: 1px solid #bbbbbb !important;
+}
+
+.botaoCancelar:hover {
+  background-color: #f0f0f0;
+}
+
+.botaoConfirmar {
+  background-color: var(--vinhoEscuro);
+  color: #ffffff;
+}
+
+.botaoConfirmar:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.botaoConfirmar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.botaoRemover {
+  background-color: var(--vermelho);
+}
+
+@media (max-width: 780px) {
+  .modal {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .caixaSelecionados {
+    min-height: 110px;
+  }
+}

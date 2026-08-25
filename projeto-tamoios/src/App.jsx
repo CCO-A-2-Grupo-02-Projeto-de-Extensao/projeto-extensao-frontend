@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import { DesbravadoresPage } from "./pages/DesbravadoresPage.jsx";
 import { ChamadaPage } from "./pages/ChamadaPage.jsx";
 import { ClassesPage } from "./pages/ClassesPage.jsx";
+import { ClasseDetalhePage } from "./pages/ClasseDetalhePage.jsx";
 import { EspecialidadesPage } from "./pages/EspecialidadesPage.jsx";
 import { DocumentosPage } from "./pages/DocumentosPage.jsx";
 
@@ -37,6 +38,10 @@ function App() {
         <Route
           path="/dashboard/classes"
           element={<ProtectedRoute element={<ClassesPage />} />}
+        />
+        <Route
+          path="/dashboard/classes/:idClasse"
+          element={<ProtectedRoute element={<ClasseDetalhePage />} />}
         />
         <Route
           path="/dashboard/especialidades"

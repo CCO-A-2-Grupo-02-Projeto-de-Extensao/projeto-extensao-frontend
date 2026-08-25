@@ -1,0 +1,139 @@
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.campoOrdenacao {
+  width: 92px;
+  flex-shrink: 0;
+}
+
+.campoPapel {
+  width: 130px;
+  flex-shrink: 0;
+}
+
+.campoBusca {
+  flex: 1;
+}
+
+.secao {
+  margin-bottom: 36px;
+}
+
+.tituloSecao {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--carvao);
+  margin-bottom: 14px;
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+/* button.module.css declara `button { width: 100%; margin: 10px 0 }` sem escopo. */
+.botaoAcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 0;
+  padding: 9px 18px;
+  background-color: #ffffff;
+  color: var(--text);
+  border: 1.5px solid var(--vinhoEscuro);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.botaoAcao:hover {
+  background-color: var(--cinza);
+}
+
+.tabelaContainer {
+  width: 100%;
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 6px;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tabela thead {
+  background-color: var(--carvao);
+}
+
+.tabela th {
+  padding: 11px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--cremeClaro);
+  white-space: nowrap;
+}
+
+.tabela td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e8e8e8;
+  color: #555555;
+  vertical-align: middle;
+}
+
+.tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabela tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.celulaNome {
+  font-weight: 600;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.mensagemEstado {
+  padding: 26px 12px;
+  text-align: center;
+  color: #777777;
+  font-size: 14px;
+}
+
+.mensagemErro {
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background-color: #f8e8e8;
+  color: var(--vermelho);
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .filtros {
+    flex-wrap: wrap;
+  }
+
+  .campoOrdenacao,
+  .campoPapel,
+  .campoBusca {
+    width: 100%;
+  }
+
+  .acoes {
+    flex-wrap: wrap;
+  }
+}

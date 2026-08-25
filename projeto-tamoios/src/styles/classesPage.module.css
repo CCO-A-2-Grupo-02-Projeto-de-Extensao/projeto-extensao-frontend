@@ -1,0 +1,48 @@
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 28px;
+  width: 100%;
+}
+
+.campoOrdenacao {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.campoBusca {
+  flex: 1;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+  padding-bottom: 32px;
+}
+
+.mensagemEstado {
+  text-align: center;
+  padding: 50px 20px;
+  color: #777777;
+  font-size: 15px;
+}
+
+.mensagemErro {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--vermelho);
+  font-size: 15px;
+}
+
+@media (max-width: 800px) {
+  .filtros {
+    flex-wrap: wrap;
+  }
+
+  .campoOrdenacao,
+  .campoBusca {
+    width: 100%;
+  }
+}

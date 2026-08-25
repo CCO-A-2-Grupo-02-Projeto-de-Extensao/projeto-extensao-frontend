@@ -1,0 +1,83 @@
+/* button.module.css declara `button { width: 100% }` sem escopo — todos os
+   botões desta tela zeram width/margin explicitamente. */
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  margin: 0 0 18px;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  color: var(--vinhoEscuro);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.voltar:hover {
+  text-decoration: underline;
+}
+
+.titulo {
+  font-size: 32px;
+  text-align: center;
+  color: var(--vinhoEscuro);
+  margin-bottom: 22px;
+}
+
+.abas {
+  display: flex;
+  justify-content: center;
+  gap: 56px;
+  border-bottom: 2px solid var(--cinza);
+  margin-bottom: 28px;
+}
+
+.aba {
+  width: auto;
+  margin: 0;
+  padding: 10px 4px 12px;
+  background: none;
+  border: none;
+  /* A borda inferior marca a aba ativa; nas inativas ela fica transparente para
+     o texto não pular de posição na troca. */
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  color: #5b5b5b;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.aba:hover {
+  color: var(--vinhoEscuro);
+}
+
+.abaAtiva {
+  color: var(--carvao);
+  font-weight: 600;
+  border-bottom-color: var(--carvao);
+}
+
+.conteudo {
+  padding-bottom: 40px;
+}
+
+.mensagemErro {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--vermelho);
+  font-size: 15px;
+}
+
+@media (max-width: 700px) {
+  .abas {
+    gap: 20px;
+  }
+
+  .titulo {
+    font-size: 26px;
+  }
+}
