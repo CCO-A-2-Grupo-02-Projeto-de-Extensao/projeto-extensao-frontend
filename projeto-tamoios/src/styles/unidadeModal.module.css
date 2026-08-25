@@ -214,36 +214,25 @@
 .botoes {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
-.botoes button {
-  width: auto;
-  margin: 0;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 5px;
-  font-family: inherit;
-  font-size: 13px;
-  cursor: pointer;
-}
 
-.botoes button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 
 .botaoPrimario {
   composes: botao primario from "./button.module.css";
+  flex: 1;
 }
 
 .botaoSecundario {
   composes: botao primario from "./button.module.css";
+  flex: 1;
 }
 
 .botaoPerigo {
   composes: botao perigo from "./button.module.css";
+  flex: 1;
 }
 
 @media (max-width: 820px) {

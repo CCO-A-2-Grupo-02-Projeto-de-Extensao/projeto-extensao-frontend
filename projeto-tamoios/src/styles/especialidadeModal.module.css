@@ -94,25 +94,18 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 26px;
+  margin-top: 20px;
 }
 
-.botoes button {
-  border: none;
-  border-radius: 7px;
-  padding: 10px 20px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
 
 .botaoCancelar {
   composes: botao secundario from "./button.module.css";
+  flex: 1;
 }
 
 .botaoSalvar {
   composes: botao primario from "./button.module.css";
+  flex: 1;
 }
 
 @media (max-width: 600px) {
@@ -128,7 +121,5 @@
     flex-direction: column-reverse;
   }
 
-  .botoes button {
-    width: 100%;
-  }
+  
 }

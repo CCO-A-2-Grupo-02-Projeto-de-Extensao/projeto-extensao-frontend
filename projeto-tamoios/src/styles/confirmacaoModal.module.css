@@ -38,32 +38,23 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 26px;
+  margin-top: 20px;
 }
 
-.botoes button {
-  width: auto;
-  margin: 0;
-  border: none;
-  border-radius: 7px;
-  padding: 10px 20px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.18s ease, opacity 0.18s ease;
-}
 
 .botaoCancelar {
   composes: botao secundario from "./button.module.css";
+  flex: 1;
 }
 
 .botaoConfirmar {
   composes: botao primario from "./button.module.css";
+  flex: 1;
 }
 
 .botaoPerigo {
   composes: botao perigo from "./button.module.css";
+  flex: 1;
 }
 
 .botoes button:focus-visible {
@@ -76,7 +67,5 @@
     flex-direction: column-reverse;
   }
 
-  .botoes button {
-    width: 100%;
-  }
+  
 }

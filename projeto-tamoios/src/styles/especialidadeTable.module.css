@@ -41,17 +41,6 @@
   gap: 8px;
 }
 
-.acoes button {
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.2s;
-}
 
 .botaoEditar {
   composes: botao icone from "./button.module.css";
