@@ -33,9 +33,6 @@
   color: #333333;
 }
 
-/* button.module.css declara `button { width: 100%; margin: 10px 0 }` como seletor
-   de elemento, que o CSS Modules não escopa — sem as sobrescritas abaixo o × ocupa
-   a largura toda do cabeçalho e espreme o título em duas linhas. */
 .fechar {
   composes: botao fechar from "./button.module.css";
 }

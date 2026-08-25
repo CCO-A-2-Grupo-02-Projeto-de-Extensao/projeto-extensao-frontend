@@ -1,6 +1,3 @@
-/* button.module.css declara `button { width: 100%; margin: 10px 0 }` como seletor
-   de elemento, que o CSS Modules não escopa — por isso o card zera margin e fixa
-   o próprio tamanho. */
 .card {
   display: flex;
   flex-direction: column;

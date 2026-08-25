@@ -8,7 +8,6 @@
   border-radius: 6px;
 }
 
-/* button.module.css declara `button { width: 100%; margin: 10px 0 }` sem escopo. */
 .botaoAcao {
   composes: botao secundario from "./button.module.css";
 }

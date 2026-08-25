@@ -7,8 +7,6 @@
   padding-right: 42px;
 }
 
-/* button.module.css declara `button { width: 100% }` como seletor de elemento,
-   que o CSS Modules não escopa — daí as sobrescritas explícitas abaixo. */
 .olho {
   position: absolute;
   right: 12px;

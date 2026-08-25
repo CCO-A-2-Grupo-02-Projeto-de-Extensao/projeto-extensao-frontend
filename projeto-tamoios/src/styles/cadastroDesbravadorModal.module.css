@@ -50,8 +50,7 @@
 }
 
 /* Mesmo botão de fechar do modal de especialidade — ver `.fechar` em
-   especialidadeModal.module.css. O `width`/`margin` explícitos também neutralizam
-   o `button { width: 100% }` que vaza de button.module.css. */
+   especialidadeModal.module.css. */
 .botaoFechar {
   composes: botao fechar from "./button.module.css";
   flex-shrink: 0;

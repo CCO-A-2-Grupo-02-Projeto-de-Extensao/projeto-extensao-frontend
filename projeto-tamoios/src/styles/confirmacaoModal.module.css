@@ -41,8 +41,6 @@
   margin-top: 26px;
 }
 
-/* `width` explícito: button.module.css declara `button { width: 100% }` como
-   seletor de elemento, que o CSS Modules não escopa. */
 .botoes button {
   width: auto;
   margin: 0;
