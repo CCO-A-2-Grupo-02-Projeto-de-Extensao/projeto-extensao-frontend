@@ -59,7 +59,9 @@ export function ClassesPage() {
 
   return (
     <DashboardLayout>
-      <NomePagina titulo="Classes" subtitulo="Resumo das classes" />
+      <div className={styles.cabecalho}>
+        <NomePagina titulo="Classes" subtitulo="Resumo das classes" />
+      </div>
 
       <div className={styles.filtros}>
         <div className={styles.campoOrdenacao}>
