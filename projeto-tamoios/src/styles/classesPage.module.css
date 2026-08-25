@@ -1,9 +1,13 @@
+/* Mesma largura e mesmo centro da grade: o filtro começa onde o primeiro card
+   começa e termina onde o último termina. Ao mexer no max-width da .grade,
+   mexa aqui junto. */
 .filtros {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 24px 0 28px;
+  margin: 24px auto 28px;
   width: 100%;
+  max-width: 940px;
 }
 
 .campoOrdenacao {
