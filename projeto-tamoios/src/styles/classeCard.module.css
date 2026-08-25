@@ -19,14 +19,17 @@
     box-shadow 0.15s ease;
 }
 
-/* O fundo escurece um passo na paleta do site: branco -> --creme. O
-   background-color precisa estar aqui de forma explícita porque
-   button.module.css tem `button:hover { background-color: var(--vermelho) }`
-   como seletor de elemento, que o CSS Modules não escopa. */
+/* Vermelho do tema, o mesmo que button.module.css já usa no hover de botão.
+   O nome clareia junto: em cima de --vermelho o cinza escuro do texto normal
+   fica ilegível. */
 .card:hover {
-  background-color: var(--creme);
+  background-color: var(--vermelho);
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.card:hover .nome {
+  color: var(--cremeClaro);
 }
 
 .card:focus-visible {
@@ -67,4 +70,5 @@
 .nome {
   font-size: 15px;
   color: #333333;
+  transition: color 0.15s ease;
 }
