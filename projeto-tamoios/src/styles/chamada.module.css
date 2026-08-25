@@ -63,10 +63,12 @@
   align-items: start;
 }
 
+/* Sem moldura própria: a tabela já traz fundo, borda arredondada e
+   `overflow: hidden` de tabelaBase.module.css. O card tinha canto quadrado e
+   borda, e a diferença entre os dois retângulos aparecia como uma segunda
+   tabela por trás. Aqui ele é só a célula do grid. */
 .tableCard {
-  background: var(--branco);
-  border: 1px solid rgba(92, 22, 18, 0.2);
-  overflow: hidden;
+  min-width: 0;
 }
 
 /* Cabeçalho, padding, bordas e hover vêm de tabelaBase.module.css. Aqui ficam
