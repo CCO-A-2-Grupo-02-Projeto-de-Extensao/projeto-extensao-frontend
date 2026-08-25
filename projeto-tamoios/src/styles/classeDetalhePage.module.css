@@ -1,28 +1,3 @@
-/* button.module.css declara `button { width: 100% }` sem escopo — todos os
-   botões desta tela zeram width/margin explicitamente. */
-.voltar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  width: auto;
-  margin: 0 0 18px;
-  padding: 6px 0;
-  background: none;
-  border: none;
-  color: var(--vinhoEscuro);
-  font-family: inherit;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.voltar:hover {
-  /* button.module.css tem `button:hover { background-color: var(--vermelho) }`
-     como seletor de elemento, que o CSS Modules não escopa. Sem repetir o fundo
-     aqui, todo botão sem cor própria pisca vermelho no hover. */
-  background-color: transparent;
-  text-decoration: underline;
-}
-
 .titulo {
   font-size: 32px;
   text-align: center;

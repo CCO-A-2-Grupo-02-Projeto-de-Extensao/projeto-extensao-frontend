@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useParams } from "react-router-dom";
 
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { ClasseParticipantes } from "../components/ClasseParticipantes/ClasseParticipantes.jsx";
@@ -19,7 +18,6 @@ const ABAS = [
 
 export function ClasseDetalhePage() {
   const { idClasse } = useParams();
-  const navigate = useNavigate();
 
   const [classe, setClasse] = useState(null);
   const [carregando, setCarregando] = useState(true);
@@ -48,15 +46,6 @@ export function ClasseDetalhePage() {
 
   return (
     <DashboardLayout>
-      <button
-        type="button"
-        className={styles.voltar}
-        onClick={() => navigate("/dashboard/classes")}
-      >
-        <ArrowBackIcon fontSize="small" />
-        Voltar para as classes
-      </button>
-
       <h1 className={styles.titulo}>
         {carregando ? "Carregando..." : `Classe ${classe?.nome ?? ""}`}
       </h1>
