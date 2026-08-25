@@ -167,11 +167,7 @@ export function SelecaoModal({
 
           <h3 className={styles.tituloSelecionados}>{tituloSelecionados}</h3>
 
-          <div
-            className={`${styles.caixaSelecionados} ${
-              ehRemocao ? styles.caixaRemover : ""
-            }`}
-          >
+          <div className={styles.caixaSelecionados}>
             {itensSelecionados.map((item) => (
               <div key={item.id} className={styles.selecionado}>
                 <span className={styles.marca} aria-hidden="true">

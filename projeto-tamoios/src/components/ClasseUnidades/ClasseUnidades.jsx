@@ -87,16 +87,6 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
         <button
           type="button"
           className={styles.botaoAcao}
-          onClick={() => setModal({ modo: "editar", unidade: null })}
-          disabled={unidades.length === 0}
-        >
-          <EditIcon fontSize="small" />
-          Editar Unidade
-        </button>
-
-        <button
-          type="button"
-          className={styles.botaoAcao}
           onClick={() => setModal({ modo: "criar", unidade: null })}
         >
           <GroupAddIcon fontSize="small" />
@@ -163,6 +153,7 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
                   <th>Sexo</th>
                   <th>Conselheiro da Unidade</th>
                   <th>Quantidade de Desbravadores</th>
+                  <th className={styles.colunaAcao}>Editar</th>
                 </tr>
               </thead>
 
@@ -174,6 +165,16 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
                     <td>{unidade.sexo || "—"}</td>
                     <td>{unidade.conselheiro || "—"}</td>
                     <td>{unidade.quantidadeDesbravadores}</td>
+                    <td className={styles.colunaAcao}>
+                      <button
+                        type="button"
+                        className={styles.botaoEditarLinha}
+                        onClick={() => setModal({ modo: "editar", unidade })}
+                        aria-label={`Editar ${unidade.nome}`}
+                      >
+                        <EditIcon fontSize="small" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -190,8 +191,9 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
 
       {modal && (
         <UnidadeModal
-          key={modal.modo}
+          key={`${modal.modo}-${modal.unidade?.id ?? "nova"}`}
           modo={modal.modo}
+          unidadeInicial={modal.unidade}
           idClasse={idClasse}
           nomeClasse={nomeClasse}
           unidadesDaClasse={unidades}

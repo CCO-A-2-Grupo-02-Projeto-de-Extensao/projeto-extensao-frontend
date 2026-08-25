@@ -43,6 +43,7 @@ function formularioDaUnidade(unidade) {
  */
 export function UnidadeModal({
   modo,
+  unidadeInicial,
   idClasse,
   nomeClasse,
   unidadesDaClasse = [],
@@ -50,13 +51,17 @@ export function UnidadeModal({
   onSalvo,
 }) {
   const edicao = modo === "editar";
-  const unidadeInicial = edicao ? unidadesDaClasse[0] : null;
+  // A unidade vem da linha em que o usuário clicou; o dropdown ainda permite
+  // trocar sem fechar o modal.
+  const unidadeDePartida = edicao
+    ? unidadeInicial ?? unidadesDaClasse[0]
+    : null;
 
   const [formulario, setFormulario] = useState(() =>
-    formularioDaUnidade(unidadeInicial)
+    formularioDaUnidade(unidadeDePartida)
   );
   const [idUnidadeSelecionada, setIdUnidadeSelecionada] = useState(
-    unidadeInicial ? String(unidadeInicial.id) : ""
+    unidadeDePartida ? String(unidadeDePartida.id) : ""
   );
   const [participantes, setParticipantes] = useState([]);
   const [generos, setGeneros] = useState([]);

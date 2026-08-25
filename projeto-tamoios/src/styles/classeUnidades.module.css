@@ -75,3 +75,15 @@
     width: 100%;
   }
 }
+
+/* Coluna estreita, encostada à direita: o botão pertence à linha, não à tela. */
+.colunaAcao {
+  width: 70px;
+  text-align: right;
+}
+
+.botaoEditarLinha {
+  composes: botao icone from "./button.module.css";
+  background-color: transparent;
+  color: var(--vinhoEscuro);
+}
