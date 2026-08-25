@@ -225,6 +225,7 @@
 }
 
 .botaoConfirmar:hover:not(:disabled) {
+  background-color: var(--vinhoEscuro);
   opacity: 0.9;
 }
 
@@ -233,7 +234,8 @@
   cursor: not-allowed;
 }
 
-.botaoRemover {
+.botaoRemover,
+.botaoRemover:hover:not(:disabled) {
   background-color: var(--vermelho);
 }
 

@@ -261,7 +261,14 @@
   color: #ffffff;
 }
 
-.botoes button:hover:not(:disabled) {
+.botaoPrimario:hover:not(:disabled),
+.botaoSecundario:hover:not(:disabled) {
+  background-color: var(--vinhoEscuro);
+  opacity: 0.9;
+}
+
+.botaoPerigo:hover:not(:disabled) {
+  background-color: var(--vermelho);
   opacity: 0.9;
 }
 
