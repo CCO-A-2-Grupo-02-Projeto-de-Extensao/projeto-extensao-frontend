@@ -1,11 +1,10 @@
-import styles from "../../styles/actionButton.module.css";
+import { Button } from "../Button/Button.jsx";
 
+// Atalho para o botão de barra de ação: é o Button na variante secundária, com
+// o ícone à esquerda. Mantido porque Desbravadores e Especialidades já o usam.
 export function ActionButton({ icon, texto, onClick }) {
   return (
-    <button type="button" className={styles.actionButton} onClick={onClick}>
-      <span className={styles.icon}>{icon}</span>
-      {texto}
-    </button>
+    <Button variante="secundario" icone={icon} texto={texto} onClick={onClick} />
   );
 }
 

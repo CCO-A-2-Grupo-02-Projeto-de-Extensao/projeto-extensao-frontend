@@ -193,9 +193,9 @@ export function SelecaoModal({
 
             <button
               type="button"
-              className={`${styles.botaoConfirmar} ${
-                ehRemocao ? styles.botaoRemover : ""
-              }`}
+              className={
+                ehRemocao ? styles.botaoRemover : styles.botaoConfirmar
+              }
               onClick={confirmar}
               disabled={selecionados.length === 0 || salvando}
             >

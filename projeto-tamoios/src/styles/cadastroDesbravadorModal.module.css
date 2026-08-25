@@ -53,29 +53,8 @@
    especialidadeModal.module.css. O `width`/`margin` explícitos também neutralizam
    o `button { width: 100% }` que vaza de button.module.css. */
 .botaoFechar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin: 0;
-  padding: 0;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: #777777;
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
+  composes: botao fechar from "./button.module.css";
   flex-shrink: 0;
-  transition: background-color 0.18s ease, color 0.18s ease,
-    transform 0.18s ease;
-}
-
-.botaoFechar:hover {
-  background-color: var(--vermelho);
-  color: var(--cremeClaro);
-  transform: scale(1.08);
 }
 
 .botaoFechar:active {
@@ -205,20 +184,7 @@
 }
 
 .botaoFoto {
-  width: auto;
-  margin: 0;
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 1.5px solid var(--vinhoEscuro);
-  background-color: var(--branco);
-  color: var(--vinhoEscuro);
-  font-size: 14px;
-  cursor: pointer;
-  font-family: "Fredoka", "Inter", sans-serif;
-}
-
-.botaoFoto:hover {
-  background-color: var(--cinza);
+  composes: botao secundario from "./button.module.css";
 }
 
 .secao {
@@ -301,35 +267,15 @@
 }
 
 .botaoCancelar,
-.botaoCadastrar {
-  flex: 1;
-  width: auto;
-  margin: 0;
-  padding: 12px 24px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  font-family: "Fredoka", "Inter", sans-serif;
+.botaoCadastrar {flex: 1;
 }
 
 .botaoCancelar {
-  background-color: var(--branco);
-  color: var(--vinhoEscuro);
-  border: 1px solid var(--vinhoEscuro);
-}
-
-.botaoCancelar:hover {
-  background-color: var(--cinza);
+  composes: botao secundario from "./button.module.css";
 }
 
 .botaoCadastrar {
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
-  border: 1px solid var(--vinhoEscuro);
-}
-
-.botaoCadastrar:hover {
-  background-color: var(--vermelho);
+  composes: botao primario from "./button.module.css";
 }
 
 @media (max-width: 700px) {

@@ -103,7 +103,7 @@ export function DetalhesDesbravadorModal({
   return (
     <div className={modalStyles.overlay}>
       <div className={modalStyles.modal}>
-        <header className={modalStyles.cabecalho}>
+        <header className={`${modalStyles.cabecalho} ${styles.cabecalhoLinha}`}>
           <div>
             <h2 className={modalStyles.titulo}>Detalhes do Desbravador</h2>
             <p className={modalStyles.subtitulo}>

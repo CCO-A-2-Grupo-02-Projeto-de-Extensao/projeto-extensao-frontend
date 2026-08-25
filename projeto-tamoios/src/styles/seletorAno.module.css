@@ -34,21 +34,7 @@
 }
 
 .botaoAdicionarAno {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin: 0;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid var(--cinza);
-  background-color: var(--branco);
-  color: var(--carvao);
-  cursor: pointer;
+  composes: botao icone from "./button.module.css";
   flex-shrink: 0;
 }
 
-.botaoAdicionarAno:hover {
-  background-color: var(--cinza);
-}

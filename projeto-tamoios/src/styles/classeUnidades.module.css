@@ -10,24 +10,7 @@
 
 /* button.module.css declara `button { width: 100%; margin: 10px 0 }` sem escopo. */
 .botaoAcao {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: auto;
-  margin: 0;
-  padding: 9px 18px;
-  background-color: #ffffff;
-  color: var(--text);
-  border: 1.5px solid var(--vinhoEscuro);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.botaoAcao:hover:not(:disabled) {
-  background-color: #ececec;
+  composes: botao secundario from "./button.module.css";
 }
 
 .botaoAcao:disabled {

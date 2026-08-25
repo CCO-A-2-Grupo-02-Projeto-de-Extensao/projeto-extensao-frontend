@@ -54,17 +54,11 @@
 }
 
 .botaoEditar {
-  background-color: #f3e9ed;
-  color: var(--vinhoEscuro);
-}
-
-.botaoEditar:hover {
-  background-color: #ead9e0;
+  composes: botao icone from "./button.module.css";
 }
 
 .botaoExcluir {
-  background-color: #f8e8e8;
-  color: #a33a3a;
+  composes: botao icone from "./button.module.css";
 }
 
 .botaoExcluir:hover {

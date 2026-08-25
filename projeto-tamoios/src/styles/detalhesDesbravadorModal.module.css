@@ -1,3 +1,12 @@
+/* O .cabecalho reaproveitado de cadastroDesbravadorModal é uma coluna, porque
+   lá empilha título e stepper. Aqui o conteúdo é título e botão de fechar lado
+   a lado — sem isto o × cai embaixo do título, encostado à esquerda. */
+.cabecalhoLinha {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
 .perfil {
   display: flex;
   align-items: center;
@@ -119,50 +128,20 @@
 }
 
 .botaoVisualizar {
-  width: auto;
-  margin: 0;
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid var(--vinhoEscuro);
-  background-color: var(--branco);
-  color: var(--vinhoEscuro);
-  font-size: 13px;
-  cursor: pointer;
+  composes: botao secundario from "./button.module.css";
   flex-shrink: 0;
-  font-family: "Fredoka", "Inter", sans-serif;
-}
-
-.botaoVisualizar:hover {
-  background-color: var(--cinza);
 }
 
 .botaoDesativar,
-.botaoReativar {
-  flex: 1;
-  width: auto;
-  margin: 0;
-  padding: 12px 24px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  font-family: "Fredoka", "Inter", sans-serif;
+.botaoReativar {flex: 1;
 }
 
 .botaoDesativar {
-  background-color: var(--branco);
-  color: var(--vermelho);
-  border: 1px solid var(--vermelho);
-}
-
-.botaoDesativar:hover {
-  background-color: var(--vermelho);
-  color: var(--branco);
+  composes: botao perigo from "./button.module.css";
 }
 
 .botaoReativar {
-  background-color: var(--verde);
-  color: var(--branco);
-  border: 1px solid var(--verde);
+  composes: botao sucesso from "./button.module.css";
 }
 
 .botaoReativar:hover {

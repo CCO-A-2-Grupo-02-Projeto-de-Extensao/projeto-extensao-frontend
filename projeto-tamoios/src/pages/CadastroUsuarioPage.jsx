@@ -31,9 +31,10 @@ export function CadastroUsuarioPage() {
         >
           <AccountCircleIcon sx={{ fontSize: 200 }} />
           <Button
+            variante="secundario"
             texto={"Adicionar Foto (Opcional)"}
             mensagemAlert={"Foto adicionada com sucesso !"}
-          ></Button>
+          />
         </div>
         <div>
           <form action="">
@@ -78,7 +79,8 @@ export function CadastroUsuarioPage() {
       <Button
         texto={"Adicionar Usuário"}
         mensagemAlert={"Usuário cadastrado com sucesso !"}
-      ></Button>
+        larguraTotal
+      />
     </DashboardLayout>
   );
 }

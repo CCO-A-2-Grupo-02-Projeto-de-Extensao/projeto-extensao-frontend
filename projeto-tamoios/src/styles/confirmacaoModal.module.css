@@ -57,25 +57,15 @@
 }
 
 .botaoCancelar {
-  background-color: #eeeeee;
-  color: #555555;
-}
-
-.botaoCancelar:hover {
-  background-color: #e2e2e2;
+  composes: botao secundario from "./button.module.css";
 }
 
 .botaoConfirmar {
-  background-color: var(--vinhoEscuro);
-  color: white;
-}
-
-.botaoConfirmar:hover {
-  opacity: 0.9;
+  composes: botao primario from "./button.module.css";
 }
 
 .botaoPerigo {
-  background-color: var(--vermelho);
+  composes: botao perigo from "./button.module.css";
 }
 
 .botoes button:focus-visible {

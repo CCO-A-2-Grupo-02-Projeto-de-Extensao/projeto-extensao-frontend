@@ -42,22 +42,8 @@
 }
 
 .botaoFechar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin: 0;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--carvao);
-  cursor: pointer;
+  composes: botao fechar from "./button.module.css";
   flex-shrink: 0;
-}
-
-.botaoFechar:hover {
-  background-color: var(--cinza);
 }
 
 .corpo {
@@ -176,35 +162,15 @@
 }
 
 .botaoCancelar,
-.botaoSalvar {
-  flex: 1;
-  width: auto;
-  margin: 0;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 15px;
-  cursor: pointer;
-  font-family: "Fredoka", "Inter", sans-serif;
+.botaoSalvar {flex: 1;
 }
 
 .botaoCancelar {
-  background-color: var(--branco);
-  color: var(--vinhoEscuro);
-  border: 1px solid var(--vinhoEscuro);
-}
-
-.botaoCancelar:hover {
-  background-color: var(--cinza);
+  composes: botao secundario from "./button.module.css";
 }
 
 .botaoSalvar {
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
-  border: 1px solid var(--vinhoEscuro);
-}
-
-.botaoSalvar:hover {
-  background-color: var(--vermelho);
+  composes: botao primario from "./button.module.css";
 }
 
 .botaoSalvar:disabled {

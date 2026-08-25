@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import desbravadoresLogoImg from "../assets/desbravadores_logo.png";
 import "../App.css";
 import { Button } from "../components/Button/Button.jsx";
+import styles from "../styles/login.module.css";
 import { Input } from "../components/Input/Input.jsx";
 import { InputSenha } from "../components/InputSenha/InputSenha.jsx";
 import { Modal } from "../components/Modal/Modal.jsx";
-import estiloBotao from "../styles/button.module.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -65,7 +65,7 @@ function Login() {
           </div>
         )}
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className={styles.formulario}>
           <Input
             type="email"
             placeholder="Seu email"
@@ -74,7 +74,6 @@ function Login() {
             required
             disabled={loading}
           />
-          <br />
           <InputSenha
             placeholder="Sua senha"
             value={senha}
@@ -82,22 +81,15 @@ function Login() {
             required
             disabled={loading}
           />
-          <br />
+          <Button type="submit" disabled={loading} larguraTotal>
+            {loading ? "Entrando..." : "Entrar"}
+          </Button>
           <Button
+            variante="secundario"
             texto={"Esqueceu a senha ?"}
             pagina={"esqueceuSenhaPage"}
-          ></Button>
-          <br />
-          <button
-            className={estiloBotao.button}
-            type="submit"
-            disabled={loading}
-            style={{
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
+            larguraTotal
+          />
         </form>
       </Modal>
     </section>

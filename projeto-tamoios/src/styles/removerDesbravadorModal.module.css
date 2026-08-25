@@ -139,41 +139,19 @@
 
 .botaoCancelar,
 .botaoRemover,
-.botaoReativar {
-  flex: 1;
-  width: auto;
-  margin: 0;
-  padding: 10px 24px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  font-family: "Fredoka", "Inter", sans-serif;
+.botaoReativar {flex: 1;
 }
 
 .botaoCancelar {
-  background-color: var(--branco);
-  color: var(--vinhoEscuro);
-  border: 1px solid var(--vinhoEscuro);
-}
-
-.botaoCancelar:hover {
-  background-color: var(--cinza);
+  composes: botao secundario from "./button.module.css";
 }
 
 .botaoRemover {
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
-  border: 1px solid var(--vinhoEscuro);
-}
-
-.botaoRemover:hover {
-  background-color: var(--vermelho);
+  composes: botao primario from "./button.module.css";
 }
 
 .botaoReativar {
-  background-color: var(--verde);
-  color: var(--branco);
-  border: 1px solid var(--verde);
+  composes: botao sucesso from "./button.module.css";
 }
 
 .botaoReativar:hover {

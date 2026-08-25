@@ -15,19 +15,7 @@
 }
 
 .toolbarButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  width: auto;
-  margin: 0;
-  padding: 0.45rem 0.9rem;
-  border: 1px solid var(--vinhoEscuro);
-  border-radius: 8px;
-  background: var(--branco);
-  color: var(--carvao);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  composes: botao secundario from "./button.module.css";
 }
 
 .toolbarButton:hover {

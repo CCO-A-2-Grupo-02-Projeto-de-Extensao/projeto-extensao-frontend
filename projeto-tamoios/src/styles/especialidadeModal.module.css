@@ -37,28 +37,7 @@
    de elemento, que o CSS Modules não escopa — sem as sobrescritas abaixo o × ocupa
    a largura toda do cabeçalho e espreme o título em duas linhas. */
 .fechar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: #777777;
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  transition: background-color 0.18s ease, color 0.18s ease,
-    transform 0.18s ease;
-}
-
-.fechar:hover {
-  background-color: var(--vermelho);
-  color: var(--cremeClaro);
-  transform: scale(1.08);
+  composes: botao fechar from "./button.module.css";
 }
 
 .fechar:active {
@@ -132,21 +111,11 @@
 }
 
 .botaoCancelar {
-  background-color: #eeeeee;
-  color: #555555;
-}
-
-.botaoCancelar:hover {
-  background-color: #e2e2e2;
+  composes: botao secundario from "./button.module.css";
 }
 
 .botaoSalvar {
-  background-color: var(--vinhoEscuro);
-  color: white;
-}
-
-.botaoSalvar:hover {
-  opacity: 0.9;
+  composes: botao primario from "./button.module.css";
 }
 
 @media (max-width: 600px) {

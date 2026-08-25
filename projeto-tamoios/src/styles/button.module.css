@@ -1,16 +1,127 @@
-button {
-  margin: 10px 0;
+/* Fonte única dos botões do app.
+ *
+ * Antes este arquivo declarava `button { ... }` como seletor de ELEMENTO. CSS
+ * Modules não escopa seletor de elemento, então aquela regra pintava todo botão
+ * do app de vinho, com largura total e margem vertical — e oito arquivos CSS
+ * tinham override só para desfazer isso. Agora tudo é classe.
+ *
+ * Como usar:
+ *   - No JSX, prefira o componente <Button variante="..."> (components/Button).
+ *   - Num CSS Module, herde as classes daqui:
+ *       .botaoSalvar { composes: botao primario from "./button.module.css"; }
+ *     e acrescente só o que for específico daquela tela.
+ *
+ * Variantes semânticas — a cor comunica o que o botão faz:
+ *   primario   ação principal          vinho cheio
+ *   secundario ação alternativa        contorno vinho sobre claro
+ *   perigo     remove/desativa         vermelho cheio
+ *   sucesso    reativa/confirma bem    verde cheio
+ *   icone      só ícone, quadrado
+ *   fechar     o × dos modais
+ */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  margin: 0;
   padding: 10px 20px;
-  background-color: var(--vinhoEscuro);
-  color: var(--creme);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  width: 100%;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
   font-family: "Fredoka", "Inter", sans-serif;
+  font-size: 15px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease, opacity 0.15s ease;
 }
 
-button:hover {
+.botao:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.botao:focus-visible {
+  outline: 2px solid var(--vinhoEscuro);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ variantes */
+
+.primario {
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+}
+
+.primario:hover:not(:disabled) {
   background-color: var(--vermelho);
+}
+
+.secundario {
+  background-color: var(--branco);
+  color: var(--text);
+  border-color: var(--vinhoEscuro);
+}
+
+.secundario:hover:not(:disabled) {
+  background-color: var(--cinza);
+}
+
+.perigo {
+  background-color: var(--vermelho);
+  color: var(--branco);
+}
+
+.perigo:hover:not(:disabled) {
+  background-color: var(--vinhoEscuro);
+}
+
+.sucesso {
+  background-color: var(--verde);
+  color: var(--branco);
+}
+
+.sucesso:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+/* --------------------------------------------------------------------- formas */
+
+.icone {
+  padding: 8px;
+  background-color: var(--cremeClaro);
+  color: var(--carvao);
+}
+
+.icone:hover:not(:disabled) {
+  background-color: var(--cinza);
+}
+
+.fechar {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: transparent;
+  color: #666666;
+  border-radius: 8px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.fechar:hover:not(:disabled) {
+  background-color: var(--vermelho);
+  color: var(--cremeClaro);
+}
+
+/* Botão de formulário que ocupa a linha inteira (login, cadastro). */
+.larguraTotal {
+  width: 100%;
+}
+
+/* Versão compacta para barras de ação densas e células de tabela. */
+.compacto {
+  padding: 7px 14px;
+  font-size: 14px;
 }

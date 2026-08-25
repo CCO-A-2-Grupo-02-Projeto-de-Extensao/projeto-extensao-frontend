@@ -1,0 +1,8 @@
+/* O espaçamento entre os campos vinha de <br /> somados à margem que o CSS
+   global dava a todo <button>. Com os botões virando classe, o form passa a
+   controlar o ritmo vertical num lugar só. */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}

@@ -64,21 +64,8 @@
 }
 
 .botaoRemoverOcorrencia {
-  width: auto;
-  margin: 0;
-  padding: 6px 12px;
-  border-radius: 5px;
-  border: 1px solid var(--vermelho);
-  background-color: var(--branco);
-  color: var(--vermelho);
-  font-size: 12px;
-  cursor: pointer;
+  composes: botao perigo from "./button.module.css";
   flex-shrink: 0;
-}
-
-.botaoRemoverOcorrencia:hover {
-  background-color: var(--vermelho);
-  color: var(--branco);
 }
 
 .novaOcorrencia {
@@ -109,20 +96,7 @@
 }
 
 .botaoAdicionarOcorrencia {
-  width: auto;
-  margin: 0;
-  padding: 10px 18px;
-  border-radius: 5px;
-  border: 1px solid var(--vinhoEscuro);
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
-  font-size: 14px;
-  cursor: pointer;
-  font-family: "Fredoka", "Inter", sans-serif;
-}
-
-.botaoAdicionarOcorrencia:hover {
-  background-color: var(--vermelho);
+  composes: botao primario from "./button.module.css";
 }
 
 .insigniaBadge {
