@@ -3,6 +3,7 @@ import NomePagina from "../components/NomePagina/NomePagina.jsx";
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { Input } from "../components/Input/Input.jsx";
 import Select from "../components/Select/Select.jsx";
+import tabela from "../styles/tabelaBase.module.css";
 import styles from "../styles/chamada.module.css";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -177,7 +178,7 @@ export function ChamadaPage() {
 
         <div className={styles.contentGrid}>
           <div className={styles.tableCard}>
-            <table className={styles.attendanceTable}>
+            <table className={`${tabela.tabela} ${styles.attendanceTable}`}>
               <thead>
                 <tr>
                   <th>Nome/Sobrenome</th>

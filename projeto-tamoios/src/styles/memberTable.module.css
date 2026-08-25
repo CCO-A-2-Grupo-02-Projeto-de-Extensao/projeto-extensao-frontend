@@ -9,60 +9,37 @@
   color: var(--text);
 }
 
-.tabela {
-  width: 100%;
+/* O visual base (cabeçalho, padding, bordas, hover) vem de
+   tabelaBase.module.css. Aqui ficam só as larguras fixas das quatro colunas e
+   o corte com reticências, que são desta tela. */
+.colunas {
   table-layout: fixed;
-  border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
 }
 
-.tabela thead {
-  background-color: var(--vinhoEscuro);
-  color: var(--cremeClaro);
-}
-
-.tabela th {
-  padding: 12px 16px;
-  font-weight: 600;
-  text-align: left;
-}
-
-.tabela td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--cinza);
+.colunas td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.tabela th:nth-child(1),
-.tabela td:nth-child(1) {
+.colunas th:nth-child(1),
+.colunas td:nth-child(1) {
   width: 37%;
 }
 
-.tabela th:nth-child(2),
-.tabela td:nth-child(2) {
+.colunas th:nth-child(2),
+.colunas td:nth-child(2) {
   width: 24%;
 }
 
-.tabela th:nth-child(3),
-.tabela td:nth-child(3) {
+.colunas th:nth-child(3),
+.colunas td:nth-child(3) {
   width: 16%;
 }
 
-.tabela th:nth-child(4),
-.tabela td:nth-child(4) {
+.colunas th:nth-child(4),
+.colunas td:nth-child(4) {
   width: 23%;
-}
-
-.tabela tbody tr:hover {
-  background-color: var(--cinza);
-}
-
-.linhaClicavel {
-  cursor: pointer;
 }
 
 /* Mesma linguagem das pílulas de status do modal de detalhes
@@ -86,9 +63,7 @@
 }
 
 @media (max-width: 640px) {
-  .tabela {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+  .colunas {
+    table-layout: auto;
   }
 }

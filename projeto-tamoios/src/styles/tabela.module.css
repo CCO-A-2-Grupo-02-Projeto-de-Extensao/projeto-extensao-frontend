@@ -1,29 +1,9 @@
-/* CSS Modules só escopam seletores de classe: `table`, `th` e `td` soltos saíam
-   sem hash e valiam para o app inteiro. O `text-align: center` daqui vazava para
-   as tabelas de Chamada e Especialidades, que alinham o cabeçalho à esquerda mas
-   não declaram alinhamento no corpo — daí a linha desencontrada do topo. */
-.tabela {
-  width: 100%;
-  text-align: center;
-  border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-}
+/* A agenda do Dashboard usa o visual padrão de tabela do app
+   (tabelaBase.module.css). Este módulo guarda só o que é dela.
 
-.tabela thead {
-  background-color: var(--vinhoEscuro);
-  color: var(--cremeClaro);
-}
-
-.tabela th {
-  padding: 10px;
-  font-weight: 500;
-}
-
-.tabela td {
-  padding: 10px;
-}
-
-.tabela tbody tr:hover {
-  background-color: var(--cinza);
+   Antes havia aqui `table`, `th` e `td` como seletores de elemento: o CSS
+   Modules não os escopa, então o `text-align: center` vazava para as tabelas de
+   Chamada e Especialidades e desencontrava o cabeçalho do corpo. */
+.horario {
+  white-space: nowrap;
 }

@@ -1,3 +1,4 @@
+import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/tabela.module.css";
 import { useNavigate } from "react-router-dom";
 
@@ -13,7 +14,7 @@ export function Tabela(props) {
   };
 
   return (
-    <table className={styles.tabela}>
+    <table className={tabela.tabela}>
       <thead>
         <tr>
           <th>Horário</th>
@@ -21,8 +22,8 @@ export function Tabela(props) {
         </tr>
       </thead>
       <tbody>
-        <tr onClick={handleClick}>
-          <td>Dia Inteiro</td>
+        <tr onClick={handleClick} className={tabela.linhaClicavel}>
+          <td className={styles.horario}>Dia Inteiro</td>
           <td>Páscoa</td>
         </tr>
       </tbody>

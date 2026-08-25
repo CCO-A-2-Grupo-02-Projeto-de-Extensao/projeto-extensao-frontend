@@ -1,6 +1,7 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/especialidadeTable.module.css";
 
 export function EspecialidadeTable({
@@ -10,7 +11,7 @@ export function EspecialidadeTable({
 }) {
   return (
     <section className={styles.container}>
-      <table className={styles.tabela}>
+      <table className={tabela.tabela}>
         <thead>
           <tr>
             <th>Especialidade</th>
@@ -42,9 +43,7 @@ export function EspecialidadeTable({
               </td>
 
               <td>
-                <span className={styles.categoria}>
-                  {especialidade.categoria}
-                </span>
+                {especialidade.categoria}
               </td>
 
               <td className={styles.descricao}>

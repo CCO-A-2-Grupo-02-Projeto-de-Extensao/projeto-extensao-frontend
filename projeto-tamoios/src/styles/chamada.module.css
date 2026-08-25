@@ -69,29 +69,10 @@
   overflow: hidden;
 }
 
+/* Cabeçalho, padding, bordas e hover vêm de tabelaBase.module.css. Aqui ficam
+   só as larguras fixas das três colunas da chamada. */
 .attendanceTable {
-  width: 100%;
-  border-collapse: collapse;
   table-layout: fixed;
-}
-
-.attendanceTable thead th {
-  padding: 0.55rem 0.75rem;
-  background: var(--vinhoEscuro);
-  color: var(--branco);
-  text-align: left;
-  font-size: 1rem;
-}
-
-.attendanceTable tbody td {
-  padding: 0.35rem 0.75rem;
-  border-bottom: 1px solid rgba(92, 22, 18, 0.25);
-  color: var(--carvao);
-  font-size: 0.95rem;
-}
-
-.attendanceTable tbody tr:hover {
-  background: rgba(92, 22, 18, 0.03);
 }
 
 .attendanceTable th:first-child,

@@ -56,54 +56,12 @@
   flex: 1;
 }
 
+/* O visual da tabela vem de tabelaBase.module.css; aqui fica só o container
+   que garante rolagem horizontal em tela estreita. */
 .tabelaContainer {
   width: 100%;
   overflow-x: auto;
   margin-bottom: 8px;
-}
-
-/* Mesma linguagem da tabela de Desbravadores (memberTable.module.css):
-   cabeçalho em --vinhoEscuro, bordas e hover em --cinza, padding 12px 16px e
-   o raio na própria tabela com overflow hidden. */
-.tabela {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #ffffff;
-}
-
-.tabela thead {
-  background-color: var(--vinhoEscuro);
-  color: var(--cremeClaro);
-}
-
-.tabela th {
-  padding: 12px 16px;
-  font-weight: 600;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.tabela td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--cinza);
-  color: var(--text);
-}
-
-.tabela tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.tabela tbody tr:hover {
-  background-color: var(--cinza);
-}
-
-/* Sem destaque na primeira coluna: a tabela de Desbravadores não usa negrito
-   no nome, e estas seguem a mesma linguagem. */
-.celulaNome {
-  white-space: nowrap;
 }
 
 .mensagemEstado {

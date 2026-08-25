@@ -14,6 +14,7 @@ import {
   vincularPessoaAClasse,
 } from "../../services/classesService.js";
 
+import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeParticipantes.module.css";
 
 const TAMANHO_PAGINA = 15;
@@ -150,7 +151,7 @@ export function ClasseParticipantes({ idClasse }) {
 
   const renderTabela = (lista) => (
     <div className={styles.tabelaContainer}>
-      <table className={styles.tabela}>
+      <table className={tabela.tabela}>
         <thead>
           <tr>
             <th>Nome/Sobrenome</th>
@@ -163,7 +164,7 @@ export function ClasseParticipantes({ idClasse }) {
         <tbody>
           {lista.map((pessoa) => (
             <tr key={pessoa.id}>
-              <td className={styles.celulaNome}>{pessoa.nome}</td>
+              <td>{pessoa.nome}</td>
               <td>{pessoa.unidade || "—"}</td>
               <td>{pessoa.papel || "—"}</td>
               <td>{pessoa.telefoneResponsavel || "—"}</td>

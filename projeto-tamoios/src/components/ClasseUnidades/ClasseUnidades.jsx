@@ -9,6 +9,7 @@ import { UnidadeModal } from "../UnidadeModal/UnidadeModal.jsx";
 
 import { getUnidadesDaClasse } from "../../services/classesService.js";
 
+import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeUnidades.module.css";
 
 const TAMANHO_PAGINA = 10;
@@ -154,7 +155,7 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
       ) : (
         <>
           <div className={styles.tabelaContainer}>
-            <table className={styles.tabela}>
+            <table className={tabela.tabela}>
               <thead>
                 <tr>
                   <th>Nome da Unidade</th>
@@ -168,7 +169,7 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
               <tbody>
                 {daPagina.map((unidade) => (
                   <tr key={unidade.id}>
-                    <td className={styles.celulaNome}>{unidade.nome}</td>
+                    <td>{unidade.nome}</td>
                     <td>{unidade.faixaEtaria || "—"}</td>
                     <td>{unidade.sexo || "—"}</td>
                     <td>{unidade.conselheiro || "—"}</td>

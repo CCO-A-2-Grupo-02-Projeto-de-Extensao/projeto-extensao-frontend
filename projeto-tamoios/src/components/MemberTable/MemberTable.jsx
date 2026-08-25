@@ -1,4 +1,5 @@
 import { StatusBadge } from "../StatusBadge/StatusBadge.jsx";
+import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/memberTable.module.css";
 
 export function MemberTable({ titulo, membros, onSelecionarMembro }) {
@@ -6,7 +7,7 @@ export function MemberTable({ titulo, membros, onSelecionarMembro }) {
     <section className={styles.grupoTabela}>
       {titulo && <h3 className={styles.tituloGrupo}>{titulo}</h3>}
 
-      <table className={styles.tabela}>
+      <table className={`${tabela.tabela} ${styles.colunas}`}>
         <thead>
           <tr>
             <th>Nome/Sobrenome</th>
@@ -19,7 +20,7 @@ export function MemberTable({ titulo, membros, onSelecionarMembro }) {
           {membros.map((membro) => (
             <tr
               key={membro.id}
-              className={styles.linhaClicavel}
+              className={tabela.linhaClicavel}
               onClick={() => onSelecionarMembro?.(membro)}
             >
               <td>{membro.nome}</td>

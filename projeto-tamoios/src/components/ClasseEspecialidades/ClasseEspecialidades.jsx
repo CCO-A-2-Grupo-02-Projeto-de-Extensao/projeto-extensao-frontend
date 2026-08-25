@@ -15,6 +15,7 @@ import {
   vincularEspecialidades,
 } from "../../services/classesService.js";
 
+import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeEspecialidades.module.css";
 
 const TAMANHO_PAGINA = 10;
@@ -212,7 +213,7 @@ export function ClasseEspecialidades({ idClasse }) {
       ) : (
         <>
           <div className={styles.tabelaContainer}>
-            <table className={styles.tabela}>
+            <table className={tabela.tabela}>
               <thead>
                 <tr>
                   <th>Especialidade</th>
@@ -225,7 +226,7 @@ export function ClasseEspecialidades({ idClasse }) {
               <tbody>
                 {daPagina.map((item) => (
                   <tr key={item.id}>
-                    <td className={styles.celulaNome}>{item.nome}</td>
+                    <td>{item.nome}</td>
 
                     <td>
                       <div className={styles.insignia}>

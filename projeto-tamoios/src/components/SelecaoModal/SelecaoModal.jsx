@@ -81,7 +81,7 @@ export function SelecaoModal({
   return (
     <div className={styles.overlay} onMouseDown={onFechar}>
       <div
-        className={`${styles.modal} ${ehRemocao ? styles.modalRemover : ""}`}
+        className={styles.modal}
         onMouseDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-label={titulo}

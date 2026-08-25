@@ -1,43 +1,11 @@
 .container {
   width: 100%;
   overflow-x: auto;
-  background: white;
-  border-radius: 10px;
 }
 
-.tabela {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.tabela thead {
-  background-color: #f7f7f7;
-}
-
-.tabela th {
-  padding: 14px 16px;
-  text-align: left;
-  font-weight: 600;
-  color: #3f3f3f;
-  border-bottom: 1px solid #e5e5e5;
-  white-space: nowrap;
-}
-
-.tabela td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #eeeeee;
-  vertical-align: middle;
-  color: #555555;
-}
-
-.tabela tbody tr:hover {
-  background-color: #fafafa;
-}
+/* Visual base em tabelaBase.module.css; aqui só o que é desta tela. */
 
 .nome {
-  font-weight: 600;
-  color: #333333 !important;
   min-width: 150px;
 }
 
@@ -60,11 +28,6 @@
 
 .imagem span {
   color: #999999;
-}
-
-.categoria {
-  font-size: 13px;
-  color: #555555;
 }
 
 .descricao {
