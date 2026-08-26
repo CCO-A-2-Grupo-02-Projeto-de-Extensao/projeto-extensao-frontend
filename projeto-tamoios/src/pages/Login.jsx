@@ -7,6 +7,7 @@ import styles from "../styles/login.module.css";
 import { Input } from "../components/Input/Input.jsx";
 import { InputSenha } from "../components/InputSenha/InputSenha.jsx";
 import { Modal } from "../components/Modal/Modal.jsx";
+import api from "../services/api.js";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -21,26 +22,17 @@ function Login() {
     setLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${apiUrl}/usuarios/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, senha }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Email ou senha inválidos.");
-      }
-
-      const data = await response.json();
+      const { data } = await api.post("/usuarios/login", { email, senha });
       localStorage.setItem("token", data.token);
       localStorage.setItem("usuario", JSON.stringify(data));
       navigate("/dashboard");
     } catch (err) {
-      setErro(err.message || "Erro ao fazer login. Tente novamente.");
+      setErro(
+        err.response?.data?.message ||
+          (err.response?.status === 401
+            ? "Email ou senha inválidos."
+            : "Erro ao fazer login. Tente novamente.")
+      );
     } finally {
       setLoading(false);
     }

@@ -4,16 +4,19 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
+const ROTAS_PUBLICAS = ["/usuarios/login", "/auth"];
+
 api.interceptors.request.use((config) => {
+  const url = config.url ?? "";
+  const rotaPublica = ROTAS_PUBLICAS.some((rota) => url.includes(rota));
   const token = localStorage.getItem("token");
-  if (token) {
+
+  if (token && !rotaPublica) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
-
-// Rotas que respondem 401 por credencial errada, e não por sessão inválida.
-const ROTAS_PUBLICAS = ["/usuarios/login", "/auth"];
 
 // Token expirado ou inválido derruba a sessão e volta para o login. Sem isto o
 // ProtectedRoute deixa passar — ele só verifica se o token existe, não se vale —
