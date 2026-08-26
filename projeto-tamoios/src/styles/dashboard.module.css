@@ -1,0 +1,284 @@
+.dashboard {
+  --espaco-1: 8px;
+  --espaco-2: 16px;
+  --espaco-3: 24px;
+  --espaco-4: 32px;
+
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--espaco-3) 0 var(--espaco-4);
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espaco-2);
+}
+
+.indicadores > div {
+  width: 100%;
+  min-width: 0;
+  min-height: 96px;
+  padding: var(--espaco-2);
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+
+.indicadores svg {
+  flex: 0 0 auto;
+  font-size: 40px !important;
+}
+
+.indicadores h1:first-child {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.indicadores h1:last-child {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.secao {
+  margin-top: var(--espaco-3);
+}
+
+.tituloSecao {
+  margin-bottom: var(--espaco-2);
+  color: var(--vinhoEscuro);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.acoes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espaco-2);
+}
+
+.acoes > div {
+  width: 100%;
+  min-height: 160px;
+  height: 160px;
+  max-height: none;
+  margin: 0;
+  padding: var(--espaco-3) var(--espaco-2) var(--espaco-2);
+  justify-content: center;
+  gap: var(--espaco-1);
+}
+
+.acoes img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  object-fit: contain;
+}
+
+.acoes p {
+  padding: 0;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.controleAcademico {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.15fr) minmax(280px, 1fr) minmax(260px, 0.9fr);
+  align-items: start;
+  gap: var(--espaco-2);
+}
+
+.painel,
+.painelCalendario {
+  min-width: 0;
+  padding: var(--espaco-2);
+  border-radius: 7px;
+  background-color: var(--branco);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.16);
+}
+
+.painelCalendario {
+  display: flex;
+}
+
+.cabecalhoPainel {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  min-height: 32px;
+  margin-bottom: var(--espaco-2);
+  color: var(--vinhoEscuro);
+}
+
+.cabecalhoPainel h3 {
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.iconePainel {
+  color: var(--carvao);
+  font-size: 24px !important;
+}
+
+.dataSelecionada {
+  color: var(--carvao);
+  font-weight: 600;
+}
+
+.tabelaEventos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabelaEventos th,
+.tabelaEventos td {
+  padding: var(--espaco-1) 12px;
+  border-bottom: 1px solid var(--cinza);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.tabelaEventos th {
+  color: var(--branco);
+  background-color: var(--vinhoEscuro);
+  font-weight: 500;
+}
+
+.tabelaEventos th:first-child {
+  width: 110px;
+  border-radius: 5px 0 0 0;
+}
+
+.tabelaEventos th:last-child {
+  border-radius: 0 5px 0 0;
+}
+
+.semEventos,
+.mensagemEstado,
+.mensagemErro {
+  padding: var(--espaco-3) var(--espaco-1);
+  color: #666666;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.mensagemErro {
+  margin-bottom: var(--espaco-2);
+  color: var(--vermelho);
+  background-color: var(--branco);
+  border-left: 4px solid var(--vermelho);
+  border-radius: 5px;
+}
+
+.filtroFaltas {
+  margin-bottom: var(--espaco-2);
+}
+
+.filtroFaltas select {
+  margin: 0;
+}
+
+.areaGrafico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  padding-top: var(--espaco-1);
+}
+
+.grafico {
+  display: grid;
+  place-items: center;
+  width: 132px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--vinhoEscuro) 0 var(--percentual-faltas),
+    var(--cinza) var(--percentual-faltas) 100%
+  );
+}
+
+.centroGrafico {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--vinhoEscuro);
+  background-color: var(--branco);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.legenda {
+  display: grid;
+  gap: var(--espaco-1);
+  color: var(--carvao);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.itemLegenda {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-1);
+}
+
+.corLegenda {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background-color: var(--vinhoEscuro);
+}
+
+.corPresencas {
+  background-color: var(--cinza);
+}
+
+@media (max-width: 1040px) {
+  .indicadores,
+  .acoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .controleAcademico {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .controleAcademico .painel:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 800px) {
+  .controleAcademico {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .controleAcademico .painel:last-child {
+    grid-column: auto;
+  }
+
+}
+
+@media (max-width: 560px) {
+  .indicadores,
+  .acoes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .indicadores > div {
+    justify-content: center;
+  }
+
+  .painel {
+    padding: var(--espaco-2);
+  }
+}
