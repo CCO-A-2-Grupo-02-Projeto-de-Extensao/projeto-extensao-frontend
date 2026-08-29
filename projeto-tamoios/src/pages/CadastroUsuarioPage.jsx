@@ -10,7 +10,7 @@ export function CadastroUsuarioPage() {
     <DashboardLayout>
       <NomePagina
         titulo="Cadastrar Usuário"
-        subtitulo="Adicionar um novo úsuario no clube Tamoios"
+        subtitulo="Adicionar um novo usuário no clube Tamoios"
       ></NomePagina>
       <section
         style={{

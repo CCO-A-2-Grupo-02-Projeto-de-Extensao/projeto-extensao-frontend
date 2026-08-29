@@ -7,7 +7,9 @@ export function Card(props) {
 
   const handleClick = () => {
     if (props.pagina === undefined) {
-      alert(props.mensagemAlert);
+      if (props.onClick) {
+        props.onClick();
+      }
     } else {
       navigate(props.pagina);
     }
