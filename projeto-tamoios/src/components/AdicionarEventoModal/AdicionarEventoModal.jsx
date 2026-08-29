@@ -16,7 +16,7 @@ import {
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/adicionarEventosModal.module.css";
 import { CalendarioAcademico } from "../CalendarioAcademico/CalendarioAcademico.jsx";
-
+import { Input } from "../Input/Input.jsx";
 import EventIcon from "@mui/icons-material/Event";
 
 function paraChaveData(data) {
@@ -377,6 +377,41 @@ export function AdicionarEventoModal({ aberto, onFechar, onCadastrar }) {
                 <p className={styles.semEventos}>Nenhum evento nesta data.</p>
               )}
             </article>
+            <article className={styles.painelFormulario}>
+              <form action="">
+                <label className={styles.label}>Nome do Evento</label>
+                <Input
+                  type="text"
+                  placeholder="Digite o nome do evento"
+                  value={formData.nome || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nome: e.target.value })
+                  }
+                />
+                <label className={styles.label}>Horário</label>
+                <Input
+                  type="time"
+                  placeholder="Digite o horário do evento"
+                  value={formData.horario || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, horario: e.target.value })
+                  }
+                />
+                <label className={styles.label}>Repetição</label>
+                <select
+                  value={formData.repeticao || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, repeticao: e.target.value })
+                  }
+                >
+                  <option value="">Selecione</option>
+                  <option value="diaria">Diária</option>
+                  <option value="semanal">Semanal</option>
+                  <option value="mensal">Mensal</option>
+                  <option value="anual">Anual</option>
+                </select>
+              </form>
+            </article>
           </div>
         </div>
 
@@ -399,7 +434,7 @@ export function AdicionarEventoModal({ aberto, onFechar, onCadastrar }) {
               ? enviando
                 ? "Cadastrando..."
                 : "Cadastrar Desbravador"
-              : "Avançar"}
+              : "Adicionar Evento"}
           </button>
         </footer>
       </div>

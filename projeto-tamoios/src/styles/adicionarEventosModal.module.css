@@ -12,7 +12,7 @@
 .modal {
   display: flex;
   flex-direction: column;
-  width: min(680px, 94vw);
+  width: min(1024px, 94vw);
   height: 90vh;
   border-radius: 12px;
   overflow: hidden;
@@ -285,6 +285,15 @@
   display: flex;
   gap: 20px;
   width: 100%;
+  align-items: start;
+  justify-content: space-around;
+}
+
+.painelFormulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 35%;
 }
 
 @media (max-width: 700px) {
