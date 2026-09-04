@@ -34,9 +34,17 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
   const [salvando, setSalvando] = useState(false);
 
   const secoesFormulario = useMemo(
-    () => criarSecoesFormulario(catalogos),
+    () => criarSecoesFormulario(catalogos, formData),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- comparamos pelas listas em si, não pelo objeto novo a cada render
-    [catalogos.cargos, catalogos.classes, catalogos.generos, catalogos.unidades]
+    [
+      catalogos.cargos,
+      catalogos.classes,
+      catalogos.generos,
+      catalogos.unidades,
+      formData.genero,
+      formData.dataNascimento,
+      formData.unidade,
+    ]
   );
 
   useEffect(() => {

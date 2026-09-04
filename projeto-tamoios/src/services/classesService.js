@@ -15,6 +15,8 @@ function paraParticipante(pessoa) {
   return {
     id: pessoa.idPessoa,
     nome: pessoa.nome,
+    dataNascimento: pessoa.dataNascimento,
+    idGenero: pessoa.idGenero,
     unidade: pessoa.nomeUnidade,
     idUnidade: pessoa.idUnidade,
     papel: pessoa.nomeCargo,
@@ -47,6 +49,7 @@ function paraUnidade(unidade) {
     conselheiro: unidade.nomeConselheiro,
     idConselheiro: unidade.idConselheiro,
     quantidadeDesbravadores: unidade.quantidadeDesbravadores ?? 0,
+    inconsistencias: unidade.inconsistencias ?? [],
   };
 }
 
@@ -74,6 +77,21 @@ export async function getPessoasForaDaClasse(idClasse) {
   return data
     .map(paraParticipante)
     .filter((pessoa) => pessoa.ativo && pessoa.idClasse !== Number(idClasse));
+}
+
+// Mesma limitação do getPessoasForaDaClasse: não há endpoint de pessoas por
+// unidade, então baixamos /pessoas e filtramos aqui. A unidade pode ter gente de
+// outra classe, por isso não dá pra reaproveitar getParticipantesDaClasse.
+export async function getDesbravadoresDaUnidade(idUnidade) {
+  const { data } = await api.get("/pessoas");
+  return data
+    .map(paraParticipante)
+    .filter(
+      (pessoa) =>
+        pessoa.ativo &&
+        pessoa.categoria === "aluno" &&
+        String(pessoa.idUnidade) === String(idUnidade)
+    );
 }
 
 export async function vincularPessoaAClasse(idPessoa, idClasse) {
@@ -154,6 +172,11 @@ export async function atualizarUnidade(idUnidade, dados) {
     idConselheiro: dados.idConselheiro ? Number(dados.idConselheiro) : null,
   });
   return paraUnidade(data);
+}
+
+// Apagar a unidade desvincula quem estava nela; ninguém é excluído do clube.
+export async function deletarUnidade(idUnidade) {
+  await api.delete(`/unidades/${idUnidade}`);
 }
 
 // Move os desbravadores selecionados para a unidade, um PATCH por pessoa — o

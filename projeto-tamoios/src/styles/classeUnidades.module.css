@@ -78,12 +78,49 @@
 
 /* Coluna estreita, encostada à direita: o botão pertence à linha, não à tela. */
 .colunaAcao {
-  width: 70px;
-  text-align: right;
+  width: 196px;
+  white-space: nowrap;
 }
 
-.botaoEditarLinha {
+/* O widget do VLibras é fixo na borda direita da janela e cobria os botões;
+   por isso a folga à direita. */
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-right: 56px;
+}
+
+@media (max-width: 640px) {
+  .acoes {
+    padding-right: 0;
+  }
+}
+
+.botaoAcaoLinha {
   composes: botao icone from "./button.module.css";
-  background-color: transparent;
-  color: var(--vinhoEscuro);
+}
+
+
+.celulaNome {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.alerta {
+  color: var(--ambarOuro);
+  cursor: help;
+}
+
+.listaInconsistencias {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.nomeExcluir {
+  color: var(--vermelho);
+  font-weight: 700;
 }

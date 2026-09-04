@@ -20,6 +20,6 @@ export async function getGeneros() {
 }
 
 export async function getUnidades() {
-  const { data } = await api.get("/unidades");
+  const { data } = await api.get("/unidades/detalhes");
   return data;
 }

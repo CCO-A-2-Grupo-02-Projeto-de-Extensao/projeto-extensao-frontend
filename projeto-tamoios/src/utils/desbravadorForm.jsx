@@ -1,6 +1,7 @@
 import { Select } from "../components/Select/Select.jsx";
 import { Input } from "../components/Input/Input.jsx";
 import { CATEGORIAS } from "../services/membrosService.js";
+import { cabeNaUnidade, temVaga } from "./regrasUnidade.js";
 
 const ROTULOS_CATEGORIA = {
   [CATEGORIAS.ADMINISTRATIVO]: "Administrativo",
@@ -100,11 +101,22 @@ function paraOpcoes(lista) {
 // (Cargo/Classe/Gênero/Unidade — ver useCatalogos). O `value` de cada opção
 // é o id numérico (como string, formato padrão de <select>), resolvido de
 // volta pra número na hora de montar o request (ver membrosService).
-export function criarSecoesFormulario({ cargos, classes, generos, unidades }) {
+export function criarSecoesFormulario({ cargos, classes, generos, unidades }, pessoa = {}) {
   const opcoesGenero = [
     ...paraOpcoes(generos),
     { value: "", label: "Prefiro não informar" },
   ];
+
+  const candidato = {
+    idGenero: pessoa.genero,
+    dataNascimento: pessoa.dataNascimento,
+  };
+
+  const unidadesCompativeis = unidades.filter(
+    (unidade) =>
+      String(unidade.id) === String(pessoa.unidade ?? "") ||
+      (temVaga(unidade) && cabeNaUnidade(candidato, unidade))
+  );
 
   return [
     {
@@ -134,7 +146,12 @@ export function criarSecoesFormulario({ cargos, classes, generos, unidades }) {
       campos: [
         { name: "cargo", label: "Cargo", type: "select", opcoes: paraOpcoes(cargos) },
         { name: "classe", label: "Classe", type: "select", opcoes: paraOpcoes(classes) },
-        { name: "unidade", label: "Unidade", type: "select", opcoes: paraOpcoes(unidades) },
+        {
+          name: "unidade",
+          label: "Unidade",
+          type: "select",
+          opcoes: paraOpcoes(unidadesCompativeis),
+        },
       ],
     },
     {

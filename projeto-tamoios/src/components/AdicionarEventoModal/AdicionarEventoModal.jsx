@@ -93,13 +93,16 @@ export function AdicionarEventoModal({ aberto, onFechar, onCadastrar }) {
   };
 
   const secoesFormulario = useMemo(
-    () => criarSecoesFormulario(catalogos),
+    () => criarSecoesFormulario(catalogos, formData),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- catalogos é um objeto novo a cada render; comparamos pelas listas em si
     [
       catalogos.cargos,
       catalogos.classes,
       catalogos.generos,
       catalogos.unidades,
+      formData.genero,
+      formData.dataNascimento,
+      formData.unidade,
     ],
   );
 
