@@ -6,7 +6,11 @@ import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
 import { Pagination } from "../Pagination/Pagination.jsx";
 import { SelecaoModal } from "../SelecaoModal/SelecaoModal.jsx";
-import { CATEGORIAS_ESPECIALIDADES } from "../EspecialidadeFilters/EspecialidadeFilters.jsx";
+import { Insignia } from "../Insignia/Insignia.jsx";
+import {
+  CATEGORIAS_ESPECIALIDADES,
+  TODAS_CATEGORIAS,
+} from "../../utils/especialidadeCategorias.js";
 
 import {
   desvincularEspecialidade,
@@ -27,7 +31,7 @@ export function ClasseEspecialidades({ idClasse }) {
   const [erro, setErro] = useState("");
 
   const [ordenacao, setOrdenacao] = useState("az");
-  const [categoria, setCategoria] = useState(CATEGORIAS_ESPECIALIDADES.TODOS);
+  const [categoria, setCategoria] = useState(TODAS_CATEGORIAS);
   const [busca, setBusca] = useState("");
   const [pagina, setPagina] = useState(1);
 
@@ -56,7 +60,7 @@ export function ClasseEspecialidades({ idClasse }) {
       .filter((item) => item.nome.toLowerCase().includes(termo))
       .filter(
         (item) =>
-          categoria === CATEGORIAS_ESPECIALIDADES.TODOS ||
+          categoria === TODAS_CATEGORIAS ||
           item.categoria === categoria
       )
       .sort((a, b) =>
@@ -173,22 +177,13 @@ export function ClasseEspecialidades({ idClasse }) {
             }}
             aria-label="Categoria"
           >
-            <option value={CATEGORIAS_ESPECIALIDADES.TODOS}>Todos</option>
-            <option value={CATEGORIAS_ESPECIALIDADES.ARTES_MANUAIS}>
-              Artes Manuais (AM)
-            </option>
-            <option value={CATEGORIAS_ESPECIALIDADES.ATIVIDADES_ESPIRITUAIS}>
-              Atividades Espirituais (AE)
-            </option>
-            <option value={CATEGORIAS_ESPECIALIDADES.ATIVIDADES_RECREATIVAS}>
-              Atividades Recreativas (AR)
-            </option>
-            <option value={CATEGORIAS_ESPECIALIDADES.ESTUDOS_NATUREZA}>
-              Estudos da Natureza (EN)
-            </option>
-            <option value={CATEGORIAS_ESPECIALIDADES.HABILIDADES_DOMESTICAS}>
-              Habilidades Domésticas (HD)
-            </option>
+            <option value={TODAS_CATEGORIAS}>Todos</option>
+
+            {CATEGORIAS_ESPECIALIDADES.map((nome) => (
+              <option key={nome} value={nome}>
+                {nome}
+              </option>
+            ))}
           </Select>
         </div>
 
@@ -229,13 +224,11 @@ export function ClasseEspecialidades({ idClasse }) {
                     <td>{item.nome}</td>
 
                     <td>
-                      <div className={styles.insignia}>
-                        {item.imagem ? (
-                          <img src={item.imagem} alt={item.nome} />
-                        ) : (
-                          <span>—</span>
-                        )}
-                      </div>
+                      <Insignia
+                        src={item.imagem}
+                        alt={item.nome}
+                        className={styles.insignia}
+                      />
                     </td>
 
                     <td>{item.categoria || "—"}</td>

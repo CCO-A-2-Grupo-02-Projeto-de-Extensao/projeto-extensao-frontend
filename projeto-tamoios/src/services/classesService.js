@@ -117,6 +117,20 @@ export async function getEspecialidades() {
   return data.map(paraEspecialidade);
 }
 
+export async function criarEspecialidade(especialidade) {
+  const { data } = await api.post("/especialidades", especialidade);
+  return paraEspecialidade(data);
+}
+
+export async function atualizarEspecialidade(id, especialidade) {
+  const { data } = await api.put(`/especialidades/${id}`, especialidade);
+  return paraEspecialidade(data);
+}
+
+export async function excluirEspecialidade(id) {
+  await api.delete(`/especialidades/${id}`);
+}
+
 export async function getEspecialidadesDaClasse(idClasse) {
   const { data } = await api.get(`/classes/${idClasse}/especialidades`);
   return data.map(paraEspecialidade);

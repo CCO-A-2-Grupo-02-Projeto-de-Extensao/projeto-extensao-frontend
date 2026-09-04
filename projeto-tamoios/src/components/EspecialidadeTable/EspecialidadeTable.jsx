@@ -1,6 +1,8 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+import { Insignia } from "../Insignia/Insignia.jsx";
+
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/especialidadeTable.module.css";
 
@@ -30,16 +32,11 @@ export function EspecialidadeTable({
               </td>
 
               <td>
-                <div className={styles.imagem}>
-                  {especialidade.imagem ? (
-                    <img
-                      src={especialidade.imagem}
-                      alt={especialidade.nome}
-                    />
-                  ) : (
-                    <span>—</span>
-                  )}
-                </div>
+                <Insignia
+                  src={especialidade.imagem}
+                  alt={especialidade.nome}
+                  className={styles.imagem}
+                />
               </td>
 
               <td>

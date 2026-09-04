@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Add } from "@mui/icons-material";
 
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
@@ -9,84 +9,52 @@ import { Pagination } from "../components/Pagination/Pagination.jsx";
 import { EspecialidadeFilters } from "../components/EspecialidadeFilters/EspecialidadeFilters.jsx";
 import { EspecialidadeTable } from "../components/EspecialidadeTable/EspecialidadeTable.jsx";
 import { EspecialidadeModal } from "../components/EspecialidadeModal/EspecialidadeModal.jsx";
+import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
+
+import {
+  atualizarEspecialidade,
+  criarEspecialidade,
+  excluirEspecialidade,
+  getEspecialidades,
+} from "../services/classesService.js";
+
+import { TODAS_CATEGORIAS } from "../utils/especialidadeCategorias.js";
 
 import styles from "../styles/especialidadesPage.module.css";
 
 const TAMANHO_PAGINA = 10;
 
-const CATEGORIAS = {
-  TODOS: "todos",
-  ARTES_MANUAIS: "Artes Manuais (AM)",
-  ATIVIDADES_ESPIRITUAIS: "Atividades Espirituais (AE)",
-  ATIVIDADES_RECREATIVAS: "Atividades Recreativas (AR)",
-  ESTUDOS_NATUREZA: "Estudos da Natureza (EN)",
-  HABILIDADES_DOMESTICAS: "Habilidades Domésticas (HD)",
-};
-
-const ESPECIALIDADES_INICIAIS = [
-  {
-    id: 1,
-    nome: "Artesanato",
-    categoria: CATEGORIAS.ARTES_MANUAIS,
-    descricao:
-      "Especialidade relacionada ao desenvolvimento de trabalhos manuais e criatividade.",
-    imagem: null,
-  },
-  {
-    id: 2,
-    nome: "Cães",
-    categoria: CATEGORIAS.ESTUDOS_NATUREZA,
-    descricao:
-      "Estudo sobre características, cuidados e comportamento dos cães.",
-    imagem: null,
-  },
-  {
-    id: 3,
-    nome: "Culinária",
-    categoria: CATEGORIAS.HABILIDADES_DOMESTICAS,
-    descricao:
-      "Aprendizado de técnicas básicas de preparo e organização de alimentos.",
-    imagem: null,
-  },
-  {
-    id: 4,
-    nome: "Flores",
-    categoria: CATEGORIAS.ESTUDOS_NATUREZA,
-    descricao:
-      "Estudo sobre diferentes tipos de flores, suas características e cuidados.",
-    imagem: null,
-  },
-  {
-    id: 5,
-    nome: "Música",
-    categoria: CATEGORIAS.ATIVIDADES_ESPIRITUAIS,
-    descricao:
-      "Conhecimentos relacionados à música e sua utilização nas atividades do clube.",
-    imagem: null,
-  },
-  {
-    id: 6,
-    nome: "Natação",
-    categoria: CATEGORIAS.ATIVIDADES_RECREATIVAS,
-    descricao:
-      "Desenvolvimento de conhecimentos e habilidades básicas de natação.",
-    imagem: null,
-  },
-];
-
 export function EspecialidadesPage() {
-  const [especialidades, setEspecialidades] = useState(
-    ESPECIALIDADES_INICIAIS
-  );
+  const [especialidades, setEspecialidades] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
   const [ordenacao, setOrdenacao] = useState("az");
-  const [categoria, setCategoria] = useState(CATEGORIAS.TODOS);
+  const [categoria, setCategoria] = useState(TODAS_CATEGORIAS);
   const [busca, setBusca] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
 
   const [modalAberto, setModalAberto] = useState(false);
   const [especialidadeSelecionada, setEspecialidadeSelecionada] =
     useState(null);
+  const [salvando, setSalvando] = useState(false);
+
+  const [aExcluir, setAExcluir] = useState(null);
+  const [excluindo, setExcluindo] = useState(false);
+
+  const carregar = useCallback(() => {
+    return getEspecialidades()
+      .then((lista) => {
+        setEspecialidades(lista);
+        setErro("");
+      })
+      .catch(() => setErro("Não foi possível carregar as especialidades."))
+      .finally(() => setCarregando(false));
+  }, []);
+
+  useEffect(() => {
+    carregar();
+  }, [carregar]);
 
   const aoMudarOrdenacao = (valor) => {
     setOrdenacao(valor);
@@ -112,16 +80,14 @@ export function EspecialidadesPage() {
       )
       .filter(
         (especialidade) =>
-          categoria === CATEGORIAS.TODOS ||
+          categoria === TODAS_CATEGORIAS ||
           especialidade.categoria === categoria
       )
-      .sort((a, b) => {
-        if (ordenacao === "az") {
-          return a.nome.localeCompare(b.nome);
-        }
-
-        return b.nome.localeCompare(a.nome);
-      });
+      .sort((a, b) =>
+        ordenacao === "az"
+          ? a.nome.localeCompare(b.nome)
+          : b.nome.localeCompare(a.nome)
+      );
   }, [especialidades, busca, categoria, ordenacao]);
 
   const totalPaginas = Math.max(
@@ -129,14 +95,13 @@ export function EspecialidadesPage() {
     Math.ceil(especialidadesFiltradas.length / TAMANHO_PAGINA)
   );
 
-  const especialidadesDaPagina = useMemo(() => {
-    const inicio = (paginaAtual - 1) * TAMANHO_PAGINA;
+  const pagina = Math.min(paginaAtual, totalPaginas);
 
-    return especialidadesFiltradas.slice(
-      inicio,
-      inicio + TAMANHO_PAGINA
-    );
-  }, [especialidadesFiltradas, paginaAtual]);
+  const especialidadesDaPagina = useMemo(() => {
+    const inicio = (pagina - 1) * TAMANHO_PAGINA;
+
+    return especialidadesFiltradas.slice(inicio, inicio + TAMANHO_PAGINA);
+  }, [especialidadesFiltradas, pagina]);
 
   const abrirModalAdicionar = () => {
     setEspecialidadeSelecionada(null);
@@ -153,48 +118,41 @@ export function EspecialidadesPage() {
     setEspecialidadeSelecionada(null);
   };
 
-  const salvarEspecialidade = (dados) => {
-    if (especialidadeSelecionada) {
-      setEspecialidades((lista) =>
-        lista.map((especialidade) =>
-          especialidade.id === especialidadeSelecionada.id
-            ? {
-                ...especialidade,
-                ...dados,
-              }
-            : especialidade
-        )
+  const salvarEspecialidade = async (dados) => {
+    setSalvando(true);
+
+    try {
+      if (especialidadeSelecionada) {
+        await atualizarEspecialidade(especialidadeSelecionada.id, dados);
+      } else {
+        await criarEspecialidade(dados);
+      }
+
+      await carregar();
+      fecharModal();
+    } catch {
+      setErro(
+        especialidadeSelecionada
+          ? `Não foi possível salvar a especialidade ${dados.nome}.`
+          : `Não foi possível cadastrar a especialidade ${dados.nome}.`
       );
-    } else {
-      const novaEspecialidade = {
-        id: Date.now(),
-        ...dados,
-        imagem: null,
-      };
-
-      setEspecialidades((lista) => [
-        ...lista,
-        novaEspecialidade,
-      ]);
+    } finally {
+      setSalvando(false);
     }
-
-    fecharModal();
   };
 
-  const excluirEspecialidade = (especialidade) => {
-    const confirmar = window.confirm(
-      `Deseja excluir a especialidade "${especialidade.nome}"?`
-    );
+  const confirmarExclusao = async () => {
+    setExcluindo(true);
 
-    if (!confirmar) {
-      return;
+    try {
+      await excluirEspecialidade(aExcluir.id);
+      await carregar();
+    } catch {
+      setErro(`Não foi possível excluir a especialidade ${aExcluir.nome}.`);
+    } finally {
+      setExcluindo(false);
+      setAExcluir(null);
     }
-
-    setEspecialidades((lista) =>
-      lista.filter(
-        (item) => item.id !== especialidade.id
-      )
-    );
   };
 
   const nenhumEncontrado = especialidadesFiltradas.length === 0;
@@ -216,6 +174,8 @@ export function EspecialidadesPage() {
 
       <h2 className={styles.tituloSecao}>Especialidades</h2>
 
+      {erro && <p className={styles.mensagemErro}>{erro}</p>}
+
       <EspecialidadeFilters
         ordenacao={ordenacao}
         onOrdenacaoChange={aoMudarOrdenacao}
@@ -224,31 +184,52 @@ export function EspecialidadesPage() {
         onBuscaChange={aoMudarBusca}
       />
 
-      {nenhumEncontrado ? (
+      {carregando ? (
+        <p className={styles.mensagemEstado}>Carregando especialidades...</p>
+      ) : nenhumEncontrado ? (
         <p className={styles.mensagemEstado}>
           Nenhuma especialidade encontrada.
         </p>
       ) : (
-        <EspecialidadeTable
-          especialidades={especialidadesDaPagina}
-          onEditar={abrirModalEditar}
-          onExcluir={excluirEspecialidade}
-        />
-      )}
+        <>
+          <EspecialidadeTable
+            especialidades={especialidadesDaPagina}
+            onEditar={abrirModalEditar}
+            onExcluir={setAExcluir}
+          />
 
-      {!nenhumEncontrado && (
-        <Pagination
-          paginaAtual={paginaAtual}
-          totalPaginas={totalPaginas}
-          onPaginaChange={setPaginaAtual}
-        />
+          <Pagination
+            paginaAtual={pagina}
+            totalPaginas={totalPaginas}
+            onPaginaChange={setPaginaAtual}
+          />
+        </>
       )}
 
       <EspecialidadeModal
         aberto={modalAberto}
         especialidade={especialidadeSelecionada}
+        salvando={salvando}
         onFechar={fecharModal}
         onSalvar={salvarEspecialidade}
+      />
+
+      <ConfirmacaoModal
+        aberto={Boolean(aExcluir)}
+        titulo="Excluir especialidade"
+        mensagem={
+          aExcluir && (
+            <>
+              A especialidade{" "}
+              <strong className={styles.nomeExcluir}>{aExcluir.nome}</strong>{" "}
+              será excluída e sai das classes em que estiver vinculada.
+            </>
+          )
+        }
+        textoConfirmar={excluindo ? "Excluindo..." : "Excluir"}
+        perigo
+        onConfirmar={confirmarExclusao}
+        onCancelar={() => setAExcluir(null)}
       />
     </DashboardLayout>
   );

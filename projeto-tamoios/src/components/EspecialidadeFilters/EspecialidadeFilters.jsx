@@ -2,19 +2,14 @@ import { useEffect, useState } from "react";
 
 import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
+import {
+  CATEGORIAS_ESPECIALIDADES,
+  TODAS_CATEGORIAS,
+} from "../../utils/especialidadeCategorias.js";
 
 import styles from "../../styles/especialidadeFilters.module.css";
 
 const DEBOUNCE_MS = 350;
-
-export const CATEGORIAS_ESPECIALIDADES = {
-  TODOS: "todos",
-  ARTES_MANUAIS: "Artes Manuais (AM)",
-  ATIVIDADES_ESPIRITUAIS: "Atividades Espirituais (AE)",
-  ATIVIDADES_RECREATIVAS: "Atividades Recreativas (AR)",
-  ESTUDOS_NATUREZA: "Estudos da Natureza (EN)",
-  HABILIDADES_DOMESTICAS: "Habilidades Domésticas (HD)",
-};
 
 export function EspecialidadeFilters({
   ordenacao,
@@ -52,43 +47,13 @@ export function EspecialidadeFilters({
           onChange={(e) => onCategoriaChange(e.target.value)}
           aria-label="Categoria"
         >
-          <option value={CATEGORIAS_ESPECIALIDADES.TODOS}>
-            Todos
-          </option>
+          <option value={TODAS_CATEGORIAS}>Todos</option>
 
-          <option value={CATEGORIAS_ESPECIALIDADES.ARTES_MANUAIS}>
-            Artes Manuais (AM)
-          </option>
-
-          <option
-            value={
-              CATEGORIAS_ESPECIALIDADES.ATIVIDADES_ESPIRITUAIS
-            }
-          >
-            Atividades Espirituais (AE)
-          </option>
-
-          <option
-            value={
-              CATEGORIAS_ESPECIALIDADES.ATIVIDADES_RECREATIVAS
-            }
-          >
-            Atividades Recreativas (AR)
-          </option>
-
-          <option
-            value={CATEGORIAS_ESPECIALIDADES.ESTUDOS_NATUREZA}
-          >
-            Estudos da Natureza (EN)
-          </option>
-
-          <option
-            value={
-              CATEGORIAS_ESPECIALIDADES.HABILIDADES_DOMESTICAS
-            }
-          >
-            Habilidades Domésticas (HD)
-          </option>
+          {CATEGORIAS_ESPECIALIDADES.map((nome) => (
+            <option key={nome} value={nome}>
+              {nome}
+            </option>
+          ))}
         </Select>
       </div>
 

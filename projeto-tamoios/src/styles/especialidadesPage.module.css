@@ -17,3 +17,18 @@
   color: #777777;
   font-size: 15px;
 }
+
+.mensagemErro {
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background-color: #f8e8e8;
+  color: var(--vermelho);
+  font-size: 14px;
+  text-align: center;
+}
+
+.nomeExcluir {
+  color: var(--vermelho);
+  font-weight: 700;
+}

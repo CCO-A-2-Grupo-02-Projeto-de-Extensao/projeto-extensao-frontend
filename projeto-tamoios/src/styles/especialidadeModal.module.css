@@ -90,6 +90,34 @@
   min-height: 120px;
 }
 
+.linhaImagem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.previaImagem {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  background-color: #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.previaImagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.previaImagem span {
+  color: #999999;
+}
+
 .botoes {
   display: flex;
   justify-content: flex-end;

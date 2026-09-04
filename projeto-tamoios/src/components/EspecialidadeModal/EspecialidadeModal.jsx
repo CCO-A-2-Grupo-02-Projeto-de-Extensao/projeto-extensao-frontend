@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 
+import { Insignia } from "../Insignia/Insignia.jsx";
 import {
   CATEGORIAS_ESPECIALIDADES,
-} from "../EspecialidadeFilters/EspecialidadeFilters.jsx";
+  TODAS_CATEGORIAS,
+} from "../../utils/especialidadeCategorias.js";
 
 import styles from "../../styles/especialidadeModal.module.css";
 
 const VALOR_INICIAL = {
   nome: "",
-  categoria: CATEGORIAS_ESPECIALIDADES.TODOS,
+  categoria: TODAS_CATEGORIAS,
   descricao: "",
+  imagem: "",
 };
 
 export function EspecialidadeModal({
   aberto,
   especialidade,
+  salvando = false,
   onFechar,
   onSalvar,
 }) {
@@ -26,10 +30,9 @@ export function EspecialidadeModal({
     if (especialidade) {
       setFormulario({
         nome: especialidade.nome || "",
-        categoria:
-          especialidade.categoria ||
-          CATEGORIAS_ESPECIALIDADES.TODOS,
+        categoria: especialidade.categoria || TODAS_CATEGORIAS,
         descricao: especialidade.descricao || "",
+        imagem: especialidade.imagem || "",
       });
     } else {
       setFormulario(VALOR_INICIAL);
@@ -55,10 +58,7 @@ export function EspecialidadeModal({
       return;
     }
 
-    if (
-      formulario.categoria ===
-      CATEGORIAS_ESPECIALIDADES.TODOS
-    ) {
+    if (formulario.categoria === TODAS_CATEGORIAS) {
       alert("Selecione uma categoria.");
       return;
     }
@@ -72,24 +72,15 @@ export function EspecialidadeModal({
       nome: formulario.nome.trim(),
       categoria: formulario.categoria,
       descricao: formulario.descricao.trim(),
+      imagem: formulario.imagem.trim() || null,
     });
   };
 
   return (
-    <div
-      className={styles.overlay}
-      onMouseDown={onFechar}
-    >
-      <div
-        className={styles.modal}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
+    <div className={styles.overlay} onMouseDown={onFechar}>
+      <div className={styles.modal} onMouseDown={(e) => e.stopPropagation()}>
         <div className={styles.cabecalho}>
-          <h2>
-            {modoEdicao
-              ? "Editar Disciplina"
-              : "Adicionar Disciplina"}
-          </h2>
+          <h2>{modoEdicao ? "Editar Disciplina" : "Adicionar Disciplina"}</h2>
 
           <button
             type="button"
@@ -101,105 +92,66 @@ export function EspecialidadeModal({
           </button>
         </div>
 
-        <form
-          className={styles.formulario}
-          onSubmit={enviarFormulario}
-        >
+        <form className={styles.formulario} onSubmit={enviarFormulario}>
           <div className={styles.campo}>
-            <label htmlFor="nome-especialidade">
-              Nome
-            </label>
+            <label htmlFor="nome-especialidade">Nome</label>
 
             <input
               id="nome-especialidade"
               type="text"
+              maxLength={45}
               value={formulario.nome}
-              onChange={(e) =>
-                alterarCampo("nome", e.target.value)
-              }
+              onChange={(e) => alterarCampo("nome", e.target.value)}
               placeholder="Digite o nome da especialidade"
             />
           </div>
 
           <div className={styles.campo}>
-            <label htmlFor="categoria-especialidade">
-              Categoria
-            </label>
+            <label htmlFor="categoria-especialidade">Categoria</label>
 
             <select
               id="categoria-especialidade"
               value={formulario.categoria}
-              onChange={(e) =>
-                alterarCampo(
-                  "categoria",
-                  e.target.value
-                )
-              }
+              onChange={(e) => alterarCampo("categoria", e.target.value)}
             >
-              <option
-                value={
-                  CATEGORIAS_ESPECIALIDADES.TODOS
-                }
-              >
-                Selecione uma categoria
-              </option>
+              <option value={TODAS_CATEGORIAS}>Selecione uma categoria</option>
 
-              <option
-                value={
-                  CATEGORIAS_ESPECIALIDADES.ARTES_MANUAIS
-                }
-              >
-                Artes Manuais (AM)
-              </option>
-
-              <option
-                value={
-                  CATEGORIAS_ESPECIALIDADES.ATIVIDADES_ESPIRITUAIS
-                }
-              >
-                Atividades Espirituais (AE)
-              </option>
-
-              <option
-                value={
-                  CATEGORIAS_ESPECIALIDADES.ATIVIDADES_RECREATIVAS
-                }
-              >
-                Atividades Recreativas (AR)
-              </option>
-
-              <option
-                value={
-                  CATEGORIAS_ESPECIALIDADES.ESTUDOS_NATUREZA
-                }
-              >
-                Estudos da Natureza (EN)
-              </option>
-
-              <option
-                value={
-                  CATEGORIAS_ESPECIALIDADES.HABILIDADES_DOMESTICAS
-                }
-              >
-                Habilidades Domésticas (HD)
-              </option>
+              {CATEGORIAS_ESPECIALIDADES.map((nome) => (
+                <option key={nome} value={nome}>
+                  {nome}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className={styles.campo}>
-            <label htmlFor="descricao-especialidade">
-              Descrição
-            </label>
+            <label htmlFor="imagem-especialidade">Insígnia (link)</label>
+
+            <div className={styles.linhaImagem}>
+              <input
+                id="imagem-especialidade"
+                type="url"
+                maxLength={500}
+                value={formulario.imagem}
+                onChange={(e) => alterarCampo("imagem", e.target.value)}
+                placeholder="https://..."
+              />
+
+              <Insignia
+                src={formulario.imagem.trim()}
+                alt="Prévia da insígnia"
+                className={styles.previaImagem}
+              />
+            </div>
+          </div>
+
+          <div className={styles.campo}>
+            <label htmlFor="descricao-especialidade">Descrição</label>
 
             <textarea
               id="descricao-especialidade"
               value={formulario.descricao}
-              onChange={(e) =>
-                alterarCampo(
-                  "descricao",
-                  e.target.value
-                )
-              }
+              onChange={(e) => alterarCampo("descricao", e.target.value)}
               placeholder="Digite a descrição da especialidade"
               rows={5}
             />
@@ -217,8 +169,9 @@ export function EspecialidadeModal({
             <button
               type="submit"
               className={styles.botaoSalvar}
+              disabled={salvando}
             >
-              {modoEdicao ? "Salvar" : "Adicionar"}
+              {salvando ? "Salvando..." : modoEdicao ? "Salvar" : "Adicionar"}
             </button>
           </div>
         </form>
