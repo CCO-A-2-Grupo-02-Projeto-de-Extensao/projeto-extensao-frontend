@@ -1,0 +1,21 @@
+.carregando {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 2px solid #dddddd;
+  border-top-color: var(--vermelho);
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carregando {
+    animation: none;
+  }
+}
