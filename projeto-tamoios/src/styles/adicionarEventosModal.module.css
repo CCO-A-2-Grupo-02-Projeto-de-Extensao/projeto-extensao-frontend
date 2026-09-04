@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,7 +17,7 @@
   border-radius: 12px;
   overflow: hidden;
   background-color: var(--cremeClaro);
-  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .cabecalho {
@@ -25,7 +25,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 24px 32px;
-  border-bottom: 1px solid var(--cinza);
+  border-bottom: 3px solid var(--vermelho);
   background-color: var(--branco);
   flex-shrink: 0;
 }
@@ -194,6 +194,7 @@
 }
 
 .secaoTitulo {
+  composes: secaoAcento from "./acentoModal.module.css";
   font-size: 14px;
   font-weight: 700;
   color: var(--vinhoEscuro);

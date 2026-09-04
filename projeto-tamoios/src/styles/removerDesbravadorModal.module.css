@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,9 +14,9 @@
   width: 960px;
   max-width: 100%;
   max-height: 85vh;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .colunaEsquerda {
@@ -37,7 +37,7 @@
 }
 
 .titulo {
-  color: var(--vinhoEscuro);
+  composes: tituloAcento from "./acentoModal.module.css";
   font-size: 22px;
   margin-bottom: 16px;
 }

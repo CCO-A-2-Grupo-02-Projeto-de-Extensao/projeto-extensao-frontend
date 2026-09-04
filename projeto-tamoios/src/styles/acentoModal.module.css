@@ -1,0 +1,31 @@
+/* Acentos vermelhos dos popups, num lugar só.
+ *
+ * São dois: um filete sob o título do modal e uma barra vertical antes do
+ * título de cada seção. Herde com
+ *   composes: tituloAcento from "./acentoModal.module.css";
+ * em vez de repetir as medidas — foi assim que a cor do cabeçalho e o raio da
+ * casca divergiram entre os nove modais antes.
+ *
+ * A barra usa `height: 1em` de propósito: ela acompanha o corpo do texto da
+ * seção, que varia de 14px a 16px conforme o modal.
+ */
+.tituloAcento {
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--vermelho);
+  color: var(--vinhoEscuro);
+}
+
+.secaoAcento {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.secaoAcento::before {
+  content: "";
+  flex-shrink: 0;
+  width: 4px;
+  height: 1em;
+  border-radius: 2px;
+  background-color: var(--vermelho);
+}

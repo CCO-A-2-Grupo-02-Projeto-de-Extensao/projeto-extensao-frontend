@@ -49,7 +49,3 @@
 .botaoExcluir {
   composes: botao icone from "./button.module.css";
 }
-
-.botaoExcluir:hover {
-  background-color: #f0d4d4;
-}

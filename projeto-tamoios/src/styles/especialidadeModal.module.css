@@ -12,9 +12,9 @@
 .modal {
   width: 100%;
   max-width: 520px;
-  background-color: white;
+  background-color: var(--cremeClaro);
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   overflow: hidden;
 }
 
@@ -23,14 +23,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 22px 24px;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 3px solid var(--vermelho);
 }
 
 .cabecalho h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #333333;
+  color: var(--vinhoEscuro);
 }
 
 .fechar {
@@ -73,8 +73,8 @@
   padding: 11px 12px;
   font-family: inherit;
   font-size: 14px;
-  color: #333333;
-  background-color: white;
+  color: var(--vinhoEscuro);
+  background-color: var(--branco);
   outline: none;
   transition: border-color 0.2s;
 }

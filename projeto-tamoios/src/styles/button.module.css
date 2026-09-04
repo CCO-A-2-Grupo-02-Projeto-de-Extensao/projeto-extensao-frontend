@@ -16,7 +16,7 @@
  *   secundario ação alternativa        contorno vinho sobre claro
  *   perigo     remove/desativa         vermelho cheio
  *   sucesso    reativa/confirma bem    verde cheio
- *   icone      só ícone, quadrado
+ *   icone      só ícone, quadrado      vermelho cheio, ícone branco
  *   fechar     o × dos modais
  */
 
@@ -91,12 +91,12 @@
 
 .icone {
   padding: 8px;
-  background-color: var(--cremeClaro);
-  color: var(--carvao);
+  background-color: var(--vermelho);
+  color: var(--branco);
 }
 
 .icone:hover:not(:disabled) {
-  background-color: var(--cinza);
+  background-color: var(--vinhoEscuro);
 }
 
 .fechar {
