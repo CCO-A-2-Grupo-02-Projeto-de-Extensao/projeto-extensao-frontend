@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Add } from "@mui/icons-material";
 
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
@@ -98,10 +98,10 @@ export function EspecialidadesPage() {
     setPaginaAtual(1);
   };
 
-  const aoMudarBusca = (valor) => {
+  const aoMudarBusca = useCallback((valor) => {
     setBusca(valor);
     setPaginaAtual(1);
-  };
+  }, []);
 
   const especialidadesFiltradas = useMemo(() => {
     const termo = busca.trim().toLowerCase();

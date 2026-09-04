@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
@@ -77,10 +77,10 @@ export function DesbravadoresPage() {
     setPaginaAtual(1);
   };
 
-  const aoMudarBusca = (valor) => {
+  const aoMudarBusca = useCallback((valor) => {
     setBusca(valor);
     setPaginaAtual(1);
-  };
+  }, []);
 
   const aoMudarSituacao = (valor) => {
     setSituacao(valor);
