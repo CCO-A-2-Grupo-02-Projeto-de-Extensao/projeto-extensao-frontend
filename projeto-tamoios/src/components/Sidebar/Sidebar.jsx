@@ -3,6 +3,7 @@ import {
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
@@ -16,6 +17,23 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+
+const itensNavegacao = [
+  { texto: "Início", Icone: HomeIcon, path: "/dashboard" },
+  { texto: "Desbravadores", Icone: PeopleAltIcon, path: "/dashboard/desbravadores" },
+  { texto: "Cadastrar Usuário", Icone: PersonAddIcon, path: "/dashboard/cadastrar-usuario" },
+  { texto: "Chamada", Icone: ContentPasteIcon, path: "/dashboard/chamada" },
+  { texto: "Classes", Icone: MenuBookIcon, path: "/dashboard/classes" },
+  { texto: "Especialidades", Icone: BookmarkIcon, path: "/dashboard/especialidades" },
+  { texto: "Documentos", Icone: DescriptionIcon, path: "/dashboard/documentos" },
+];
+
+const estiloItem = {
+  cursor: "pointer",
+  "&:hover": { backgroundColor: "var(--vermelho)" },
+};
+
+const negrito = { primary: { sx: { fontWeight: "bold" } } };
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -55,134 +73,24 @@ export function Sidebar() {
               style={{ width: "90px", height: "auto" }}
             />
           </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={() => handleNavigate("/dashboard")}
-          >
-            <ListItemIcon>
-              <HomeIcon className={styles.customIcon} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Início"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={() => handleNavigate("/dashboard/desbravadores")}
-          >
-            <ListItemIcon>
-              <PeopleAltIcon className={styles.customIcon} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Desbravadores"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={() => handleNavigate("/dashboard/cadastrar-usuario")}
-          >
-            <ListItemIcon>
-              <PersonAddIcon className={styles.customIcon} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Cadastrar Usuário"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={() => handleNavigate("/dashboard/chamada")}
-          >
-            <ListItemIcon>
-              <ContentPasteIcon className={styles.customIcon} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Chamada"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={() => handleNavigate("/dashboard/classes")}
-          >
-            <ListItemIcon>
-              <MenuBookIcon className={styles.customIcon} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Classes"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={() => handleNavigate("/dashboard/especialidades")}
-          >
-            <ListItemIcon>
-              <BookmarkIcon className={styles.customIcon} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Especialidades"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={() => handleNavigate("/dashboard/documentos")}
-          >
-            <ListItemIcon>
-              <DescriptionIcon className={styles.customIcon} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Documentos"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "var(--vermelho)" },
-            }}
-            button
-            onClick={handleLogout}
-          >
+          {itensNavegacao.map(({ texto, Icone, path }) => (
+            <ListItemButton
+              key={path}
+              sx={estiloItem}
+              onClick={() => handleNavigate(path)}
+            >
+              <ListItemIcon>
+                <Icone className={styles.customIcon} />
+              </ListItemIcon>
+              <ListItemText primary={texto} slotProps={negrito} />
+            </ListItemButton>
+          ))}
+          <ListItemButton sx={estiloItem} onClick={handleLogout}>
             <ListItemIcon>
               <LogoutIcon className={styles.customIcon} />
             </ListItemIcon>
-            <ListItemText
-              primary="Sair"
-              primaryTypographyProps={{ sx: { fontWeight: "bold" } }}
-            />
-          </ListItem>
+            <ListItemText primary="Sair" slotProps={negrito} />
+          </ListItemButton>
         </List>
       </Drawer>
     </div>
