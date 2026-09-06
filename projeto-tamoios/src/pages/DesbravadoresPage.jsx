@@ -163,6 +163,11 @@ export function DesbravadoresPage() {
     carregarMembros();
   };
 
+  const aoCancelarEdicao = () => {
+    setModalEditarAberto(false);
+    setModalDetalhesAberto(true);
+  };
+
   const totalPaginas = Math.max(
     1,
     Math.ceil(membrosFiltrados.length / TAMANHO_PAGINA)
@@ -291,7 +296,7 @@ export function DesbravadoresPage() {
       <EditarDesbravadorModal
         aberto={modalEditarAberto}
         membro={membroSelecionado}
-        onFechar={() => setModalEditarAberto(false)}
+        onFechar={aoCancelarEdicao}
         onSalvar={aoSalvarEdicao}
       />
     </DashboardLayout>

@@ -123,7 +123,6 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
         nome: formData.nome.trim(),
       });
       onSalvar?.({ ...membroAtualizado, documentacao: DOCUMENTOS.every((doc) => documents[doc.id]) });
-      onFechar();
     } catch (erroRequisicao) {
       const dados = erroRequisicao.response?.data;
       setErro(dados?.erro ?? (dados && Object.values(dados)[0]) ?? "Não foi possível salvar as alterações.");
