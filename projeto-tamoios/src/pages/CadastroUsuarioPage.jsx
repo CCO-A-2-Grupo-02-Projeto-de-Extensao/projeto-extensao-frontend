@@ -6,6 +6,8 @@ import { Button } from "../components/Button/Button.jsx";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useEffect, useRef, useState } from "react";
 import api from "../services/api.js";
+import { InputSenha } from "../components/InputSenha/InputSenha.jsx";
+import { useNavigate } from "react-router-dom";
 
 export function CadastroUsuarioPage() {
   const [desbravadores, setDesbravadores] = useState([]);
@@ -14,6 +16,37 @@ export function CadastroUsuarioPage() {
   const [desbravadorSelecionado, setDesbravadorSelecionado] = useState(null);
   const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
   const containerBuscaRef = useRef(null);
+  const [idCargoSelecionado, setIdCargoSelecionado] = useState("");
+  const [idPessoaSelecionado, setIdPessoaSelecionado] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState(false);
+  const navigate = useNavigate();
+  const handleCadastroUsuario = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await api.post("/usuarios", {
+        idPessoa: idPessoaSelecionado,
+        idCargo: idCargoSelecionado,
+        email,
+        senha,
+      });
+      alert("Usuário cadastrado com sucesso!");
+      navigate("/dashboard");
+    } catch (err) {
+      console.log(idPessoaSelecionado, idCargoSelecionado, email, senha);
+      alert(
+        err.response?.data?.message ||
+          "Erro ao cadastrar usuário. Tente novamente.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let ativo = true;
@@ -27,6 +60,7 @@ export function CadastroUsuarioPage() {
         }
 
         setDesbravadores(Array.isArray(resposta.data) ? resposta.data : []);
+        console.log("Desbravadores carregados:", resposta.data);
       } catch (error) {
         if (!ativo) {
           return;
@@ -70,6 +104,7 @@ export function CadastroUsuarioPage() {
   }, []);
 
   const handleSelecionarDesbravador = (desbravador) => {
+    setIdPessoaSelecionado(Number(desbravador.idPessoa));
     setDesbravadorSelecionado(desbravador);
     setTermoBusca(desbravador.nome ?? "");
     setMostrarSugestoes(false);
@@ -102,18 +137,38 @@ export function CadastroUsuarioPage() {
           <Button
             variante="secundario"
             texto={"Adicionar Foto (Opcional)"}
-            mensagemAlert={"Foto adicionada com sucesso !"}
+            mensagemAlert={"Funcionalidade ainda não implementada."}
           />
         </div>
         <div>
-          <form action="">
+          {localStorage.getItem("usuario") &&
+            JSON.parse(localStorage.getItem("usuario")).nomeCargo !==
+              "Diretor" &&
+            JSON.parse(localStorage.getItem("usuario")).cargo !==
+              "Secretário" && (
+              <div
+                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
+              >
+                {
+                  "Usuário tem que ser Diretor ou Secretário para poder cadastrar uma nova pessoa."
+                }
+              </div>
+            )}
+          <form onSubmit={handleCadastroUsuario} action="">
             <label htmlFor="">Cargo:</label>
-            <Select placeholder="Selecione o cargo">
+            <Select
+              placeholder="Selecione o cargo"
+              onChange={(e) =>
+                setIdCargoSelecionado(
+                  e.target.value === "" ? "" : Number(e.target.value),
+                )
+              }
+            >
               <option value="">Selecione o cargo</option>
               <option value="1">Diretor</option>
               <option value="2">Secretário</option>
               <option value="3">Tesoureiro</option>
-              <option value="3">Instrutor</option>
+              <option value="5">Instrutor</option>
             </Select>
             <br />
             <label htmlFor="">Associar Desbravador</label>
@@ -162,7 +217,10 @@ export function CadastroUsuarioPage() {
                       <button
                         key={desbravador.idPessoa}
                         type="button"
-                        onClick={() => handleSelecionarDesbravador(desbravador)}
+                        onClick={() => {
+                          handleSelecionarDesbravador(desbravador);
+                          setTouched(true);
+                        }}
                         style={{
                           display: "block",
                           width: "100%",
@@ -197,35 +255,103 @@ export function CadastroUsuarioPage() {
                     style={{
                       marginTop: "4px",
                       color: "#5c1612",
-                      fontSize: "14px",
+                      fontSize: "16px",
                     }}
                   >
                     Nenhum desbravador encontrado.
                   </div>
                 )}
             </div>
+            {!desbravadorSelecionado && touched && (
+              <div
+                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
+              >
+                {
+                  "É necessário selecionar um desbravador para associar ao usuário."
+                }
+              </div>
+            )}
             <br />
             <label htmlFor="">Email:</label>
-            <Input type="email" placeholder="Email" />
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              required
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setTouched(true)}
+            />
+            {!email && touched && (
+              <div
+                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
+              >
+                {
+                  "É necessário adicionar um email para associar ao usuário. O email será usado para login."
+                }
+              </div>
+            )}
             <br />
             <div style={{ display: "flex", gap: "20px" }}>
               <div>
                 <label htmlFor="">Senha:</label>
-                <Input type="password" placeholder="Senha" />
+                <InputSenha
+                  placeholder="Sua senha"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  required
+                  disabled={loading}
+                  onBlur={() => setTouched(true)}
+                />
               </div>
               <div>
                 <label htmlFor="">Confirmar Senha:</label>
-                <Input type="password" placeholder="Confirmar Senha" />
+                <InputSenha
+                  placeholder="Confirme sua senha"
+                  value={senhaConfirmacao}
+                  onChange={(e) => setSenhaConfirmacao(e.target.value)}
+                  required
+                  disabled={loading}
+                  onBlur={() => setTouched(true)}
+                />
               </div>
             </div>
+            {senha.length < 6 && touched && (
+              <div
+                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
+              >
+                {
+                  "A senha deve ter pelo menos 6 caracteres. Por favor, escolha uma senha mais forte."
+                }
+              </div>
+            )}
+            {senha !== senhaConfirmacao && (
+              <div
+                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
+              >
+                {
+                  "As senhas não coincidem. Por favor, verifique e tente novamente."
+                }
+              </div>
+            )}
+            <Button
+              texto={loading ? "Carregando..." : "Cadastrar Usuário"}
+              disabled={
+                senha !== senhaConfirmacao ||
+                !desbravadorSelecionado ||
+                !email ||
+                !senha ||
+                !senhaConfirmacao ||
+                JSON.parse(localStorage.getItem("usuario")).nomeCargo !==
+                  "Diretor" ||
+                JSON.parse(localStorage.getItem("usuario")).nomeCargo !==
+                  "Secretário"
+              }
+              type="submit"
+              larguraTotal
+            />
           </form>
         </div>
       </section>
-      <Button
-        texto={"Adicionar Usuário"}
-        mensagemAlert={"Usuário cadastrado com sucesso !"}
-        larguraTotal
-      />
     </DashboardLayout>
   );
 }
