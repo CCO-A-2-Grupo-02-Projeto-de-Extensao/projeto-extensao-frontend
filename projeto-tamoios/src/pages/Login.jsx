@@ -8,6 +8,8 @@ import { Input } from "../components/Input/Input.jsx";
 import { InputSenha } from "../components/InputSenha/InputSenha.jsx";
 import { Modal } from "../components/Modal/Modal.jsx";
 import api from "../services/api.js";
+import { ActionButton } from "../components/ActionButton/ActionButton.jsx";
+import { EsqueceuSenhaModal } from "../components/EsqueceuSenhaModal/EsqueceuSenhaModal.jsx";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -15,6 +17,8 @@ function Login() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [modalEsqueceuSenhaAberto, setModalEsqueceuSenhaAberto] =
+    useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,7 +35,7 @@ function Login() {
         err.response?.data?.message ||
           (err.response?.status === 401
             ? "Email ou senha inválidos."
-            : "Erro ao fazer login. Tente novamente.")
+            : "Erro ao fazer login. Tente novamente."),
       );
     } finally {
       setLoading(false);
@@ -76,14 +80,17 @@ function Login() {
           <Button type="submit" disabled={loading} larguraTotal>
             {loading ? "Entrando..." : "Entrar"}
           </Button>
-          <Button
-            variante="secundario"
-            texto={"Esqueceu a senha ?"}
-            pagina={"esqueceuSenhaPage"}
-            larguraTotal
+          <ActionButton
+            texto="Esqueceu a Senha ?"
+            onClick={() => setModalEsqueceuSenhaAberto(true)}
           />
         </form>
       </Modal>
+      <EsqueceuSenhaModal
+        aberto={modalEsqueceuSenhaAberto}
+        onFechar={() => setModalEsqueceuSenhaAberto(false)}
+        //onCadastrar={aoCadastrarMembro}
+      />
     </section>
   );
 }
