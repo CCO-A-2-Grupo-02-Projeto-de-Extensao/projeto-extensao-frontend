@@ -132,6 +132,22 @@ export function criarSecoesFormulario({ cargos, classes, generos, unidades }, pe
         },
         { name: "genero", label: "Gênero", type: "select", opcoes: opcoesGenero },
         {
+          name: "cpf",
+          label: "CPF",
+          type: "text",
+          mascara: mascararCpf,
+          validar: cpfValido,
+          mensagemErro: "CPF inválido.",
+        },
+        {
+          name: "rg",
+          label: "RG",
+          type: "text",
+          mascara: mascararRg,
+          validar: rgValido,
+          mensagemErro: "RG inválido.",
+        },
+        {
           name: "telefone",
           label: "Telefone",
           type: "tel",
