@@ -3,6 +3,7 @@ import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
 import styles from "../../styles/removerDesbravadorModal.module.css";
 import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
+import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
 
 export function ReativarDesbravadorModal({ aberto, membros, onFechar, onConfirmar }) {
   const [ordenacao, setOrdenacao] = useState("az");
@@ -32,9 +33,21 @@ export function ReativarDesbravadorModal({ aberto, membros, onFechar, onConfirma
     );
   };
 
+  const [confirmandoDescarte, setConfirmandoDescarte] = useState(false);
+
   const limparEFechar = () => {
     setSelecionados([]);
+    setConfirmandoDescarte(false);
     onFechar();
+  };
+
+  // Só pergunta se há seleção a perder; sem nada marcado, fecha direto.
+  const aoClicarCancelar = () => {
+    if (selecionados.length === 0) {
+      limparEFechar();
+      return;
+    }
+    setConfirmandoDescarte(true);
   };
 
   const aoReativar = () => {
@@ -128,7 +141,7 @@ export function ReativarDesbravadorModal({ aberto, membros, onFechar, onConfirma
             <button
               type="button"
               className={styles.botaoCancelar}
-              onClick={limparEFechar}
+              onClick={aoClicarCancelar}
             >
               Cancelar
             </button>
@@ -142,6 +155,21 @@ export function ReativarDesbravadorModal({ aberto, membros, onFechar, onConfirma
           </div>
         </div>
       </div>
+
+      <ConfirmacaoModal
+        aberto={confirmandoDescarte}
+        titulo="Descartar seleção?"
+        mensagem={
+          selecionados.length === 1
+            ? "O desbravador marcado para reativação será desmarcado."
+            : `Os ${selecionados.length} desbravadores marcados para reativação serão desmarcados.`
+        }
+        textoConfirmar="Descartar"
+        textoCancelar="Continuar editando"
+        perigo
+        onConfirmar={limparEFechar}
+        onCancelar={() => setConfirmandoDescarte(false)}
+      />
     </div>
   );
 }

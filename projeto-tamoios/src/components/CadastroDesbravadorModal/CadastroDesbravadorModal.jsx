@@ -20,6 +20,7 @@ import {
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/cadastroDesbravadorModal.module.css";
 import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
+import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
 
 const TOOLTIP_SLOT_PROPS = {
   tooltip: {
@@ -51,6 +52,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   const [erro, setErro] = useState("");
   const [campoComErro, setCampoComErro] = useState(null);
   const [tentativaErro, setTentativaErro] = useState(0);
+  const [confirmandoDescarte, setConfirmandoDescarte] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erroSubmissao, setErroSubmissao] = useState("");
   const [quantidadeResponsaveis, setQuantidadeResponsaveis] = useState(1);
@@ -177,7 +179,22 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
 
   const aoFechar = () => {
     resetarTudo();
+    setConfirmandoDescarte(false);
     onFechar();
+  };
+
+  // Só pergunta se há algo a perder; formulário intocado fecha direto.
+  const temAlgoPreenchido =
+    Object.values(formData).some((valor) => String(valor ?? "").trim() !== "") ||
+    Boolean(foto) ||
+    Object.keys(documents).length > 0;
+
+  const aoClicarCancelar = () => {
+    if (!temAlgoPreenchido) {
+      aoFechar();
+      return;
+    }
+    setConfirmandoDescarte(true);
   };
 
   const aoAvancar = () => {
@@ -476,7 +493,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
           <button
             type="button"
             className={styles.botaoCancelar}
-            onClick={primeiraEtapa ? aoFechar : aoVoltar}
+            onClick={primeiraEtapa ? aoClicarCancelar : aoVoltar}
             disabled={enviando}
           >
             {primeiraEtapa ? "Cancelar" : "Voltar"}
@@ -497,6 +514,17 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
         documento={selectedDocument}
         onFechar={() => setIsUploadOpen(false)}
         onSalvar={aoSalvarDocumento}
+      />
+
+      <ConfirmacaoModal
+        aberto={confirmandoDescarte}
+        titulo="Descartar cadastro?"
+        mensagem="Tudo que foi preenchido neste formulário será perdido."
+        textoConfirmar="Descartar"
+        textoCancelar="Continuar preenchendo"
+        perigo
+        onConfirmar={aoFechar}
+        onCancelar={() => setConfirmandoDescarte(false)}
       />
     </div>
   );
