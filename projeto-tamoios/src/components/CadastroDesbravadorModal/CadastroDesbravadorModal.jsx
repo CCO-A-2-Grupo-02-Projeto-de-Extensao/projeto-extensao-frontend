@@ -19,6 +19,7 @@ import {
   validarResponsaveis,
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/cadastroDesbravadorModal.module.css";
+import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
 
 const TOOLTIP_SLOT_PROPS = {
   tooltip: {
@@ -294,10 +295,14 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     }
   };
 
+  // Clicar fora apenas esconde o modal: o que já foi preenchido continua
+  // em memória enquanto a página não é trocada. Descartar é só pelo Cancelar.
+  const fecharAoClicarFora = useFecharAoClicarFora(onFechar);
+
   if (!aberto) return null;
 
   return (
-    <div className={styles.overlay}>
+    <div className={styles.overlay} {...fecharAoClicarFora}>
       <div className={styles.modal}>
         <header className={styles.cabecalho}>
           <div>
