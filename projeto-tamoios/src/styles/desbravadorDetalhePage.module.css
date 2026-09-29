@@ -1,0 +1,556 @@
+/* Tela de detalhes do desbravador.
+ *
+ * NOTA: card.module.css e documento.module.css declaram `p { ... }` como
+ * seletor de ELEMENTO. CSS Modules não escopa isso, então todo <p> do app
+ * herda font-size 24px, text-align center e padding 1rem. Por isso as classes
+ * abaixo que caem em <p> repetem text-align/padding explicitamente.
+ *
+ * Substitui o antigo DetalhesDesbravadorModal: os mesmos dados, mas numa
+ * página própria, com os dados em blocos sobre o creme do fundo para não
+ * ficarem "soltos". Usa só os tokens de cor do app (ver index.css) e a
+ * Fredoka herdada do :root. */
+
+.mensagem,
+.mensagemErro,
+.mensagemVazia {
+  text-align: left;
+  padding: 0;
+  font-size: 15px;
+  color: var(--carvao);
+}
+
+.mensagemErro {
+  text-align: left;
+  padding: 0;
+  color: var(--vermelho);
+  margin-bottom: 16px;
+}
+
+.mensagemVazia {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* ------------------------------------------------------------------ cabeçalho */
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.cabecalhoTextos {
+  flex: 1;
+  min-width: 240px;
+}
+
+.sobretitulo {
+  text-align: left;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vermelho);
+  margin: 0 0 4px;
+}
+
+.matricula {
+  text-align: left;
+  padding: 0;
+  color: var(--carvao);
+  opacity: 0.55;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-weight: 500;
+}
+
+.titulo {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  text-align: left;
+  padding: 0;
+  font-size: 14px;
+  color: var(--carvao);
+  opacity: 0.7;
+  margin: 4px 0 0;
+}
+
+.cabecalhoAcoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.botaoVoltar {
+  composes: botao secundario from "./button.module.css";
+  padding: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.botaoPrimario {
+  composes: botao primario from "./button.module.css";
+}
+
+.botaoDesativar {
+  composes: botao perigo from "./button.module.css";
+}
+
+.botaoReativar {
+  composes: botao sucesso from "./button.module.css";
+}
+
+/* --------------------------------------------------------------------- painel */
+
+.painel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.coluna,
+.colunaLateral {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Superfície branca dos cartões sobre o creme do layout. */
+.perfil,
+.blocoDados,
+.secao,
+.documentos,
+.responsavel,
+.atalho {
+  background-color: var(--branco);
+  border: 1px solid var(--cinza);
+  border-radius: 12px;
+}
+
+/* ---------------------------------------------------------------------- perfil */
+
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+}
+
+.avatar {
+  width: 92px;
+  height: 92px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--creme);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarIcone {
+  font-size: 48px;
+  color: var(--vinhoEscuro);
+  opacity: 0.55;
+}
+
+.perfilTextos {
+  min-width: 0;
+}
+
+.perfilBadges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.tagPapel {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: var(--creme);
+  color: var(--vinhoEscuro);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tagStatus {
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tagStatusAtivo {
+  background-color: rgba(46, 125, 50, 0.15);
+  color: var(--verde);
+}
+
+.tagStatusInativo {
+  background-color: rgba(168, 27, 22, 0.12);
+  color: var(--vermelho);
+}
+
+.perfilNome {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.perfilLinha {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+/* ----------------------------------------------------------------- bloco dados */
+
+.blocoDados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px 24px;
+  padding: 20px 24px;
+}
+
+.dado {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dadoRotulo {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--carvao);
+  opacity: 0.6;
+}
+
+.dadoValor {
+  font-size: 15px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.dadoVazio {
+  font-size: 15px;
+  color: var(--carvao);
+  opacity: 0.45;
+  font-style: italic;
+}
+
+.link {
+  color: var(--vermelho);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------- seções */
+
+.secao {
+  padding: 20px 24px;
+}
+
+.secaoCabecalho {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.secaoTitulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+  margin: 0;
+}
+
+.secaoContagem,
+.documentosContagem {
+  font-size: 12px;
+  color: var(--carvao);
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------- responsáveis */
+
+.responsaveis {
+  display: grid;
+  /* auto-fill (e não auto-fit) para que um único responsável ocupe a largura
+     de uma coluna, em vez de esticar por todo o cartão. */
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.responsavel {
+  background-color: var(--cremeClaro);
+  padding: 16px;
+}
+
+.responsavelTitulo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vermelho);
+  margin: 0 0 6px;
+}
+
+.responsavelNome {
+  text-align: left;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.responsavelTelefone {
+  text-align: left;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--carvao);
+  margin: 0 0 10px;
+}
+
+.responsavelLinhas {
+  margin: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.responsavelLinha {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.responsavelLinha dt {
+  color: var(--carvao);
+  opacity: 0.6;
+}
+
+.responsavelLinha dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.responsavelAcoes {
+  display: flex;
+  gap: 8px;
+}
+
+.botaoContato {
+  composes: botao secundario compacto from "./button.module.css";
+  flex: 1;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* ----------------------------------------------------------------- documentos */
+
+.documentos {
+  padding: 20px 24px;
+}
+
+.documentosCabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.percentual {
+  text-align: left;
+  padding: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+  margin: 2px 0 0;
+  line-height: 1;
+}
+
+.barra {
+  height: 8px;
+  border-radius: 999px;
+  background-color: var(--creme);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.barraPreenchida {
+  height: 100%;
+  background-color: var(--vinhoEscuro);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.documentosGrade {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.documento {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--cinza);
+  border-radius: 8px;
+  background-color: var(--cremeClaro);
+}
+
+.documentoEnviado {
+  border-color: var(--verde);
+}
+
+.documentoIconeOk {
+  color: var(--verde);
+}
+
+.documentoIconePendente {
+  color: var(--carvao);
+  opacity: 0.35;
+}
+
+.documentoTitulo {
+  font-size: 13px;
+  color: var(--text);
+  min-width: 0;
+}
+
+.documentoStatusOk,
+.documentoStatusPendente {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.documentoStatusOk {
+  color: var(--verde);
+}
+
+.documentoStatusPendente {
+  color: var(--ambarOuro);
+}
+
+/* -------------------------------------------------------------------- atalhos */
+
+.atalhos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.atalho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.atalho:hover {
+  border-color: var(--vinhoEscuro);
+  background-color: var(--cremeClaro);
+}
+
+.atalhoIcone {
+  color: var(--vinhoEscuro);
+  flex-shrink: 0;
+}
+
+.atalhoTexto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.atalhoTexto strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.atalhoTexto small {
+  font-size: 12px;
+  color: var(--carvao);
+  opacity: 0.6;
+}
+
+.atalhoSeta {
+  color: var(--vinhoEscuro);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------- responsivo */
+
+@media (max-width: 1100px) {
+  .painel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .cabecalhoAcoes {
+    width: 100%;
+  }
+
+  .cabecalhoAcoes button {
+    flex: 1;
+  }
+
+  .perfil {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .titulo {
+    font-size: 22px;
+  }
+}

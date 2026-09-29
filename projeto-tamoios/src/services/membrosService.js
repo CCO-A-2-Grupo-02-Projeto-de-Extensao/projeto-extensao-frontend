@@ -51,6 +51,11 @@ export async function getMembros() {
   return data.map(paraMembro);
 }
 
+export async function getMembro(idPessoa) {
+  const { data } = await api.get(`/pessoas/${idPessoa}`);
+  return paraMembro(data);
+}
+
 // Converte o formData produzido pelo formulário (ver
 // utils/desbravadorForm.jsx) — onde cargo/classe/genero/unidade guardam o id
 // real como string — no formato que o backend espera em PessoaCadastroRequest.
