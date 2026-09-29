@@ -5,6 +5,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { DocumentCard } from "../DocumentCard/DocumentCard.jsx";
 import { UploadDocumentoModal } from "../UploadDocumentoModal/UploadDocumentoModal.jsx";
 import { useCatalogos } from "../../hooks/useCatalogos.js";
+import { useRolarParaErro } from "../../hooks/useRolarParaErro.js";
 import { criarPessoa, criarUsuario } from "../../services/membrosService.js";
 import { enviarDocumento } from "../../services/documentosService.js";
 import {
@@ -64,8 +65,11 @@ export function EsqueceuSenhaModal({ aberto, onFechar, onCadastrar }) {
   const [etapasVisitadas, setEtapasVisitadas] = useState(() => new Set([0]));
   const [erro, setErro] = useState("");
   const [campoComErro, setCampoComErro] = useState(null);
+  const [tentativaErro, setTentativaErro] = useState(0);
   const [enviando, setEnviando] = useState(false);
   const [erroSubmissao, setErroSubmissao] = useState("");
+
+  useRolarParaErro(campoComErro, tentativaErro);
 
   const secoesFormulario = useMemo(
     () => criarSecoesFormulario(catalogos, formData),
@@ -192,6 +196,7 @@ export function EsqueceuSenhaModal({ aberto, onFechar, onCadastrar }) {
   };
 
   const aoAvancar = () => {
+    setTentativaErro((n) => n + 1);
     if (etapa.campos) {
       for (const campo of etapa.campos) {
         const valor = String(formData[campo.name] ?? "").trim();
@@ -255,6 +260,7 @@ export function EsqueceuSenhaModal({ aberto, onFechar, onCadastrar }) {
   };
 
   const aoCadastrar = async () => {
+    setTentativaErro((n) => n + 1);
     if (!formData.nome?.trim() || enviando) return;
 
     setEnviando(true);

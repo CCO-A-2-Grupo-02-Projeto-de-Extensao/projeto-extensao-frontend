@@ -4,6 +4,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { DocumentCard } from "../DocumentCard/DocumentCard.jsx";
 import { UploadDocumentoModal } from "../UploadDocumentoModal/UploadDocumentoModal.jsx";
 import { useCatalogos } from "../../hooks/useCatalogos.js";
+import { useRolarParaErro } from "../../hooks/useRolarParaErro.js";
 import { atualizarPessoa } from "../../services/membrosService.js";
 import {
   enviarDocumento,
@@ -35,8 +36,11 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [erro, setErro] = useState("");
   const [campoComErro, setCampoComErro] = useState(null);
+  const [tentativaErro, setTentativaErro] = useState(0);
   const [salvando, setSalvando] = useState(false);
   const [quantidadeResponsaveis, setQuantidadeResponsaveis] = useState(0);
+
+  useRolarParaErro(campoComErro, tentativaErro);
 
   const secoesFormulario = useMemo(
     () => criarSecoesFormulario(catalogos, formData),
@@ -127,6 +131,7 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
   };
 
   const aoSalvar = async () => {
+    setTentativaErro((n) => n + 1);
     const todosCampos = [CAMPO_NOME, ...secoesFormulario.flatMap((s) => s.campos)];
     const resultado =
       validarCampos(todosCampos, formData) ??

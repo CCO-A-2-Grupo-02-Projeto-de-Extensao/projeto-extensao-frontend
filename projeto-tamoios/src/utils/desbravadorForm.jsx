@@ -396,7 +396,11 @@ export function renderResponsaveis({
         </div>
       ))}
 
-      {campoComErro === "responsaveis" && <p className={styles.campoErro}>{erro}</p>}
+      {campoComErro === "responsaveis" && (
+        <p className={styles.campoErro} data-erro="responsaveis" tabIndex={-1}>
+          {erro}
+        </p>
+      )}
 
       {quantidade < MAX_RESPONSAVEIS && (
         <button type="button" className={styles.botaoFoto} onClick={onAdicionar}>
