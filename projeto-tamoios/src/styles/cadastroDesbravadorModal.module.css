@@ -301,7 +301,7 @@
 }
 
 .botaoCancelar {
-  composes: botao secundario from "./button.module.css";
+  composes: botao perigo from "./button.module.css";
 }
 
 .botaoVoltar {
