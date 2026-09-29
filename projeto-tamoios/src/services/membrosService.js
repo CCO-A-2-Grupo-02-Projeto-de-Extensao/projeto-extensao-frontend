@@ -58,6 +58,8 @@ export function construirPessoaRequest(formData) {
   return {
     nome: formData.nome?.trim(),
     dataNascimento: formData.dataNascimento,
+    cpf: formData.cpf || null,
+    rg: formData.rg || null,
     telefone: formData.telefone || null,
     idClasse: formData.classe ? Number(formData.classe) : null,
     idGenero: formData.genero ? Number(formData.genero) : null,
