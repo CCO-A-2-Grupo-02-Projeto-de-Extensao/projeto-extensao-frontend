@@ -296,10 +296,15 @@
 }
 
 .botaoCancelar,
+.botaoVoltar,
 .botaoCadastrar {flex: 1;
 }
 
 .botaoCancelar {
+  composes: botao secundario from "./button.module.css";
+}
+
+.botaoVoltar {
   composes: botao secundario from "./button.module.css";
 }
 
