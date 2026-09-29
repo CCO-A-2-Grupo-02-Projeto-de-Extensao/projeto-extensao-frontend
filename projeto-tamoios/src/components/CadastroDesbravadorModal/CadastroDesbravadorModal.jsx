@@ -5,7 +5,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { DocumentCard } from "../DocumentCard/DocumentCard.jsx";
 import { UploadDocumentoModal } from "../UploadDocumentoModal/UploadDocumentoModal.jsx";
 import { useCatalogos } from "../../hooks/useCatalogos.js";
-import { criarPessoa, criarUsuario } from "../../services/membrosService.js";
+import { criarPessoa } from "../../services/membrosService.js";
 import { enviarDocumento } from "../../services/documentosService.js";
 import {
   CAMPO_NOME,
@@ -18,25 +18,6 @@ import {
   validarResponsaveis,
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/cadastroDesbravadorModal.module.css";
-
-const CAMPOS_ACESSO = [
-  {
-    name: "email",
-    label: "E-mail de acesso",
-    type: "email",
-    obrigatorio: true,
-    validar: (valor) => /\S+@\S+\.\S+/.test(valor),
-    mensagemErro: "E-mail inválido.",
-  },
-  {
-    name: "senha",
-    label: "Senha",
-    type: "password",
-    obrigatorio: true,
-    validar: (valor) => valor.length >= 6,
-    mensagemErro: "A senha deve ter ao menos 6 caracteres.",
-  },
-];
 
 const TOOLTIP_SLOT_PROPS = {
   tooltip: {
@@ -85,27 +66,15 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     ]
   );
 
-  const cargoSelecionado = catalogos.cargos.find(
-    (cargo) => String(cargo.id) === formData.cargo
-  );
-  const precisaAcesso = Boolean(cargoSelecionado) && cargoSelecionado.nome !== "Desbravador";
-
   const ETAPAS = useMemo(() => {
     const formularioEtapas = secoesFormulario.map((secao) => ({ ...secao, tipo: "formulario" }));
-    const etapas = [
+    return [
       { titulo: "Foto e nome", tipo: "foto", campos: [CAMPO_NOME] },
-      ...formularioEtapas.slice(0, 2),
-    ];
-    if (precisaAcesso) {
-      etapas.push({ titulo: "Acesso ao sistema", tipo: "formulario", campos: CAMPOS_ACESSO });
-    }
-    etapas.push(
-      ...formularioEtapas.slice(2),
+      ...formularioEtapas,
       { titulo: "Responsáveis", tipo: "responsaveis" },
-      { titulo: "Documentos", tipo: "documentos" }
-    );
-    return etapas;
-  }, [secoesFormulario, precisaAcesso]);
+      { titulo: "Documentos", tipo: "documentos" },
+    ];
+  }, [secoesFormulario]);
 
   const primeiraEtapa = etapaAtual === 0;
   const ultimaEtapa = etapaAtual === ETAPAS.length - 1;
@@ -293,15 +262,6 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     try {
       const novoMembro = await criarPessoa(formData);
 
-      if (precisaAcesso) {
-        await criarUsuario({
-          idPessoa: novoMembro.id,
-          idCargo: Number(formData.cargo),
-          email: formData.email,
-          senha: formData.senha,
-        });
-      }
-
       if (foto) {
         await enviarDocumento(novoMembro.id, "foto", foto);
       }
@@ -442,12 +402,6 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
             ) : etapa.tipo === "formulario" ? (
               <section className={styles.secao}>
                 <h3 className={styles.secaoTitulo}>{etapa.titulo}</h3>
-                {etapa.titulo === "Acesso ao sistema" && (
-                  <p className={styles.documentosSubtitulo}>
-                    Como o cargo escolhido tem acesso ao sistema, defina o e-mail e a
-                    senha de login.
-                  </p>
-                )}
                 <div className={styles.grid}>
                   {calcularSpans(etapa.campos).map((campo) =>
                     renderCampo(campo, formData, aoMudarCampo, erro, campoComErro, styles)
