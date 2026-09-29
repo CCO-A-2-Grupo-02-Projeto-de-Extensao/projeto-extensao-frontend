@@ -368,12 +368,16 @@
 
 .responsavelAcoes {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .botaoContato {
   composes: botao secundario compacto from "./button.module.css";
-  flex: 1;
+  /* base 100px + min-width 0: lado a lado quando cabe, empilhados quando o
+     cartão chega na largura mínima — sem estourar a borda. */
+  flex: 1 1 100px;
+  min-width: 0;
   text-decoration: none;
   font-size: 13px;
 }
