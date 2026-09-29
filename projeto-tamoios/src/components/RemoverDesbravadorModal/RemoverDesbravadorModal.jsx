@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
 import styles from "../../styles/removerDesbravadorModal.module.css";
+import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
 
 export function RemoverDesbravadorModal({ aberto, membros, onFechar, onConfirmar }) {
   const [ordenacao, setOrdenacao] = useState("az");
@@ -43,10 +44,13 @@ export function RemoverDesbravadorModal({ aberto, membros, onFechar, onConfirmar
     onFechar();
   };
 
+  // Clicar fora preserva a seleção feita; Cancelar é que limpa.
+  const fecharAoClicarFora = useFecharAoClicarFora(onFechar);
+
   if (!aberto) return null;
 
   return (
-    <div className={styles.overlay}>
+    <div className={styles.overlay} {...fecharAoClicarFora}>
       <div className={styles.modal}>
         <div className={styles.colunaEsquerda}>
           <h2 className={styles.titulo}>Desativar Desbravador</h2>
