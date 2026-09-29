@@ -11,7 +11,7 @@ import { HistoricoEscolarModal } from "../HistoricoEscolarModal/HistoricoEscolar
 import { DesempenhoClubeModal } from "../DesempenhoClubeModal/DesempenhoClubeModal.jsx";
 import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { listarDocumentosDaPessoa } from "../../services/documentosService.js";
-import { DOCUMENTOS } from "../../utils/desbravadorForm.jsx";
+import { DOCUMENTOS, MAX_RESPONSAVEIS } from "../../utils/desbravadorForm.jsx";
 import modalStyles from "../../styles/cadastroDesbravadorModal.module.css";
 import styles from "../../styles/detalhesDesbravadorModal.module.css";
 
@@ -35,31 +35,40 @@ function CampoLeitura({ label, valor }) {
   );
 }
 
-function SecaoResponsavel({ titulo, membro, sufixo }) {
-  const nome = membro[`nomeResponsavel${sufixo}`];
-  const telefone = membro[`telefoneResponsavel${sufixo}`];
-  const rg = membro[`rgResponsavel${sufixo}`];
-  const cpf = membro[`cpfResponsavel${sufixo}`];
+function SecaoResponsaveis({ membro }) {
+  const responsaveis = Array.from({ length: MAX_RESPONSAVEIS }, (_, indice) => ({
+    nome: membro[`nomeResponsavel${indice + 1}`],
+    telefone: membro[`telefoneResponsavel${indice + 1}`],
+    rg: membro[`rgResponsavel${indice + 1}`],
+    cpf: membro[`cpfResponsavel${indice + 1}`],
+  })).filter(({ nome, telefone, rg, cpf }) => nome || telefone || rg || cpf);
 
   return (
     <section className={modalStyles.secao}>
-      <h3 className={modalStyles.secaoTitulo}>{titulo}</h3>
-      {nome || telefone || rg || cpf ? (
-        <div className={modalStyles.grid}>
-          <div className={modalStyles.campoSpan2}>
-            <span className={modalStyles.campoLabel}>Nome</span>
-            {nome ? (
-              <span className={styles.valor}>{nome}</span>
-            ) : (
-              <span className={styles.valorVazio}>Não informado</span>
-            )}
-          </div>
-          <CampoLeitura label="Telefone" valor={telefone} />
-          <CampoLeitura label="RG" valor={rg} />
-          <CampoLeitura label="CPF" valor={cpf} />
-        </div>
-      ) : (
+      <h3 className={modalStyles.secaoTitulo}>Responsáveis</h3>
+      {responsaveis.length === 0 ? (
         <p className={styles.mensagemVazia}>Nenhum responsável cadastrado.</p>
+      ) : (
+        responsaveis.map((responsavel, indice) => (
+          <div key={indice} className={modalStyles.responsavelBloco}>
+            <div className={modalStyles.responsavelCabecalho}>
+              <h4 className={modalStyles.responsavelTitulo}>Responsável {indice + 1}</h4>
+            </div>
+            <div className={modalStyles.grid}>
+              <div className={modalStyles.campoSpan2}>
+                <span className={modalStyles.campoLabel}>Nome</span>
+                {responsavel.nome ? (
+                  <span className={styles.valor}>{responsavel.nome}</span>
+                ) : (
+                  <span className={styles.valorVazio}>Não informado</span>
+                )}
+              </div>
+              <CampoLeitura label="Telefone" valor={responsavel.telefone} />
+              <CampoLeitura label="RG" valor={responsavel.rg} />
+              <CampoLeitura label="CPF" valor={responsavel.cpf} />
+            </div>
+          </div>
+        ))
       )}
     </section>
   );
@@ -181,8 +190,7 @@ export function DetalhesDesbravadorModal({
               </div>
             </section>
 
-            <SecaoResponsavel titulo="Responsável 1" membro={membro} sufixo="1" />
-            <SecaoResponsavel titulo="Responsável 2" membro={membro} sufixo="2" />
+            <SecaoResponsaveis membro={membro} />
 
             <section className={modalStyles.secao}>
               <h3 className={modalStyles.secaoTitulo}>Documentos</h3>

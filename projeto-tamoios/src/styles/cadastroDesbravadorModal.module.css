@@ -250,6 +250,35 @@
   margin-bottom: 20px;
 }
 
+.responsavelBloco {
+  padding: 16px;
+  border: 1px solid var(--cinza);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.responsavelCabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.responsavelTitulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--carvao);
+}
+
+.botaoRemoverResponsavel {
+  background: none;
+  border: none;
+  color: var(--vermelho);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .documentosGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

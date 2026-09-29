@@ -15,9 +15,13 @@ import {
   CAMPO_NOME,
   DOCUMENTOS,
   calcularSpans,
+  contarResponsaveis,
   criarSecoesFormulario,
+  removerResponsavel,
   renderCampo,
+  renderResponsaveis,
   validarCampos,
+  validarResponsaveis,
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/cadastroDesbravadorModal.module.css";
 
@@ -32,6 +36,7 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
   const [erro, setErro] = useState("");
   const [campoComErro, setCampoComErro] = useState(null);
   const [salvando, setSalvando] = useState(false);
+  const [quantidadeResponsaveis, setQuantidadeResponsaveis] = useState(0);
 
   const secoesFormulario = useMemo(
     () => criarSecoesFormulario(catalogos, formData),
@@ -56,6 +61,7 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
         genero: membro.idGenero != null ? String(membro.idGenero) : "",
         unidade: membro.idUnidade != null ? String(membro.idUnidade) : "",
       });
+      setQuantidadeResponsaveis(contarResponsaveis(membro));
       setErro("");
       setCampoComErro(null);
       listarDocumentosDaPessoa(membro.id).then(setDocuments);
@@ -72,6 +78,19 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
       setErro("");
       setCampoComErro(null);
     }
+  };
+
+  const aoAdicionarResponsavel = () => {
+    setQuantidadeResponsaveis((atual) => atual + 1);
+    setErro("");
+    setCampoComErro(null);
+  };
+
+  const aoRemoverResponsavel = (numero) => {
+    setFormData((atual) => removerResponsavel(atual, numero, quantidadeResponsaveis));
+    setQuantidadeResponsaveis((atual) => atual - 1);
+    setErro("");
+    setCampoComErro(null);
   };
 
   const aoAbrirUpload = (documento) => {
@@ -109,7 +128,9 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
 
   const aoSalvar = async () => {
     const todosCampos = [CAMPO_NOME, ...secoesFormulario.flatMap((s) => s.campos)];
-    const resultado = validarCampos(todosCampos, formData);
+    const resultado =
+      validarCampos(todosCampos, formData) ??
+      validarResponsaveis(formData, quantidadeResponsaveis);
     if (resultado) {
       setErro(resultado.mensagem);
       setCampoComErro(resultado.campo);
@@ -197,6 +218,20 @@ export function EditarDesbravadorModal({ aberto, membro, onFechar, onSalvar }) {
                 </div>
               </section>
             ))}
+
+            <section className={styles.secao}>
+              <h3 className={styles.secaoTitulo}>Responsáveis</h3>
+              {renderResponsaveis({
+                formData,
+                quantidade: quantidadeResponsaveis,
+                onAdicionar: aoAdicionarResponsavel,
+                onRemover: aoRemoverResponsavel,
+                aoMudarCampo,
+                erro,
+                campoComErro,
+                styles,
+              })}
+            </section>
 
             <section className={styles.secao}>
               <h3 className={styles.secaoTitulo}>Documentos</h3>

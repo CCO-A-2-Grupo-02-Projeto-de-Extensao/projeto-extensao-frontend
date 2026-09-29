@@ -161,66 +161,6 @@ export function criarSecoesFormulario({ cargos, classes, generos, unidades }, pe
         { name: "turma", label: "Turma", type: "text" },
       ],
     },
-  {
-    titulo: "Responsável 1",
-    campos: [
-      { name: "nomeResponsavel1", label: "Nome", type: "text", span: 2 },
-      {
-        name: "telefoneResponsavel1",
-        label: "Telefone",
-        type: "tel",
-        mascara: mascararTelefone,
-        validar: telefoneValido,
-        mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
-      },
-      {
-        name: "rgResponsavel1",
-        label: "RG",
-        type: "text",
-        mascara: mascararRg,
-        validar: rgValido,
-        mensagemErro: "RG inválido.",
-      },
-      {
-        name: "cpfResponsavel1",
-        label: "CPF",
-        type: "text",
-        mascara: mascararCpf,
-        validar: cpfValido,
-        mensagemErro: "CPF inválido.",
-      },
-    ],
-  },
-  {
-    titulo: "Responsável 2 (opcional)",
-    campos: [
-      { name: "nomeResponsavel2", label: "Nome", type: "text", span: 2 },
-      {
-        name: "telefoneResponsavel2",
-        label: "Telefone",
-        type: "tel",
-        mascara: mascararTelefone,
-        validar: telefoneValido,
-        mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
-      },
-      {
-        name: "rgResponsavel2",
-        label: "RG",
-        type: "text",
-        mascara: mascararRg,
-        validar: rgValido,
-        mensagemErro: "RG inválido.",
-      },
-      {
-        name: "cpfResponsavel2",
-        label: "CPF",
-        type: "text",
-        mascara: mascararCpf,
-        validar: cpfValido,
-        mensagemErro: "CPF inválido.",
-      },
-    ],
-    },
   ];
 }
 
@@ -310,6 +250,145 @@ export function validarCampos(campos, formData) {
     }
   }
   return null;
+}
+
+export const MAX_RESPONSAVEIS = 2;
+
+const PREFIXOS_RESPONSAVEL = ["nome", "telefone", "rg", "cpf"];
+
+export function camposResponsavel(numero, nomeObrigatorio = false) {
+  return [
+    { name: `nomeResponsavel${numero}`, label: "Nome", type: "text", span: 2, obrigatorio: nomeObrigatorio },
+    {
+      name: `telefoneResponsavel${numero}`,
+      label: "Telefone",
+      type: "tel",
+      mascara: mascararTelefone,
+      validar: telefoneValido,
+      mensagemErro: "Telefone inválido. Use o formato (00) 00000-0000.",
+    },
+    {
+      name: `rgResponsavel${numero}`,
+      label: "RG",
+      type: "text",
+      mascara: mascararRg,
+      validar: rgValido,
+      mensagemErro: "RG inválido.",
+    },
+    {
+      name: `cpfResponsavel${numero}`,
+      label: "CPF",
+      type: "text",
+      mascara: mascararCpf,
+      validar: cpfValido,
+      mensagemErro: "CPF inválido.",
+    },
+  ];
+}
+
+function responsavelTemDados(formData, numero) {
+  return PREFIXOS_RESPONSAVEL.some(
+    (prefixo) => String(formData[`${prefixo}Responsavel${numero}`] ?? "").trim() !== ""
+  );
+}
+
+export function contarResponsaveis(formData) {
+  for (let numero = MAX_RESPONSAVEIS; numero > 0; numero--) {
+    if (responsavelTemDados(formData, numero)) return numero;
+  }
+  return 0;
+}
+
+export function calcularIdade(dataNascimento) {
+  if (!dataNascimento || !dataNascimentoValida(dataNascimento)) return null;
+  const [ano, mes, dia] = dataNascimento.split("-").map(Number);
+  const hoje = new Date();
+  const jaFezAniversario =
+    hoje.getMonth() + 1 > mes || (hoje.getMonth() + 1 === mes && hoje.getDate() >= dia);
+  return hoje.getFullYear() - ano - (jaFezAniversario ? 0 : 1);
+}
+
+export function exigeResponsavel(formData) {
+  const idade = calcularIdade(formData.dataNascimento);
+  return idade !== null && idade < 18;
+}
+
+export function removerResponsavel(formData, numero, quantidade) {
+  const copia = { ...formData };
+  for (let atual = numero; atual <= quantidade; atual++) {
+    PREFIXOS_RESPONSAVEL.forEach((prefixo) => {
+      copia[`${prefixo}Responsavel${atual}`] = copia[`${prefixo}Responsavel${atual + 1}`] ?? "";
+    });
+  }
+  return copia;
+}
+
+export function validarResponsaveis(formData, quantidade) {
+  for (let numero = 1; numero <= quantidade; numero++) {
+    const resultado = validarCampos(
+      camposResponsavel(numero, responsavelTemDados(formData, numero)),
+      formData
+    );
+    if (resultado) return resultado;
+  }
+  if (exigeResponsavel(formData) && contarResponsaveis(formData) === 0) {
+    return {
+      campo: quantidade > 0 ? "nomeResponsavel1" : "responsaveis",
+      mensagem: "Desbravadores menores de 18 anos precisam de pelo menos um responsável.",
+    };
+  }
+  return null;
+}
+
+export function renderResponsaveis({
+  formData,
+  quantidade,
+  onAdicionar,
+  onRemover,
+  aoMudarCampo,
+  erro,
+  campoComErro,
+  styles,
+}) {
+  const obrigatorio = exigeResponsavel(formData);
+
+  return (
+    <>
+      <p className={styles.documentosSubtitulo}>
+        {obrigatorio
+          ? "Desbravador menor de 18 anos: informe pelo menos um responsável."
+          : "Opcional para desbravadores com 18 anos ou mais."}
+      </p>
+
+      {Array.from({ length: quantidade }, (_, indice) => indice + 1).map((numero) => (
+        <div key={numero} className={styles.responsavelBloco}>
+          <div className={styles.responsavelCabecalho}>
+            <h4 className={styles.responsavelTitulo}>Responsável {numero}</h4>
+            <button
+              type="button"
+              className={styles.botaoRemoverResponsavel}
+              onClick={() => onRemover(numero)}
+            >
+              Remover
+            </button>
+          </div>
+          <div className={styles.grid}>
+            {calcularSpans(camposResponsavel(numero, obrigatorio && numero === 1)).map((campo) =>
+              renderCampo(campo, formData, aoMudarCampo, erro, campoComErro, styles)
+            )}
+          </div>
+        </div>
+      ))}
+
+      {campoComErro === "responsaveis" && <p className={styles.campoErro}>{erro}</p>}
+
+      {quantidade < MAX_RESPONSAVEIS && (
+        <button type="button" className={styles.botaoFoto} onClick={onAdicionar}>
+          Adicionar responsável
+        </button>
+      )}
+    </>
+  );
 }
 
 export function rotuloCargo(categoria) {

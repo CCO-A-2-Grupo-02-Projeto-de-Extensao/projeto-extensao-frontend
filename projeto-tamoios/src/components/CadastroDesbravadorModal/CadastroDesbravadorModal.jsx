@@ -12,7 +12,10 @@ import {
   DOCUMENTOS,
   calcularSpans,
   criarSecoesFormulario,
+  removerResponsavel,
   renderCampo,
+  renderResponsaveis,
+  validarResponsaveis,
 } from "../../utils/desbravadorForm.jsx";
 import styles from "../../styles/cadastroDesbravadorModal.module.css";
 
@@ -66,6 +69,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   const [campoComErro, setCampoComErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [erroSubmissao, setErroSubmissao] = useState("");
+  const [quantidadeResponsaveis, setQuantidadeResponsaveis] = useState(1);
 
   const secoesFormulario = useMemo(
     () => criarSecoesFormulario(catalogos, formData),
@@ -95,7 +99,11 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     if (precisaAcesso) {
       etapas.push({ titulo: "Acesso ao sistema", tipo: "formulario", campos: CAMPOS_ACESSO });
     }
-    etapas.push(...formularioEtapas.slice(2), { titulo: "Documentos", tipo: "documentos" });
+    etapas.push(
+      ...formularioEtapas.slice(2),
+      { titulo: "Responsáveis", tipo: "responsaveis" },
+      { titulo: "Documentos", tipo: "documentos" }
+    );
     return etapas;
   }, [secoesFormulario, precisaAcesso]);
 
@@ -132,6 +140,9 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
   // assim ele pode pular de volta sem risco de "perder o lugar".
   const etapaClicavel = (indice) => {
     if (!etapasVisitadas.has(indice)) return false;
+    if (ETAPAS[indice]?.tipo === "responsaveis") {
+      return !validarResponsaveis(formData, quantidadeResponsaveis);
+    }
     const campos = ETAPAS[indice]?.campos;
     if (!campos) return true;
     return campos.every((campo) => {
@@ -156,6 +167,19 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     }
   };
 
+  const aoAdicionarResponsavel = () => {
+    setQuantidadeResponsaveis((atual) => atual + 1);
+    setErro("");
+    setCampoComErro(null);
+  };
+
+  const aoRemoverResponsavel = (numero) => {
+    setFormData((atual) => removerResponsavel(atual, numero, quantidadeResponsaveis));
+    setQuantidadeResponsaveis((atual) => atual - 1);
+    setErro("");
+    setCampoComErro(null);
+  };
+
   const resetarTudo = (manterArquivos = false) => {
     if (manterArquivos) preservarArquivosRef.current = true;
     setFormData({});
@@ -173,6 +197,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
     setErro("");
     setCampoComErro(null);
     setErroSubmissao("");
+    setQuantidadeResponsaveis(1);
   };
 
   const aoFechar = () => {
@@ -196,6 +221,14 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
           setCampoComErro(campo.name);
           return;
         }
+      }
+    }
+    if (etapa.tipo === "responsaveis") {
+      const resultado = validarResponsaveis(formData, quantidadeResponsaveis);
+      if (resultado) {
+        setErro(resultado.mensagem);
+        setCampoComErro(resultado.campo);
+        return;
       }
     }
     setErro("");
@@ -245,6 +278,14 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
 
   const aoCadastrar = async () => {
     if (!formData.nome?.trim() || enviando) return;
+
+    const erroResponsaveis = validarResponsaveis(formData, quantidadeResponsaveis);
+    if (erroResponsaveis) {
+      setEtapaAtual(ETAPAS.findIndex((item) => item.tipo === "responsaveis"));
+      setErro(erroResponsaveis.mensagem);
+      setCampoComErro(erroResponsaveis.campo);
+      return;
+    }
 
     setEnviando(true);
     setErroSubmissao("");
@@ -349,7 +390,7 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
 
         <div className={styles.corpo}>
           <div className={styles.painelWrapper}>
-            {etapa.tipo === "formulario" && (
+            {(etapa.tipo === "formulario" || etapa.tipo === "responsaveis") && (
               <p className={styles.camposLegenda}>
                 <span className={styles.obrigatorio}>*</span> campos obrigatórios —
                 os demais são opcionais.
@@ -412,6 +453,20 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
                     renderCampo(campo, formData, aoMudarCampo, erro, campoComErro, styles)
                   )}
                 </div>
+              </section>
+            ) : etapa.tipo === "responsaveis" ? (
+              <section className={styles.secao}>
+                <h3 className={styles.secaoTitulo}>Responsáveis</h3>
+                {renderResponsaveis({
+                  formData,
+                  quantidade: quantidadeResponsaveis,
+                  onAdicionar: aoAdicionarResponsavel,
+                  onRemover: aoRemoverResponsavel,
+                  aoMudarCampo,
+                  erro,
+                  campoComErro,
+                  styles,
+                })}
               </section>
             ) : (
               <section className={styles.secao}>
