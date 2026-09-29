@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
@@ -12,8 +13,6 @@ import { Pagination } from "../components/Pagination/Pagination.jsx";
 import { RemoverDesbravadorModal } from "../components/RemoverDesbravadorModal/RemoverDesbravadorModal.jsx";
 import { ReativarDesbravadorModal } from "../components/ReativarDesbravadorModal/ReativarDesbravadorModal.jsx";
 import { CadastroDesbravadorModal } from "../components/CadastroDesbravadorModal/CadastroDesbravadorModal.jsx";
-import { DetalhesDesbravadorModal } from "../components/DetalhesDesbravadorModal/DetalhesDesbravadorModal.jsx";
-import { EditarDesbravadorModal } from "../components/EditarDesbravadorModal/EditarDesbravadorModal.jsx";
 import {
   getMembros,
   CATEGORIAS,
@@ -32,6 +31,7 @@ const GRUPOS = [
 ];
 
 export function DesbravadoresPage() {
+  const navegar = useNavigate();
   const [membros, setMembros] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
@@ -44,9 +44,6 @@ export function DesbravadoresPage() {
   const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
   const [modalReativarAberto, setModalReativarAberto] = useState(false);
   const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
-  const [membroSelecionado, setMembroSelecionado] = useState(null);
-  const [modalDetalhesAberto, setModalDetalhesAberto] = useState(false);
-  const [modalEditarAberto, setModalEditarAberto] = useState(false);
 
   const carregarMembros = () => {
     setCarregando(true);
@@ -136,36 +133,7 @@ export function DesbravadoresPage() {
   };
 
   const aoSelecionarMembro = (membro) => {
-    setMembroSelecionado(membro);
-    setModalDetalhesAberto(true);
-  };
-
-  const aoAbrirEdicao = (membro) => {
-    setModalDetalhesAberto(false);
-    setMembroSelecionado(membro);
-    setModalEditarAberto(true);
-  };
-
-  const aoAlterarStatusMembro = async (membro) => {
-    if (membro.ativo) {
-      await desativarPessoa(membro.id);
-    } else {
-      await reativarPessoa(membro.id);
-    }
-    setModalDetalhesAberto(false);
-    setMembroSelecionado(null);
-    await carregarMembros();
-  };
-
-  const aoSalvarEdicao = () => {
-    setModalEditarAberto(false);
-    setMembroSelecionado(null);
-    carregarMembros();
-  };
-
-  const aoCancelarEdicao = () => {
-    setModalEditarAberto(false);
-    setModalDetalhesAberto(true);
+    navegar(`/dashboard/desbravadores/${membro.id}`);
   };
 
   const totalPaginas = Math.max(
@@ -283,21 +251,6 @@ export function DesbravadoresPage() {
         aberto={modalCadastroAberto}
         onFechar={() => setModalCadastroAberto(false)}
         onCadastrar={aoCadastrarMembro}
-      />
-
-      <DetalhesDesbravadorModal
-        aberto={modalDetalhesAberto}
-        membro={membroSelecionado}
-        onFechar={() => setModalDetalhesAberto(false)}
-        onEditar={aoAbrirEdicao}
-        onAlterarStatus={aoAlterarStatusMembro}
-      />
-
-      <EditarDesbravadorModal
-        aberto={modalEditarAberto}
-        membro={membroSelecionado}
-        onFechar={aoCancelarEdicao}
-        onSalvar={aoSalvarEdicao}
       />
     </DashboardLayout>
   );
