@@ -493,11 +493,21 @@ export function CadastroDesbravadorModal({ aberto, onFechar, onCadastrar }) {
           <button
             type="button"
             className={styles.botaoCancelar}
-            onClick={primeiraEtapa ? aoClicarCancelar : aoVoltar}
+            onClick={aoClicarCancelar}
             disabled={enviando}
           >
-            {primeiraEtapa ? "Cancelar" : "Voltar"}
+            Cancelar
           </button>
+          {!primeiraEtapa && (
+            <button
+              type="button"
+              className={styles.botaoVoltar}
+              onClick={aoVoltar}
+              disabled={enviando}
+            >
+              Voltar
+            </button>
+          )}
           <button
             type="button"
             className={styles.botaoCadastrar}
