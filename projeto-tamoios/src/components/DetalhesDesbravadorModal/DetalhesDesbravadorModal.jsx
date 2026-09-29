@@ -14,6 +14,7 @@ import { listarDocumentosDaPessoa } from "../../services/documentosService.js";
 import { DOCUMENTOS, MAX_RESPONSAVEIS } from "../../utils/desbravadorForm.jsx";
 import modalStyles from "../../styles/cadastroDesbravadorModal.module.css";
 import styles from "../../styles/detalhesDesbravadorModal.module.css";
+import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
 
 function formatarData(valor) {
   if (!valor) return null;
@@ -93,6 +94,8 @@ export function DetalhesDesbravadorModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- só recarrega ao (re)abrir para o mesmo/outro membro
   }, [aberto, membro?.id]);
 
+  const fecharAoClicarFora = useFecharAoClicarFora(onFechar);
+
   if (!aberto || !membro) return null;
 
   // Reativar é reversível e segue direto; só a desativação pede confirmação.
@@ -110,7 +113,7 @@ export function DetalhesDesbravadorModal({
   };
 
   return (
-    <div className={modalStyles.overlay}>
+    <div className={modalStyles.overlay} {...fecharAoClicarFora}>
       <div className={modalStyles.modal}>
         <header className={`${modalStyles.cabecalho} ${styles.cabecalhoLinha}`}>
           <div>
