@@ -203,54 +203,7 @@ function Dashboard() {
                 )}
               </article>
 
-              <article className={styles.painel}>
-                <header className={styles.cabecalhoPainel}>
-                  <PersonOffIcon
-                    className={styles.iconePainel}
-                    aria-hidden="true"
-                  />
-                  <h3>Faltas (Este mês)</h3>
-                </header>
-
-                <div className={styles.filtroFaltas}>
-                  <Select
-                    value={categoriaFaltas}
-                    onChange={(evento) =>
-                      setCategoriaFaltas(evento.target.value)
-                    }
-                    aria-label="Filtrar faltas por categoria"
-                  >
-                    <option value="todos">Todos</option>
-                    <option value="desbravadores">Desbravadores</option>
-                    <option value="instrutores">Instrutores</option>
-                  </Select>
-                </div>
-
-                <div className={styles.areaGrafico}>
-                  <div
-                    className={styles.grafico}
-                    style={{ "--percentual-faltas": `${percentualFaltas}%` }}
-                    role="img"
-                    aria-label={`${percentualFaltas}% de faltas no mês: ${faltasSelecionadas.faltas} faltas e ${faltasSelecionadas.presencas} presenças`}
-                  >
-                    <span className={styles.centroGrafico}>
-                      {percentualFaltas}%
-                    </span>
-                  </div>
-                  <div className={styles.legenda} aria-hidden="true">
-                    <span className={styles.itemLegenda}>
-                      <span className={styles.corLegenda} />
-                      {faltasSelecionadas.faltas} faltas
-                    </span>
-                    <span className={styles.itemLegenda}>
-                      <span
-                        className={`${styles.corLegenda} ${styles.corPresencas}`}
-                      />
-                      {faltasSelecionadas.presencas} presenças
-                    </span>
-                  </div>
-                </div>
-              </article>
+              
             </div>
           )}
         </section>

@@ -87,7 +87,7 @@
 
 .controleAcademico {
   display: grid;
-  grid-template-columns: minmax(300px, 1.15fr) minmax(280px, 1fr) minmax(260px, 0.9fr);
+  grid-template-columns: minmax(300px, 1.15fr) minmax(280px, 1fr);
   align-items: start;
   gap: var(--espaco-2);
 }
