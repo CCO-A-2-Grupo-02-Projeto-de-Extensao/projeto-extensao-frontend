@@ -71,6 +71,10 @@
   padding: 28px 32px;
   display: flex;
   justify-content: center;
+  /* Sem isto o wrapper é esticado à altura do container: o conteúdo transborda
+     dele e o padding inferior fica de fora da área rolável, fazendo o último
+     elemento encostar na base ao rolar até o fim. */
+  align-items: flex-start;
 }
 
 .painelWrapper {
