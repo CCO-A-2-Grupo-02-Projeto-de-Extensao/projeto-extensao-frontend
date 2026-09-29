@@ -14,7 +14,9 @@ import {
   criarSecoesFormulario,
   renderCampo,
 } from "../../utils/desbravadorForm.jsx";
-import styles from "../../styles/cadastroDesbravadorModal.module.css";
+import styles from "../../styles/esqueceuSenhaModal.module.css";
+import PasswordIcon from "@mui/icons-material/Password";
+import { Input } from "../Input/Input.jsx";
 
 const CAMPOS_ACESSO = [
   {
@@ -66,6 +68,8 @@ export function EsqueceuSenhaModal({ aberto, onFechar, onCadastrar }) {
   const [campoComErro, setCampoComErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [erroSubmissao, setErroSubmissao] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const secoesFormulario = useMemo(
     () => criarSecoesFormulario(catalogos, formData),
@@ -306,11 +310,34 @@ export function EsqueceuSenhaModal({ aberto, onFechar, onCadastrar }) {
         <header className={styles.cabecalho}>
           <div>
             <h2 className={styles.titulo}>Esqueceu a Senha?</h2>
-            <p className={styles.subtitulo}>Recuperar acesso à sua conta.</p>
           </div>
         </header>
-
-        <div className={styles.corpo}></div>
+        <div>
+          <div className={styles.corpo}>
+            <div className={styles.corpo__icone}>
+              <PasswordIcon className={styles.customIcon} />
+            </div>
+            <div className={styles.corpo__formulario}>
+              <p>
+                Caso tenha esquecido a senha, insira o seu email de cadastro
+                existente:
+              </p>
+              <Input
+                type="email"
+                placeholder="Seu email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+          </div>
+          <div className={styles.corpo__contato}>
+            <span>Ou entre em contato com a secretaria do Clube Tamoios:</span>
+            <span>secretaria@clubetamoios.com</span>
+            <span>(11)94682-9633</span>
+          </div>
+        </div>
 
         <footer className={styles.rodape}>
           <button
@@ -319,7 +346,7 @@ export function EsqueceuSenhaModal({ aberto, onFechar, onCadastrar }) {
             onClick={primeiraEtapa ? aoFechar : aoVoltar}
             disabled={enviando}
           >
-            {primeiraEtapa ? "Cancelar" : "Voltar"}
+            Cancelar
           </button>
           <button
             type="button"
@@ -327,11 +354,7 @@ export function EsqueceuSenhaModal({ aberto, onFechar, onCadastrar }) {
             onClick={ultimaEtapa ? aoCadastrar : aoAvancar}
             disabled={enviando || catalogos.carregandoCatalogos}
           >
-            {ultimaEtapa
-              ? enviando
-                ? "Cadastrando..."
-                : "Cadastrar Desbravador"
-              : "Avançar"}
+            Enviar
           </button>
         </footer>
       </div>
