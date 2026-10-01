@@ -3,26 +3,40 @@ import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import AddIcon from "@mui/icons-material/Add";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
 import SchoolIcon from "@mui/icons-material/School";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import EditIcon from "@mui/icons-material/Edit";
+import DescriptionIcon from "@mui/icons-material/Description";
+import BadgeIcon from "@mui/icons-material/Badge";
+import VaccinesIcon from "@mui/icons-material/Vaccines";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import PlaceIcon from "@mui/icons-material/Place";
+import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { EditarDesbravadorModal } from "../components/EditarDesbravadorModal/EditarDesbravadorModal.jsx";
 import { HistoricoEscolarModal } from "../components/HistoricoEscolarModal/HistoricoEscolarModal.jsx";
 import { DesempenhoClubeModal } from "../components/DesempenhoClubeModal/DesempenhoClubeModal.jsx";
+import { UploadDocumentoModal } from "../components/UploadDocumentoModal/UploadDocumentoModal.jsx";
 
 import {
   getMembro,
   desativarPessoa,
   reativarPessoa,
 } from "../services/membrosService.js";
-import { listarDocumentosDaPessoa } from "../services/documentosService.js";
+import {
+  enviarDocumento,
+  listarDocumentosDaPessoa,
+  substituirDocumento,
+} from "../services/documentosService.js";
 import { DOCUMENTOS, MAX_RESPONSAVEIS } from "../utils/desbravadorForm.jsx";
 
 import styles from "../styles/desbravadorDetalhePage.module.css";
@@ -113,6 +127,67 @@ function CartaoResponsavel({ numero, responsavel }) {
   );
 }
 
+// Um ícone por tipo de documento, para que o cartão seja reconhecível antes
+// mesmo de ler o título. Os ids são os de DOCUMENTOS (desbravadorForm.jsx).
+const ICONES_DOCUMENTO = {
+  certidaoNascimento: DescriptionIcon,
+  cartaoSus: BadgeIcon,
+  carteiraVacinacao: VaccinesIcon,
+  carteiraConvenio: LocalHospitalIcon,
+  comprovanteEndereco: PlaceIcon,
+  fichaMedica: MedicalInformationIcon,
+  receitaMedica: ReceiptLongIcon,
+  autorizacaoClube: AssignmentTurnedInIcon,
+};
+
+function CartaoDocumento({ documento, arquivo, onAbrir, onEnviar }) {
+  const Icone = ICONES_DOCUMENTO[documento.id] ?? DescriptionIcon;
+  const enviado = Boolean(arquivo);
+
+  return (
+    <li className={`${styles.documento} ${enviado ? styles.documentoEnviado : ""}`}>
+      {/* O cartão inteiro é a ação principal: abre o arquivo quando já existe,
+          abre o upload quando ainda falta. */}
+      <button
+        type="button"
+        className={styles.documentoBotao}
+        onClick={enviado ? onAbrir : onEnviar}
+        title={enviado ? `Abrir ${arquivo.nome}` : `Anexar ${documento.titulo}`}
+      >
+        <span className={styles.documentoSelo} aria-hidden="true">
+          {enviado ? (
+            <CheckCircleIcon className={styles.documentoSeloOk} />
+          ) : (
+            <AddIcon className={styles.documentoSeloPendente} />
+          )}
+        </span>
+
+        <Icone className={styles.documentoIcone} />
+
+        <span className={styles.documentoTitulo}>{documento.titulo}</span>
+
+        <span
+          className={enviado ? styles.documentoStatusOk : styles.documentoStatusPendente}
+        >
+          {enviado ? arquivo.nome : "Pendente"}
+        </span>
+      </button>
+
+      {enviado && (
+        <button
+          type="button"
+          className={styles.documentoTrocar}
+          onClick={onEnviar}
+          title="Substituir arquivo"
+          aria-label={`Substituir ${documento.titulo}`}
+        >
+          <SwapHorizIcon fontSize="small" />
+        </button>
+      )}
+    </li>
+  );
+}
+
 function ConteudoDesbravador({ idPessoa }) {
   const navegar = useNavigate();
 
@@ -125,6 +200,7 @@ function ConteudoDesbravador({ idPessoa }) {
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalHistoricoAberto, setModalHistoricoAberto] = useState(false);
   const [modalDesempenhoAberto, setModalDesempenhoAberto] = useState(false);
+  const [documentoSelecionado, setDocumentoSelecionado] = useState(null);
 
   useEffect(() => {
     let ativo = true;
@@ -157,6 +233,16 @@ function ConteudoDesbravador({ idPessoa }) {
     }
     await reativarPessoa(membro.id);
     setMembro({ ...membro, ativo: true });
+  };
+
+  const aoSalvarDocumento = async (arquivo) => {
+    const existente = documentos[documentoSelecionado.id];
+    const salvo = existente
+      ? await substituirDocumento(existente.idDocumento, arquivo)
+      : await enviarDocumento(membro.id, documentoSelecionado.id, arquivo);
+
+    setDocumentos((atual) => ({ ...atual, [documentoSelecionado.id]: salvo }));
+    setDocumentoSelecionado(null);
   };
 
   const confirmarDesativacao = async () => {
@@ -348,32 +434,15 @@ function ConteudoDesbravador({ idPessoa }) {
             </div>
 
             <ul className={styles.documentosGrade}>
-              {DOCUMENTOS.map((documento) => {
-                const enviado = Boolean(documentos[documento.id]);
-                return (
-                  <li
-                    key={documento.id}
-                    className={`${styles.documento} ${enviado ? styles.documentoEnviado : ""}`}
-                  >
-                    {enviado ? (
-                      <CheckCircleIcon className={styles.documentoIconeOk} fontSize="small" />
-                    ) : (
-                      <RadioButtonUncheckedIcon
-                        className={styles.documentoIconePendente}
-                        fontSize="small"
-                      />
-                    )}
-                    <span className={styles.documentoTitulo}>{documento.titulo}</span>
-                    <span
-                      className={
-                        enviado ? styles.documentoStatusOk : styles.documentoStatusPendente
-                      }
-                    >
-                      {enviado ? "Anexado" : "Pendente"}
-                    </span>
-                  </li>
-                );
-              })}
+              {DOCUMENTOS.map((documento) => (
+                <CartaoDocumento
+                  key={documento.id}
+                  documento={documento}
+                  arquivo={documentos[documento.id] ?? null}
+                  onAbrir={() => window.open(documentos[documento.id].url, "_blank")}
+                  onEnviar={() => setDocumentoSelecionado(documento)}
+                />
+              ))}
             </ul>
           </section>
 
@@ -428,6 +497,13 @@ function ConteudoDesbravador({ idPessoa }) {
         membro={membro}
         onFechar={() => setModalDesempenhoAberto(false)}
         onSalvar={() => setModalDesempenhoAberto(false)}
+      />
+
+      <UploadDocumentoModal
+        aberto={Boolean(documentoSelecionado)}
+        documento={documentoSelecionado}
+        onFechar={() => setDocumentoSelecionado(null)}
+        onSalvar={aoSalvarDocumento}
       />
 
       <ConfirmacaoModal

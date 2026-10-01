@@ -421,60 +421,124 @@
   transition: width 0.3s ease;
 }
 
+/* Grade de cartões (um por tipo de documento), como no mockup. A coluna
+ * lateral comporta 3 cartões; em telas estreitas o auto-fill reflui sozinho. */
 .documentosGrade {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 10px;
 }
 
 .documento {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  position: relative;
   border: 1px solid var(--cinza);
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: var(--cremeClaro);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.documento:hover {
+  border-color: var(--vinhoEscuro);
+  box-shadow: 0 4px 10px rgba(92, 22, 18, 0.1);
+  transform: translateY(-2px);
 }
 
 .documentoEnviado {
   border-color: var(--verde);
+  background-color: var(--branco);
 }
 
-.documentoIconeOk {
+.documentoBotao {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px 10px 10px;
+  border-radius: inherit;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Fredoka", "Inter", sans-serif;
+}
+
+.documentoSelo {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+}
+
+.documentoSeloOk {
+  font-size: 17px;
   color: var(--verde);
 }
 
-.documentoIconePendente {
+.documentoSeloPendente {
+  font-size: 17px;
   color: var(--carvao);
-  opacity: 0.35;
+  opacity: 0.3;
+}
+
+.documentoIcone {
+  font-size: 22px;
+  color: var(--vinhoEscuro);
 }
 
 .documentoTitulo {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
   color: var(--text);
   min-width: 0;
 }
 
+/* O nome do arquivo pode ser longo; corta com reticências em vez de esticar
+ * o cartão. O título completo fica no `title` do botão. */
 .documentoStatusOk,
 .documentoStatusPendente {
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .documentoStatusOk {
-  color: var(--verde);
+  color: var(--carvao);
+  opacity: 0.6;
+  padding-right: 24px;
 }
 
 .documentoStatusPendente {
-  color: var(--ambarOuro);
+  color: var(--vermelho);
+  font-weight: 600;
+}
+
+.documentoTrocar {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  display: flex;
+  padding: 3px;
+  border-radius: 6px;
+  background: none;
+  color: var(--carvao);
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.documentoTrocar:hover {
+  background-color: var(--creme);
+  color: var(--vinhoEscuro);
+  opacity: 1;
 }
 
 /* -------------------------------------------------------------------- atalhos */
