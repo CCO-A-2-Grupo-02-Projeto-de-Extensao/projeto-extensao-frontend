@@ -182,6 +182,16 @@
 .dayCell {
   color: var(--carvao);
   background: #fff;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  width: 100%;
+  height: 100%;
+  transition: background-color 0.15s ease;
+}
+
+.dayCell:hover {
+  background: var(--creme);
 }
 
 .dayMuted {
@@ -193,6 +203,30 @@
   background: rgba(42, 78, 158, 0.08);
   color: var(--azul);
   box-shadow: inset 0 0 0 1px rgba(42, 78, 158, 0.55);
+}
+
+.daySelected {
+  background: var(--vinhoEscuro) !important;
+  color: var(--branco) !important;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.mensagemEstado {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--carvao);
+  font-size: 1rem;
+}
+
+.mensagemErro {
+  text-align: center;
+  padding: 1rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
 }
 
 .statsStack {

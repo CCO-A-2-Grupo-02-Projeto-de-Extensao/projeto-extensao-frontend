@@ -18,16 +18,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Token expirado ou inválido derruba a sessão e volta para o login. Sem isto o
+// Token expirado ou inválido (401) derruba a sessão e volta para o login. Sem isto o
 // ProtectedRoute deixa passar — ele só verifica se o token existe, não se vale —
 // e a tela abre vazia, sem erro.
+// Nota: 403 (Forbidden) NÃO derruba a sessão — o token é válido, mas o usuário
+// não tem permissão para aquele recurso específico.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const url = error.config?.url ?? "";
     const rotaPublica = ROTAS_PUBLICAS.some((rota) => url.includes(rota));
+    const status = error.response?.status;
 
-    if (error.response?.status === 401 && !rotaPublica) {
+    if (status === 401 && !rotaPublica) {
       localStorage.removeItem("token");
       localStorage.removeItem("usuario");
 

@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { CircularProgress } from "@mui/material";
 import NomePagina from "../components/NomePagina/NomePagina.jsx";
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { Input } from "../components/Input/Input.jsx";
@@ -14,23 +15,66 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import SentimentDissatisfiedRoundedIcon from "@mui/icons-material/SentimentDissatisfiedRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-// Mockado por enquanto, precisa atualizar com os dados do banco
-const initialRows = Array.from({ length: 15 }, (_, index) => ({
-  id: index,
-  name: "Ademar Teste",
-  role: index === 0 ? "Instrutor" : "Aluno",
-  present: true,
-}));
+import { getMembros } from "../services/membrosService.js";
+import {
+  buscarChamadaPorData,
+  getPresencasPorChamada,
+  salvarChamadaCompleta,
+  deletarChamadaCompleta,
+} from "../services/chamadasService.js";
 
-const calendarWeeks = [
-  [29, 30, 31, 1, 2, 3, 4],
-  [5, 6, 7, 8, 9, 10, 11],
-  [12, 13, 14, 15, 16, 17, 18],
-  [19, 20, 21, 22, 23, 24, 25],
-  [26, 27, 28, 29, 30, 1, 2],
-];
+function paraDataIso(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+  return `${ano}-${mes}-${dia}`;
+}
 
-const MENSAGEM_EM_DESENVOLVIMENTO = "Funcionalidade em desenvolvimento";
+function paraDataBr(data) {
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const ano = data.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+function formatarMesAno(data) {
+  const meses = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
+  return `${meses[data.getMonth()]}, ${data.getFullYear()}`;
+}
+
+function mesmaData(dataA, dataB) {
+  return (
+    dataA.getFullYear() === dataB.getFullYear() &&
+    dataA.getMonth() === dataB.getMonth() &&
+    dataA.getDate() === dataB.getDate()
+  );
+}
+
+function montarDiasCalendario(mesExibido) {
+  const ano = mesExibido.getFullYear();
+  const mes = mesExibido.getMonth();
+  const primeiroDia = new Date(ano, mes, 1);
+  const inicioGrade = new Date(ano, mes, 1 - primeiroDia.getDay());
+
+  return Array.from({ length: 42 }, (_, indice) => {
+    const data = new Date(inicioGrade);
+    data.setDate(inicioGrade.getDate() + indice);
+    return data;
+  });
+}
 
 function StatCard({ icon: Icon, value, label }) {
   return (
@@ -47,33 +91,209 @@ function StatCard({ icon: Icon, value, label }) {
 }
 
 export function ChamadaPage() {
-  const [rows, setRows] = useState(initialRows);
+  const [dataSelecionada, setDataSelecionada] = useState(() => new Date());
+  const [mesExibido, setMesExibido] = useState(() => {
+    const hoje = new Date();
+    return new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  });
+
+  const [rows, setRows] = useState([]);
+  const [chamadaAtual, setChamadaAtual] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState(null);
+
   const [order, setOrder] = useState("alfabetica");
   const [presenceFilter, setPresenceFilter] = useState("todos");
   const [search, setSearch] = useState("");
 
-  const togglePresente = (id) => {
-    setRows((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, present: !row.present } : row))
-    );
-  };
+  const carregarDadosDaData = async (data) => {
+    setCarregando(true);
+    setErro(null);
 
-  const handleSalvar = () => {
-    alert("Chamada salva com sucesso!");
-  };
+    try {
+      const dataIso = paraDataIso(data);
 
-  const handleDeletar = () => {
-    const confirmar = window.confirm(
-      "Deseja realmente apagar os registros de chamada de hoje?"
-    );
-    if (confirmar) {
-      setRows(initialRows.map((row) => ({ ...row, present: true })));
-      alert("Chamada deletada!");
+      // Carrega membros e chamada em paralelo; trata erros independentemente
+      let membros = [];
+      let resultadoChamada = null;
+
+      const [membrosResult, chamadaResult] = await Promise.allSettled([
+        getMembros(),
+        buscarChamadaPorData(dataIso),
+      ]);
+
+      if (membrosResult.status === "fulfilled") {
+        membros = membrosResult.value;
+      } else {
+        console.error("Erro ao carregar membros:", membrosResult.reason);
+        setErro("Não foi possível carregar a lista de membros.");
+        setCarregando(false);
+        return;
+      }
+
+      if (chamadaResult.status === "fulfilled") {
+        resultadoChamada = chamadaResult.value;
+      } else {
+        console.error("Erro ao buscar chamada:", chamadaResult.reason);
+        // Não bloqueia o carregamento — trata como "sem chamada registrada"
+        resultadoChamada = null;
+      }
+
+      const membrosAtivos = membros.filter((m) => m.ativo !== false);
+
+      if (resultadoChamada?.chamada) {
+        const chamada = resultadoChamada.chamada;
+        setChamadaAtual(chamada);
+
+        let presencas = [];
+        try {
+          presencas = await getPresencasPorChamada(chamada.idChamada);
+        } catch (err) {
+          console.error("Erro ao carregar presenças:", err);
+          // Exibe os membros sem presenças — o usuário pode salvar normalmente
+        }
+
+        const presencaPorPessoaId = new Map();
+        presencas.forEach((p) => {
+          presencaPorPessoaId.set(p.idPessoa, p);
+        });
+
+        const linhasMapeadas = membrosAtivos.map((membro) => {
+          const presencaRegistrada = presencaPorPessoaId.get(membro.id);
+          return {
+            id: membro.id,
+            name: membro.nome,
+            role: membro.papel || membro.categoria || "Desbravador",
+            present: presencaRegistrada ? presencaRegistrada.presente : true,
+            idPresenca: presencaRegistrada ? presencaRegistrada.id : null,
+          };
+        });
+
+        setRows(linhasMapeadas);
+      } else {
+        setChamadaAtual(null);
+        const linhasMapeadas = membrosAtivos.map((membro) => ({
+          id: membro.id,
+          name: membro.nome,
+          role: membro.papel || membro.categoria || "Desbravador",
+          present: true,
+          idPresenca: null,
+        }));
+        setRows(linhasMapeadas);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar dados da chamada:", err);
+      setErro("Não foi possível carregar os dados da chamada.");
+    } finally {
+      setCarregando(false);
     }
   };
 
-  const handleMudarMes = () => {
-    alert(MENSAGEM_EM_DESENVOLVIMENTO);
+  useEffect(() => {
+    carregarDadosDaData(dataSelecionada);
+  }, [dataSelecionada]);
+
+  const togglePresente = (id) => {
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === id ? { ...row, present: !row.present } : row
+      )
+    );
+  };
+
+  const handleSalvar = async () => {
+    if (salvando || rows.length === 0) return;
+
+    setSalvando(true);
+    setErro(null);
+
+    try {
+      const dataIso = paraDataIso(dataSelecionada);
+      const dataFormatada = paraDataBr(dataSelecionada);
+      const titulo = `Chamada - ${dataFormatada}`;
+
+      const { chamada, presencas } = await salvarChamadaCompleta({
+        dataIso,
+        titulo,
+        membrosPresencas: rows,
+        chamadaExistente: chamadaAtual,
+      });
+
+      setChamadaAtual(chamada);
+
+      // Atualizar os ids de presenca nas linhas locais
+      const presencaPorPessoaId = new Map();
+      presencas.forEach((p) => {
+        presencaPorPessoaId.set(p.idPessoa, p);
+      });
+
+      setRows((prev) =>
+        prev.map((row) => {
+          const presencaSalva = presencaPorPessoaId.get(row.id);
+          return {
+            ...row,
+            idPresenca: presencaSalva ? presencaSalva.id : row.idPresenca,
+          };
+        })
+      );
+
+      alert("Chamada salva com sucesso!");
+    } catch (err) {
+      console.error("Erro ao salvar chamada:", err);
+      alert("Não foi possível salvar a chamada. Tente novamente.");
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  const handleDeletar = async () => {
+    if (!chamadaAtual) {
+      const confirmarLimpeza = window.confirm(
+        "Nenhum registro de chamada salvo no banco para esta data. Deseja redefinir todos como presentes?"
+      );
+      if (confirmarLimpeza) {
+        setRows((prev) => prev.map((row) => ({ ...row, present: true })));
+      }
+      return;
+    }
+
+    const confirmar = window.confirm(
+      `Deseja realmente apagar os registros de chamada de ${paraDataBr(
+        dataSelecionada
+      )}?`
+    );
+
+    if (confirmar) {
+      setSalvando(true);
+      try {
+        await deletarChamadaCompleta(chamadaAtual.idChamada);
+        setChamadaAtual(null);
+        setRows((prev) =>
+          prev.map((row) => ({ ...row, present: true, idPresenca: null }))
+        );
+        alert("Chamada deletada com sucesso!");
+      } catch (err) {
+        console.error("Erro ao deletar chamada:", err);
+        alert("Não foi possível deletar a chamada. Tente novamente.");
+      } finally {
+        setSalvando(false);
+      }
+    }
+  };
+
+  const handleMudarMes = (incremento) => {
+    setMesExibido((prev) => {
+      const novo = new Date(prev.getFullYear(), prev.getMonth() + incremento, 1);
+      return novo;
+    });
+  };
+
+  const handleSelecionarData = (data) => {
+    setDataSelecionada(data);
+    if (data.getMonth() !== mesExibido.getMonth()) {
+      setMesExibido(new Date(data.getFullYear(), data.getMonth(), 1));
+    }
   };
 
   const visibleRows = useMemo(() => {
@@ -118,24 +338,39 @@ export function ChamadaPage() {
     ];
   }, [rows]);
 
+  const diasCalendario = useMemo(
+    () => montarDiasCalendario(mesExibido),
+    [mesExibido]
+  );
+  const hoje = useMemo(() => new Date(), []);
+
   return (
     <DashboardLayout>
       <section className={styles.page}>
-        <NomePagina titulo="Chamada - 05/04/2026" subtitulo="" />
+        <NomePagina
+          titulo={`Chamada - ${paraDataBr(dataSelecionada)}`}
+          subtitulo={
+            chamadaAtual
+              ? "Chamada registrada no sistema"
+              : "Nova chamada para a data selecionada"
+          }
+        />
 
         <div className={styles.toolbar}>
           <button
             className={styles.toolbarButton}
             type="button"
             onClick={handleSalvar}
+            disabled={salvando || carregando}
           >
             <SaveOutlinedIcon className={styles.toolbarButtonIcon} />
-            Salvar
+            {salvando ? "Salvando..." : "Salvar"}
           </button>
           <button
             className={styles.toolbarButton}
             type="button"
             onClick={handleDeletar}
+            disabled={salvando || carregando}
           >
             <DeleteOutlineOutlinedIcon className={styles.toolbarButtonIcon} />
             Deletar
@@ -176,45 +411,61 @@ export function ChamadaPage() {
           </div>
         </div>
 
+        {erro && <div className={styles.mensagemErro}>{erro}</div>}
+
         <div className={styles.contentGrid}>
           <div className={styles.tableCard}>
-            <table className={`${tabela.tabela} ${styles.attendanceTable}`}>
-              <thead>
-                <tr>
-                  <th>Nome/Sobrenome</th>
-                  <th>Papéis</th>
-                  <th>Presente</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleRows.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.name}</td>
-                    <td>{row.role}</td>
-                    <td
-                      className={styles.presentCell}
-                      onClick={() => togglePresente(row.id)}
-                      role="button"
-                      tabIndex={0}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {row.present ? (
-                        <CheckCircleIcon className={styles.presentIcon} />
-                      ) : (
-                        <span className={styles.absentMark}>-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {visibleRows.length === 0 && (
+            {carregando ? (
+              <div className={styles.mensagemEstado}>
+                <p>Carregando dados da chamada...</p>
+                <CircularProgress
+                  size={32}
+                  sx={{ color: "var(--vinhoEscuro)", marginTop: "12px" }}
+                />
+              </div>
+            ) : (
+              <table className={`${tabela.tabela} ${styles.attendanceTable}`}>
+                <thead>
                   <tr>
-                    <td colSpan={3} style={{ textAlign: "center", padding: "1rem" }}>
-                      Nenhum desbravador encontrado
-                    </td>
+                    <th>Nome/Sobrenome</th>
+                    <th>Papéis</th>
+                    <th>Presente</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {visibleRows.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.name}</td>
+                      <td>{row.role}</td>
+                      <td
+                        className={styles.presentCell}
+                        onClick={() => togglePresente(row.id)}
+                        role="button"
+                        tabIndex={0}
+                        style={{ cursor: "pointer" }}
+                        title="Clique para alternar presença"
+                      >
+                        {row.present ? (
+                          <CheckCircleIcon className={styles.presentIcon} />
+                        ) : (
+                          <span className={styles.absentMark}>-</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {visibleRows.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={3}
+                        style={{ textAlign: "center", padding: "1.5rem" }}
+                      >
+                        Nenhum desbravador encontrado
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
 
           <aside className={styles.sideColumn}>
@@ -225,15 +476,15 @@ export function ChamadaPage() {
                   <button
                     type="button"
                     aria-label="Mês anterior"
-                    onClick={handleMudarMes}
+                    onClick={() => handleMudarMes(-1)}
                   >
                     <KeyboardDoubleArrowLeftIcon />
                   </button>
-                  <strong>Abril, 2026</strong>
+                  <strong>{formatarMesAno(mesExibido)}</strong>
                   <button
                     type="button"
                     aria-label="Próximo mês"
-                    onClick={handleMudarMes}
+                    onClick={() => handleMudarMes(1)}
                   >
                     <KeyboardDoubleArrowRightIcon />
                   </button>
@@ -247,25 +498,27 @@ export function ChamadaPage() {
                   </span>
                 ))}
 
-                {calendarWeeks.flatMap((week, weekIndex) =>
-                  week.map((day, dayIndex) => {
-                    const isToday = weekIndex === 0 && day === 2;
-                    const isMuted =
-                      (weekIndex === 0 && day >= 29 && day <= 31) ||
-                      (weekIndex === 4 && day >= 1 && day <= 2);
+                {diasCalendario.map((data) => {
+                  const foraDoMes = data.getMonth() !== mesExibido.getMonth();
+                  const isHoje = mesmaData(data, hoje);
+                  const isSelecionado = mesmaData(data, dataSelecionada);
 
-                    return (
-                      <span
-                        key={`${weekIndex}-${dayIndex}-${day}`}
-                        className={`${styles.dayCell} ${
-                          isMuted ? styles.dayMuted : ""
-                        } ${isToday ? styles.dayToday : ""}`}
-                      >
-                        {day}
-                      </span>
-                    );
-                  })
-                )}
+                  return (
+                    <button
+                      key={data.toISOString()}
+                      type="button"
+                      onClick={() => handleSelecionarData(data)}
+                      className={`${styles.dayCell} ${
+                        foraDoMes ? styles.dayMuted : ""
+                      } ${isHoje ? styles.dayToday : ""} ${
+                        isSelecionado ? styles.daySelected : ""
+                      }`}
+                      aria-label={data.toLocaleDateString("pt-BR")}
+                    >
+                      {data.getDate()}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
