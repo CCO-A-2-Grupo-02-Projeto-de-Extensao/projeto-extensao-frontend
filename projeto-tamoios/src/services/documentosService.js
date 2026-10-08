@@ -18,6 +18,10 @@ export function paraMapaPorTipo(documentos) {
       tamanho: doc.tamanho,
       tipo: doc.mimeType,
       url: urlVisualizar(doc.id),
+      // Nulos em documentos nunca ajustados; quem renderiza aplica o padrão.
+      posX: doc.posX,
+      posY: doc.posY,
+      zoom: doc.zoom,
     };
   }
   return mapa;
@@ -44,6 +48,9 @@ export async function enviarDocumento(idPessoa, tipo, arquivo) {
     tamanho: data.tamanho,
     tipo: data.mimeType,
     url: urlVisualizar(data.id),
+    posX: data.posX,
+    posY: data.posY,
+    zoom: data.zoom,
   };
 }
 
@@ -61,9 +68,37 @@ export async function substituirDocumento(idDocumento, arquivo) {
     tamanho: data.tamanho,
     tipo: data.mimeType,
     url: urlVisualizar(data.id),
+    posX: data.posX,
+    posY: data.posY,
+    zoom: data.zoom,
   };
 }
 
 export async function removerDocumento(idDocumento) {
   await api.delete(`/documentos/${idDocumento}`);
+}
+
+// Posição e zoom com que a imagem é recortada no avatar. Não altera o
+// arquivo: só os metadados, então o original segue intacto e dá para
+// reajustar quantas vezes quiser.
+export async function salvarEnquadramento(idDocumento, { posX, posY, zoom }) {
+  const { data } = await api.patch(`/documentos/${idDocumento}/enquadramento`, {
+    posX,
+    posY,
+    zoom,
+  });
+  return data;
+}
+
+// /documentos/{id}/visualizar exige JWT, mas <img src> e window.open são
+// requisições cruas do navegador: não passam pelo interceptor do axios e
+// chegam sem o header Authorization, levando 401. Então baixamos o arquivo
+// pelo axios (que injeta o token) e devolvemos um object URL, que o
+// navegador renderiza/abre sem precisar autenticar.
+// Quem chama é responsável por revogar o URL (URL.revokeObjectURL).
+export async function urlLocalDoDocumento(idDocumento) {
+  const { data } = await api.get(`/documentos/${idDocumento}/visualizar`, {
+    responseType: "blob",
+  });
+  return URL.createObjectURL(data);
 }

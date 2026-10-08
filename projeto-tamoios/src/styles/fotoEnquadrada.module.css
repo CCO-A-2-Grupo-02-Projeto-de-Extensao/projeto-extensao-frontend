@@ -1,0 +1,61 @@
+.area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.circulo {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--creme);
+}
+
+.ajustavel {
+  cursor: grab;
+  /* Sem isto o navegador trata o arraste como rolagem no touch. */
+  touch-action: none;
+}
+
+.ajustavel:active {
+  cursor: grabbing;
+}
+
+.ajustavel:focus-visible {
+  outline: 2px solid var(--vinhoEscuro);
+  outline-offset: 2px;
+}
+
+.imagem {
+  position: absolute;
+  display: block;
+  /* O reset global limita imagens a 100%; aqui a imagem precisa poder
+   * estourar o círculo, que é justamente o que o zoom faz. */
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.controleZoom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 160px;
+}
+
+.controleZoom input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--vinhoEscuro);
+  cursor: pointer;
+}
+
+.iconeZoom {
+  color: var(--carvao);
+  opacity: 0.55;
+  flex-shrink: 0;
+}

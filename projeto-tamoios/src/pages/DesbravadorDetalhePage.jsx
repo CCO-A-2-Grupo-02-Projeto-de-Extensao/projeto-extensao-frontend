@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddIcon from "@mui/icons-material/Add";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
 import SchoolIcon from "@mui/icons-material/School";
@@ -22,12 +23,19 @@ import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
-import { EditarDesbravadorModal } from "../components/EditarDesbravadorModal/EditarDesbravadorModal.jsx";
 import { HistoricoEscolarModal } from "../components/HistoricoEscolarModal/HistoricoEscolarModal.jsx";
 import { DesempenhoClubeModal } from "../components/DesempenhoClubeModal/DesempenhoClubeModal.jsx";
 import { UploadDocumentoModal } from "../components/UploadDocumentoModal/UploadDocumentoModal.jsx";
-
+import { FotoEnquadrada } from "../components/FotoEnquadrada/FotoEnquadrada.jsx";
 import {
+  ENQUADRAMENTO_PADRAO,
+  normalizarEnquadramento,
+} from "../utils/enquadramento.js";
+
+import { useCatalogos } from "../hooks/useCatalogos.js";
+import { useRolarParaErro } from "../hooks/useRolarParaErro.js";
+import {
+  atualizarPessoa,
   getMembro,
   desativarPessoa,
   reativarPessoa,
@@ -35,11 +43,33 @@ import {
 import {
   enviarDocumento,
   listarDocumentosDaPessoa,
+  removerDocumento,
+  salvarEnquadramento,
   substituirDocumento,
+  urlLocalDoDocumento,
 } from "../services/documentosService.js";
-import { DOCUMENTOS, MAX_RESPONSAVEIS } from "../utils/desbravadorForm.jsx";
+import {
+  CAMPO_NOME,
+  DOCUMENTOS,
+  MAX_RESPONSAVEIS,
+  calcularSpans,
+  contarResponsaveis,
+  criarSecoesFormulario,
+  removerResponsavel,
+  renderCampo,
+  renderResponsaveis,
+  validarCampos,
+  validarResponsaveis,
+} from "../utils/desbravadorForm.jsx";
 
 import styles from "../styles/desbravadorDetalhePage.module.css";
+// Os campos reaproveitam o visual do formulário de cadastro: as classes de
+// input/label/grid não dependem do modal, só do próprio elemento.
+import formStyles from "../styles/cadastroDesbravadorModal.module.css";
+
+// A foto é guardada como documento, mas fica fora de DOCUMENTOS porque não
+// entra na contagem de documentação digitalizada.
+const DOCUMENTO_FOTO = { id: "foto", titulo: "Foto" };
 
 function formatarData(valor) {
   if (!valor) return null;
@@ -140,7 +170,7 @@ const ICONES_DOCUMENTO = {
   autorizacaoClube: AssignmentTurnedInIcon,
 };
 
-function CartaoDocumento({ documento, arquivo, onAbrir, onEnviar }) {
+function CartaoDocumento({ documento, arquivo, onAbrir, onEnviar, onRemover }) {
   const Icone = ICONES_DOCUMENTO[documento.id] ?? DescriptionIcon;
   const enviado = Boolean(arquivo);
 
@@ -174,15 +204,26 @@ function CartaoDocumento({ documento, arquivo, onAbrir, onEnviar }) {
       </button>
 
       {enviado && (
-        <button
-          type="button"
-          className={styles.documentoTrocar}
-          onClick={onEnviar}
-          title="Substituir arquivo"
-          aria-label={`Substituir ${documento.titulo}`}
-        >
-          <SwapHorizIcon fontSize="small" />
-        </button>
+        <div className={styles.documentoAcoes}>
+          <button
+            type="button"
+            className={styles.documentoAcao}
+            onClick={onEnviar}
+            title="Substituir arquivo"
+            aria-label={`Substituir ${documento.titulo}`}
+          >
+            <SwapHorizIcon fontSize="small" />
+          </button>
+          <button
+            type="button"
+            className={styles.documentoAcaoRemover}
+            onClick={onRemover}
+            title="Remover arquivo"
+            aria-label={`Remover ${documento.titulo}`}
+          >
+            <DeleteOutlineIcon fontSize="small" />
+          </button>
+        </div>
       )}
     </li>
   );
@@ -190,17 +231,54 @@ function CartaoDocumento({ documento, arquivo, onAbrir, onEnviar }) {
 
 function ConteudoDesbravador({ idPessoa }) {
   const navegar = useNavigate();
+  const catalogos = useCatalogos();
 
   const [membro, setMembro] = useState(null);
   const [documentos, setDocumentos] = useState({});
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
+  // Edição acontece na própria tela: `editando` troca os blocos de leitura
+  // pelos campos do formulário, sem modal.
+  const [editando, setEditando] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [quantidadeResponsaveis, setQuantidadeResponsaveis] = useState(0);
+  const [erroForm, setErroForm] = useState("");
+  const [campoComErro, setCampoComErro] = useState(null);
+  const [tentativaErro, setTentativaErro] = useState(0);
+  const [salvando, setSalvando] = useState(false);
+
   const [confirmacaoAberta, setConfirmacaoAberta] = useState(false);
-  const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalHistoricoAberto, setModalHistoricoAberto] = useState(false);
   const [modalDesempenhoAberto, setModalDesempenhoAberto] = useState(false);
   const [documentoSelecionado, setDocumentoSelecionado] = useState(null);
+  const [documentoARemover, setDocumentoARemover] = useState(null);
+
+  // A foto não pode sair direto no src: o endpoint é protegido. Baixamos o
+  // arquivo autenticado e guardamos o object URL junto do id que o gerou,
+  // para derivar a foto atual sem zerar o estado dentro do efeito.
+  // `versaoFoto` força o recarregamento quando a foto é substituída
+  // mantendo o mesmo id.
+  const [foto, setFoto] = useState({ id: null, url: null });
+  const [versaoFoto, setVersaoFoto] = useState(0);
+  // Enquadramento sendo ajustado; só vai para o banco ao salvar a tela.
+  const [enquadramento, setEnquadramento] = useState(ENQUADRAMENTO_PADRAO);
+
+  useRolarParaErro(campoComErro, tentativaErro);
+
+  const secoesFormulario = useMemo(
+    () => criarSecoesFormulario(catalogos, formData),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- comparamos pelas listas em si, não pelo objeto novo a cada render
+    [
+      catalogos.cargos,
+      catalogos.classes,
+      catalogos.generos,
+      catalogos.unidades,
+      formData.genero,
+      formData.dataNascimento,
+      formData.unidade,
+    ]
+  );
 
   useEffect(() => {
     let ativo = true;
@@ -226,6 +304,136 @@ function ConteudoDesbravador({ idPessoa }) {
     };
   }, [idPessoa]);
 
+  const idFoto = documentos.foto?.idDocumento ?? null;
+
+  useEffect(() => {
+    if (!idFoto) return undefined;
+
+    let ativo = true;
+    let urlCriada = null;
+
+    urlLocalDoDocumento(idFoto)
+      .then((url) => {
+        // Se o efeito já foi descartado, revoga na hora para não vazar.
+        if (!ativo) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        urlCriada = url;
+        setFoto({ id: idFoto, url });
+      })
+      .catch(() => {
+        if (ativo) setFoto({ id: idFoto, url: null });
+      });
+
+    return () => {
+      ativo = false;
+      if (urlCriada) URL.revokeObjectURL(urlCriada);
+    };
+  }, [idFoto, versaoFoto]);
+
+  // Só vale a foto baixada para o documento que está em tela; se a foto for
+  // removida (idFoto vira null), isto dá null sozinho.
+  const fotoUrl = foto.id === idFoto ? foto.url : null;
+
+  const abrirEdicao = () => {
+    setFormData({
+      ...membro,
+      cargo: membro.idCargo != null ? String(membro.idCargo) : "",
+      classe: membro.idClasse != null ? String(membro.idClasse) : "",
+      genero: membro.idGenero != null ? String(membro.idGenero) : "",
+      unidade: membro.idUnidade != null ? String(membro.idUnidade) : "",
+    });
+    setQuantidadeResponsaveis(contarResponsaveis(membro));
+    setEnquadramento(normalizarEnquadramento(documentos.foto));
+    setErroForm("");
+    setCampoComErro(null);
+    setEditando(true);
+  };
+
+  const cancelarEdicao = () => {
+    setEditando(false);
+    setEnquadramento(normalizarEnquadramento(documentos.foto));
+    setErroForm("");
+    setCampoComErro(null);
+  };
+
+  const aoMudarCampo = (campo, valorDigitado) => {
+    const valor = campo.mascara ? campo.mascara(valorDigitado) : valorDigitado;
+    setFormData((atual) => ({ ...atual, [campo.name]: valor }));
+    if (campo.name === campoComErro) {
+      setErroForm("");
+      setCampoComErro(null);
+    }
+  };
+
+  const aoAdicionarResponsavel = () => {
+    setQuantidadeResponsaveis((atual) => atual + 1);
+    setErroForm("");
+    setCampoComErro(null);
+  };
+
+  const aoRemoverResponsavel = (numero) => {
+    setFormData((atual) => removerResponsavel(atual, numero, quantidadeResponsaveis));
+    setQuantidadeResponsaveis((atual) => atual - 1);
+    setErroForm("");
+    setCampoComErro(null);
+  };
+
+  const aoSalvar = async () => {
+    setTentativaErro((n) => n + 1);
+    const todosCampos = [CAMPO_NOME, ...secoesFormulario.flatMap((s) => s.campos)];
+    const resultado =
+      validarCampos(todosCampos, formData) ??
+      validarResponsaveis(formData, quantidadeResponsaveis);
+    if (resultado) {
+      setErroForm(resultado.mensagem);
+      setCampoComErro(resultado.campo);
+      return;
+    }
+
+    setSalvando(true);
+    try {
+      const fotoAtual = documentos.foto;
+      const salvo = normalizarEnquadramento(fotoAtual);
+      const mudouEnquadramento =
+        fotoAtual &&
+        (salvo.posX !== enquadramento.posX ||
+          salvo.posY !== enquadramento.posY ||
+          salvo.zoom !== enquadramento.zoom);
+
+      if (mudouEnquadramento) {
+        await salvarEnquadramento(fotoAtual.idDocumento, enquadramento);
+        setDocumentos((atual) => ({
+          ...atual,
+          foto: { ...atual.foto, ...enquadramento },
+        }));
+      }
+
+      const atualizado = await atualizarPessoa(membro.id, {
+        ...formData,
+        nome: formData.nome.trim(),
+      });
+      setMembro({
+        ...atualizado,
+        documentacao: DOCUMENTOS.every((doc) => documentos[doc.id]),
+      });
+      setEditando(false);
+      setErroForm("");
+      setCampoComErro(null);
+    } catch (erroRequisicao) {
+      const dados = erroRequisicao.response?.data;
+      setErroForm(
+        dados?.erro ??
+          (dados && Object.values(dados)[0]) ??
+          "Não foi possível salvar as alterações."
+      );
+      setCampoComErro(null);
+    } finally {
+      setSalvando(false);
+    }
+  };
+
   const aoAlterarStatus = async () => {
     if (membro.ativo) {
       setConfirmacaoAberta(true);
@@ -242,7 +450,36 @@ function ConteudoDesbravador({ idPessoa }) {
       : await enviarDocumento(membro.id, documentoSelecionado.id, arquivo);
 
     setDocumentos((atual) => ({ ...atual, [documentoSelecionado.id]: salvo }));
+    if (documentoSelecionado.id === DOCUMENTO_FOTO.id) {
+      setVersaoFoto((n) => n + 1);
+      // Outra imagem: os deslocamentos antigos não querem dizer nada nela.
+      setEnquadramento(ENQUADRAMENTO_PADRAO);
+    }
     setDocumentoSelecionado(null);
+  };
+
+  // Mesmo motivo da foto: abrir a URL da API direto cai em 401, porque a
+  // aba nova não leva o token.
+  const aoAbrirDocumento = async (documento) => {
+    const existente = documentos[documento.id];
+    if (!existente) return;
+    const url = await urlLocalDoDocumento(existente.idDocumento);
+    window.open(url, "_blank");
+    // Revoga depois de dar tempo da aba carregar; antes disso o blob morre.
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  };
+
+  const confirmarRemocaoDocumento = async () => {
+    const existente = documentos[documentoARemover.id];
+    if (existente) {
+      await removerDocumento(existente.idDocumento);
+      setDocumentos((atual) => {
+        const copia = { ...atual };
+        delete copia[documentoARemover.id];
+        return copia;
+      });
+    }
+    setDocumentoARemover(null);
   };
 
   const confirmarDesativacao = async () => {
@@ -302,112 +539,213 @@ function ConteudoDesbravador({ idPessoa }) {
             {membro.classe ? ` • ${membro.classe}` : ""}
             <span className={styles.matricula}>Matrícula #{membro.id}</span>
           </p>
-          <h1 className={styles.titulo}>Informações do Desbravador</h1>
+          <h1 className={styles.titulo}>
+            {editando ? "Editar Informações" : "Informações do Desbravador"}
+          </h1>
           <p className={styles.subtitulo}>
-            Dados cadastrais, responsáveis e acervo de documentação.
+            {editando
+              ? "Altere os campos e salve. Os documentos continuam ao lado, salvos na hora do envio."
+              : "Dados cadastrais, responsáveis e acervo de documentação."}
           </p>
         </div>
 
         <div className={styles.cabecalhoAcoes}>
-          <button
-            type="button"
-            className={membro.ativo ? styles.botaoDesativar : styles.botaoReativar}
-            onClick={aoAlterarStatus}
-          >
-            {membro.ativo ? "Desativar" : "Reativar"}
-          </button>
-          <button
-            type="button"
-            className={styles.botaoPrimario}
-            onClick={() => setModalEditarAberto(true)}
-          >
-            <EditIcon fontSize="small" />
-            Editar Informações
-          </button>
+          {editando ? (
+            <>
+              <button
+                type="button"
+                className={styles.botaoSecundario}
+                onClick={cancelarEdicao}
+                disabled={salvando}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className={styles.botaoPrimario}
+                onClick={aoSalvar}
+                disabled={salvando}
+              >
+                {salvando ? "Salvando..." : "Salvar alterações"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className={membro.ativo ? styles.botaoDesativar : styles.botaoReativar}
+                onClick={aoAlterarStatus}
+              >
+                {membro.ativo ? "Desativar" : "Reativar"}
+              </button>
+              <button
+                type="button"
+                className={styles.botaoPrimario}
+                onClick={abrirEdicao}
+              >
+                <EditIcon fontSize="small" />
+                Editar Informações
+              </button>
+            </>
+          )}
         </div>
       </header>
 
       <div className={styles.painel}>
         <div className={styles.coluna}>
+          {/* Erros de submissão não pertencem a nenhum campo, então aparecem
+              acima do formulário; os de validação ficam no próprio campo. */}
+          {editando && erroForm && !campoComErro && (
+            <p className={styles.erroBanner} role="alert">
+              {erroForm}
+            </p>
+          )}
+
           <section className={styles.perfil}>
-            <div className={styles.avatar}>
-              <PersonIcon className={styles.avatarIcone} />
+            <div className={styles.avatarArea}>
+              {fotoUrl ? (
+                <FotoEnquadrada
+                  url={fotoUrl}
+                  alt={`Foto de ${membro.nome}`}
+                  // Em edição o ajuste é ao vivo; em leitura vale o que está salvo.
+                  enquadramento={editando ? enquadramento : documentos.foto}
+                  onChange={editando ? setEnquadramento : undefined}
+                  tamanho={editando ? 120 : 92}
+                />
+              ) : (
+                <div className={styles.avatar}>
+                  <PersonIcon className={styles.avatarIcone} />
+                </div>
+              )}
+
+              {editando && (
+                <button
+                  type="button"
+                  className={styles.botaoFoto}
+                  onClick={() => setDocumentoSelecionado(DOCUMENTO_FOTO)}
+                >
+                  {fotoUrl ? "Trocar foto" : "Adicionar foto"}
+                </button>
+              )}
             </div>
 
             <div className={styles.perfilTextos}>
-              <div className={styles.perfilBadges}>
-                <span className={styles.tagPapel}>{membro.papel || "Sem cargo"}</span>
-                <span
-                  className={`${styles.tagStatus} ${
-                    membro.ativo ? styles.tagStatusAtivo : styles.tagStatusInativo
-                  }`}
-                >
-                  {membro.ativo ? "Ativo" : "Inativo"}
-                </span>
-              </div>
-              <h2 className={styles.perfilNome}>{membro.nome}</h2>
-              <div className={styles.perfilLinha}>
+              {editando ? (
+                <>
+                  <div className={formStyles.grid}>
+                    {calcularSpans([CAMPO_NOME]).map((campo) =>
+                      renderCampo(campo, formData, aoMudarCampo, erroForm, campoComErro, formStyles)
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.perfilBadges}>
+                    <span className={styles.tagPapel}>{membro.papel || "Sem cargo"}</span>
+                    <span
+                      className={`${styles.tagStatus} ${
+                        membro.ativo ? styles.tagStatusAtivo : styles.tagStatusInativo
+                      }`}
+                    >
+                      {membro.ativo ? "Ativo" : "Inativo"}
+                    </span>
+                  </div>
+                  <h2 className={styles.perfilNome}>{membro.nome}</h2>
+                  <div className={styles.perfilLinha}>
+                    <Dado
+                      rotulo="Nascimento"
+                      valor={
+                        membro.dataNascimento
+                          ? `${formatarData(membro.dataNascimento)}${
+                              idade !== null ? ` (${idade} anos)` : ""
+                            }`
+                          : null
+                      }
+                    />
+                    <Dado rotulo="Gênero" valor={membro.genero} />
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+
+          {editando ? (
+            <>
+              {secoesFormulario.map((secao) => (
+                <section key={secao.titulo} className={styles.secao}>
+                  <h2 className={styles.secaoTitulo}>{secao.titulo}</h2>
+                  <div className={formStyles.grid}>
+                    {calcularSpans(secao.campos).map((campo) =>
+                      renderCampo(campo, formData, aoMudarCampo, erroForm, campoComErro, formStyles)
+                    )}
+                  </div>
+                </section>
+              ))}
+
+              <section className={styles.secao}>
+                <h2 className={styles.secaoTitulo}>Responsáveis</h2>
+                {renderResponsaveis({
+                  formData,
+                  quantidade: quantidadeResponsaveis,
+                  onAdicionar: aoAdicionarResponsavel,
+                  onRemover: aoRemoverResponsavel,
+                  aoMudarCampo,
+                  erro: erroForm,
+                  campoComErro,
+                  styles: formStyles,
+                })}
+              </section>
+            </>
+          ) : (
+            <>
+              <section className={styles.blocoDados}>
+                <Dado rotulo="Cargo" valor={membro.papel} />
+                <Dado rotulo="Unidade" valor={membro.unidade} />
+                <Dado rotulo="Classe" valor={membro.classe} />
                 <Dado
-                  rotulo="Nascimento"
+                  rotulo="Telefone"
                   valor={
-                    membro.dataNascimento
-                      ? `${formatarData(membro.dataNascimento)}${
-                          idade !== null ? ` (${idade} anos)` : ""
-                        }`
-                      : null
+                    membro.telefone && telefoneDigitos ? (
+                      <a className={styles.link} href={`tel:+55${telefoneDigitos}`}>
+                        {membro.telefone}
+                      </a>
+                    ) : (
+                      membro.telefone
+                    )
                   }
                 />
-                <Dado rotulo="Gênero" valor={membro.genero} />
-              </div>
-            </div>
-          </section>
+                <Dado rotulo="CPF" valor={membro.cpf} />
+                <Dado rotulo="RG" valor={membro.rg} />
+                <Dado rotulo="Escola" valor={membro.escola} />
+                <Dado rotulo="Turma" valor={membro.turma} />
+              </section>
 
-          <section className={styles.blocoDados}>
-            <Dado rotulo="Cargo" valor={membro.papel} />
-            <Dado rotulo="Unidade" valor={membro.unidade} />
-            <Dado rotulo="Classe" valor={membro.classe} />
-            <Dado
-              rotulo="Telefone"
-              valor={
-                membro.telefone && telefoneDigitos ? (
-                  <a className={styles.link} href={`tel:+55${telefoneDigitos}`}>
-                    {membro.telefone}
-                  </a>
+              <section className={styles.secao}>
+                <div className={styles.secaoCabecalho}>
+                  <h2 className={styles.secaoTitulo}>Responsáveis</h2>
+                  <span className={styles.secaoContagem}>
+                    {responsaveis.length === 1
+                      ? "1 contato cadastrado"
+                      : `${responsaveis.length} contatos cadastrados`}
+                  </span>
+                </div>
+
+                {responsaveis.length === 0 ? (
+                  <p className={styles.mensagemVazia}>Nenhum responsável cadastrado.</p>
                 ) : (
-                  membro.telefone
-                )
-              }
-            />
-            <Dado rotulo="CPF" valor={membro.cpf} />
-            <Dado rotulo="RG" valor={membro.rg} />
-            <Dado rotulo="Escola" valor={membro.escola} />
-            <Dado rotulo="Turma" valor={membro.turma} />
-          </section>
-
-          <section className={styles.secao}>
-            <div className={styles.secaoCabecalho}>
-              <h2 className={styles.secaoTitulo}>Responsáveis</h2>
-              <span className={styles.secaoContagem}>
-                {responsaveis.length === 1
-                  ? "1 contato cadastrado"
-                  : `${responsaveis.length} contatos cadastrados`}
-              </span>
-            </div>
-
-            {responsaveis.length === 0 ? (
-              <p className={styles.mensagemVazia}>Nenhum responsável cadastrado.</p>
-            ) : (
-              <div className={styles.responsaveis}>
-                {responsaveis.map((responsavel, indice) => (
-                  <CartaoResponsavel
-                    key={indice}
-                    numero={indice + 1}
-                    responsavel={responsavel}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
+                  <div className={styles.responsaveis}>
+                    {responsaveis.map((responsavel, indice) => (
+                      <CartaoResponsavel
+                        key={indice}
+                        numero={indice + 1}
+                        responsavel={responsavel}
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
+            </>
+          )}
         </div>
 
         <aside className={styles.colunaLateral}>
@@ -439,8 +777,9 @@ function ConteudoDesbravador({ idPessoa }) {
                   key={documento.id}
                   documento={documento}
                   arquivo={documentos[documento.id] ?? null}
-                  onAbrir={() => window.open(documentos[documento.id].url, "_blank")}
+                  onAbrir={() => aoAbrirDocumento(documento)}
                   onEnviar={() => setDocumentoSelecionado(documento)}
+                  onRemover={() => setDocumentoARemover(documento)}
                 />
               ))}
             </ul>
@@ -476,16 +815,6 @@ function ConteudoDesbravador({ idPessoa }) {
         </aside>
       </div>
 
-      <EditarDesbravadorModal
-        aberto={modalEditarAberto}
-        membro={membro}
-        onFechar={() => setModalEditarAberto(false)}
-        onSalvar={(atualizado) => {
-          setMembro(atualizado ?? membro);
-          setModalEditarAberto(false);
-        }}
-      />
-
       <HistoricoEscolarModal
         aberto={modalHistoricoAberto}
         membro={membro}
@@ -504,6 +833,16 @@ function ConteudoDesbravador({ idPessoa }) {
         documento={documentoSelecionado}
         onFechar={() => setDocumentoSelecionado(null)}
         onSalvar={aoSalvarDocumento}
+      />
+
+      <ConfirmacaoModal
+        aberto={Boolean(documentoARemover)}
+        titulo="Remover documento"
+        mensagem={`O arquivo de "${documentoARemover?.titulo}" será excluído e não dá para desfazer.`}
+        textoConfirmar="Remover"
+        perigo
+        onConfirmar={confirmarRemocaoDocumento}
+        onCancelar={() => setDocumentoARemover(null)}
       />
 
       <ConfirmacaoModal

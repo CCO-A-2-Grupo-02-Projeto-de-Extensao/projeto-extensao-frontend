@@ -113,6 +113,25 @@
   composes: botao sucesso from "./button.module.css";
 }
 
+.botaoSecundario {
+  composes: botao secundario from "./button.module.css";
+}
+
+.botaoFoto {
+  composes: botao secundario from "./button.module.css";
+}
+
+/* Erro de submissão: não pertence a nenhum campo, então abre o formulário. */
+.erroBanner {
+  padding: 12px 16px;
+  border: 1px solid var(--vermelho);
+  border-radius: 10px;
+  background-color: var(--branco);
+  color: var(--vermelho);
+  font-size: 14px;
+  font-weight: 600;
+}
+
 /* --------------------------------------------------------------------- painel */
 
 .painel {
@@ -146,9 +165,17 @@
 
 .perfil {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
   padding: 20px 24px;
+}
+
+.avatarArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .avatar {
@@ -169,6 +196,7 @@
 }
 
 .perfilTextos {
+  flex: 1;
   min-width: 0;
 }
 
@@ -514,7 +542,7 @@
 .documentoStatusOk {
   color: var(--carvao);
   opacity: 0.6;
-  padding-right: 24px;
+  padding-right: 48px;
 }
 
 .documentoStatusPendente {
@@ -522,10 +550,16 @@
   font-weight: 600;
 }
 
-.documentoTrocar {
+.documentoAcoes {
   position: absolute;
   right: 4px;
   bottom: 4px;
+  display: flex;
+  gap: 2px;
+}
+
+.documentoAcao,
+.documentoAcaoRemover {
   display: flex;
   padding: 3px;
   border-radius: 6px;
@@ -535,9 +569,15 @@
   cursor: pointer;
 }
 
-.documentoTrocar:hover {
+.documentoAcao:hover {
   background-color: var(--creme);
   color: var(--vinhoEscuro);
+  opacity: 1;
+}
+
+.documentoAcaoRemover:hover {
+  background-color: var(--creme);
+  color: var(--vermelho);
   opacity: 1;
 }
 
