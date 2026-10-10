@@ -1,5 +1,6 @@
 import { getEspecialidades } from "./classesService.js";
 import { getMembros } from "./membrosService.js";
+import { getEventos } from "./chamadasService.js";
 
 const agora = new Date();
 const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
@@ -49,7 +50,7 @@ function comTempoLimite(promessa, milissegundos = 5000) {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(
       () => reject(new Error("Tempo limite da requisição excedido.")),
-      milissegundos
+      milissegundos,
     );
 
     promessa.then(
@@ -60,16 +61,30 @@ function comTempoLimite(promessa, milissegundos = 5000) {
       (erro) => {
         clearTimeout(timeout);
         reject(erro);
-      }
+      },
     );
   });
 }
 
+function normalizarEvento(evento) {
+  const data = evento.dataInicio ?? evento.data ?? evento.dataEvento ?? "";
+  return {
+    id: evento.idEvento ?? evento.id ?? crypto.randomUUID(),
+    data: data ? String(data) : "",
+    horario:
+      evento.horario ?? evento.hora ?? evento.horaInicio ?? "Dia inteiro",
+    titulo: evento.nome ?? evento.titulo ?? "Evento",
+    repeticao: evento.repeticao ?? "",
+  };
+}
+
 export async function getDadosDashboard() {
-  const [resultadoMembros, resultadoEspecialidades] = await Promise.allSettled([
-    comTempoLimite(getMembros()),
-    comTempoLimite(getEspecialidades()),
-  ]);
+  const [resultadoMembros, resultadoEspecialidades, resultadoEventos] =
+    await Promise.allSettled([
+      comTempoLimite(getMembros()),
+      comTempoLimite(getEspecialidades()),
+      comTempoLimite(getEventos()),
+    ]);
 
   const membros =
     resultadoMembros.status === "fulfilled" ? resultadoMembros.value : null;
@@ -77,22 +92,30 @@ export async function getDadosDashboard() {
     resultadoEspecialidades.status === "fulfilled"
       ? resultadoEspecialidades.value
       : null;
+  const eventosRaw =
+    resultadoEventos.status === "fulfilled" ? resultadoEventos.value : [];
+  const eventos = Array.isArray(eventosRaw)
+    ? eventosRaw.map(normalizarEvento)
+    : [];
 
   return {
     indicadores: {
       desbravadores: membros
         ? membros.filter(
-            (membro) => membro.categoria?.toLowerCase() === "aluno"
+            (membro) => membro.categoria?.toLowerCase() === "aluno",
           ).length
         : indicadoresMock.desbravadores,
       especialidades: especialidades?.length ?? indicadoresMock.especialidades,
       instrutores: membros
         ? membros.filter(
-            (membro) => membro.categoria?.toLowerCase() === "instrutor"
+            (membro) => membro.categoria?.toLowerCase() === "instrutor",
           ).length
         : indicadoresMock.instrutores,
       feriados: indicadoresMock.feriados,
     },
-    controleAcademico: controleAcademicoMock,
+    controleAcademico: {
+      ...controleAcademicoMock,
+      eventos: eventos.length > 0 ? eventos : controleAcademicoMock.eventos,
+    },
   };
 }

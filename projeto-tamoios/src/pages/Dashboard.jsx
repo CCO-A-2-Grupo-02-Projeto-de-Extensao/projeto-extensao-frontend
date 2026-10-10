@@ -38,25 +38,23 @@ function Dashboard() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
+  const carregarDashboard = async () => {
+    setCarregando(true);
+    setErro("");
+
+    try {
+      const dados = await getDadosDashboard();
+      setIndicadores(dados.indicadores);
+      setControleAcademico(dados.controleAcademico);
+    } catch {
+      setErro("Não foi possível carregar os dados do dashboard.");
+    } finally {
+      setCarregando(false);
+    }
+  };
+
   useEffect(() => {
-    let ativo = true;
-
-    getDadosDashboard()
-      .then((dados) => {
-        if (!ativo) return;
-        setIndicadores(dados.indicadores);
-        setControleAcademico(dados.controleAcademico);
-        setCarregando(false);
-      })
-      .catch(() => {
-        if (!ativo) return;
-        setErro("Não foi possível carregar os dados do dashboard.");
-        setCarregando(false);
-      });
-
-    return () => {
-      ativo = false;
-    };
+    void carregarDashboard();
   }, []);
 
   const selecionarData = (data) => {
@@ -202,14 +200,15 @@ function Dashboard() {
                   <p className={styles.semEventos}>Nenhum evento nesta data.</p>
                 )}
               </article>
-
-              
             </div>
           )}
         </section>
         <AdicionarEventoModal
           aberto={modalCadastroAberto}
           onFechar={() => setModalCadastroAberto(false)}
+          onCadastrar={async () => {
+            await carregarDashboard();
+          }}
         />
       </div>
     </DashboardLayout>

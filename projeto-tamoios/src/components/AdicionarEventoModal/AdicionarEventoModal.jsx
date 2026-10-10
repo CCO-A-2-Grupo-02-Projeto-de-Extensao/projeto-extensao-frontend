@@ -8,6 +8,7 @@ import { useCatalogos } from "../../hooks/useCatalogos.js";
 import { useRolarParaErro } from "../../hooks/useRolarParaErro.js";
 import { criarPessoa, criarUsuario } from "../../services/membrosService.js";
 import { enviarDocumento } from "../../services/documentosService.js";
+import { criarEvento } from "../../services/chamadasService.js";
 import {
   CAMPO_NOME,
   DOCUMENTOS,
@@ -96,233 +97,50 @@ export function AdicionarEventoModal({ aberto, onFechar, onCadastrar }) {
 
   useRolarParaErro(campoComErro, tentativaErro);
 
-  const secoesFormulario = useMemo(
-    () => criarSecoesFormulario(catalogos, formData),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- catalogos é um objeto novo a cada render; comparamos pelas listas em si
-    [
-      catalogos.cargos,
-      catalogos.classes,
-      catalogos.generos,
-      catalogos.unidades,
-      formData.genero,
-      formData.dataNascimento,
-      formData.unidade,
-    ],
-  );
-
   const cargoSelecionado = catalogos.cargos.find(
     (cargo) => String(cargo.id) === formData.cargo,
   );
   const precisaAcesso =
     Boolean(cargoSelecionado) && cargoSelecionado.nome !== "Desbravador";
 
-  const ETAPAS = useMemo(() => {
-    const formularioEtapas = secoesFormulario.map((secao) => ({
-      ...secao,
-      tipo: "formulario",
-    }));
-    const etapas = [
-      { titulo: "Foto e nome", tipo: "foto", campos: [CAMPO_NOME] },
-      ...formularioEtapas.slice(0, 2),
-    ];
-    if (precisaAcesso) {
-      etapas.push({
-        titulo: "Acesso ao sistema",
-        tipo: "formulario",
-        campos: CAMPOS_ACESSO,
-      });
-    }
-    etapas.push(...formularioEtapas.slice(2), {
-      titulo: "Documentos",
-      tipo: "documentos",
-    });
-    return etapas;
-  }, [secoesFormulario, precisaAcesso]);
-
-  const primeiraEtapa = etapaAtual === 0;
-  const ultimaEtapa = etapaAtual === ETAPAS.length - 1;
-  const etapa = ETAPAS[Math.min(etapaAtual, ETAPAS.length - 1)];
-
-  const fotoInputRef = useRef(null);
-  const preservarArquivosRef = useRef(false);
-
-  const fotoPreviewUrl = useMemo(
-    () => (foto ? URL.createObjectURL(foto) : null),
-    [foto],
-  );
-
-  useEffect(() => {
-    return () => {
-      if (fotoPreviewUrl && !preservarArquivosRef.current) {
-        URL.revokeObjectURL(fotoPreviewUrl);
-      }
-      preservarArquivosRef.current = false;
-    };
-  }, [fotoPreviewUrl]);
-
-  useEffect(() => {
-    setEtapasVisitadas((atual) => {
-      if (atual.has(etapaAtual)) return atual;
-      return new Set(atual).add(etapaAtual);
-    });
-  }, [etapaAtual]);
-
-  // Uma etapa só vira atalho clicável depois que o usuário passou por ela
-  // pelo menos uma vez e os campos obrigatórios dela já estão preenchidos —
-  // assim ele pode pular de volta sem risco de "perder o lugar".
-  const etapaClicavel = (indice) => {
-    if (!etapasVisitadas.has(indice)) return false;
-    const campos = ETAPAS[indice]?.campos;
-    if (!campos) return true;
-    return campos.every((campo) => {
-      if (!campo.obrigatorio) return true;
-      return String(formData[campo.name] ?? "").trim() !== "";
-    });
-  };
-
-  const aoClicarEtapa = (indice) => {
-    if (indice === etapaAtual || !etapaClicavel(indice)) return;
-    setErro("");
-    setCampoComErro(null);
-    setEtapaAtual(indice);
-  };
-
-  const aoMudarCampo = (campo, valorDigitado) => {
-    const valor = campo.mascara ? campo.mascara(valorDigitado) : valorDigitado;
-    setFormData((atual) => ({ ...atual, [campo.name]: valor }));
-    if (campo.name === campoComErro) {
-      setErro("");
-      setCampoComErro(null);
-    }
-  };
-
-  const resetarTudo = (manterArquivos = false) => {
-    if (manterArquivos) preservarArquivosRef.current = true;
-    setFormData({});
-    setFoto(null);
-    setDocuments((atual) => {
-      if (!manterArquivos) {
-        Object.values(atual).forEach((doc) => URL.revokeObjectURL(doc.url));
-      }
-      return {};
-    });
-    setSelectedDocument(null);
-    setIsUploadOpen(false);
-    setEtapaAtual(0);
-    setEtapasVisitadas(new Set([0]));
-    setErro("");
-    setCampoComErro(null);
-    setErroSubmissao("");
-  };
-
   const aoFechar = () => {
-    resetarTudo();
     onFechar();
-  };
-
-  const aoAvancar = () => {
-    setTentativaErro((n) => n + 1);
-    if (etapa.campos) {
-      for (const campo of etapa.campos) {
-        const valor = String(formData[campo.name] ?? "").trim();
-
-        if (campo.obrigatorio && !valor) {
-          setErro(`Preencha o campo "${campo.label}" para continuar.`);
-          setCampoComErro(campo.name);
-          return;
-        }
-
-        if (valor && campo.validar && !campo.validar(valor)) {
-          setErro(campo.mensagemErro ?? `Campo "${campo.label}" inválido.`);
-          setCampoComErro(campo.name);
-          return;
-        }
-      }
-    }
-    setErro("");
-    setCampoComErro(null);
-    setEtapaAtual((atual) => Math.min(atual + 1, ETAPAS.length - 1));
-  };
-
-  const aoVoltar = () => {
-    setErro("");
-    setCampoComErro(null);
-    setEtapaAtual((atual) => Math.max(atual - 1, 0));
-  };
-
-  const aoAbrirUpload = (documento) => {
-    setSelectedDocument(documento);
-    setIsUploadOpen(true);
-  };
-
-  const aoSalvarDocumento = (arquivo) => {
-    setDocuments((atual) => {
-      if (atual[selectedDocument.id]?.url) {
-        URL.revokeObjectURL(atual[selectedDocument.id].url);
-      }
-      return {
-        ...atual,
-        [selectedDocument.id]: {
-          arquivo,
-          nome: arquivo.name,
-          tamanho: arquivo.size,
-          tipo: arquivo.type,
-          url: URL.createObjectURL(arquivo),
-        },
-      };
-    });
-    setIsUploadOpen(false);
-    setSelectedDocument(null);
-  };
-
-  const aoRemoverDocumento = (docId) => {
-    setDocuments((atual) => {
-      const copia = { ...atual };
-      if (copia[docId]?.url) URL.revokeObjectURL(copia[docId].url);
-      delete copia[docId];
-      return copia;
-    });
   };
 
   const aoCadastrar = async () => {
     setTentativaErro((n) => n + 1);
-    if (!formData.nome?.trim() || enviando) return;
+    const nomeEvento = formData.nome?.trim();
+    if (!nomeEvento || enviando) return;
 
     setEnviando(true);
     setErroSubmissao("");
 
     try {
-      const novoMembro = await criarPessoa(formData);
+      const dataIso = paraChaveData(dataSelecionada);
+      const descricaoEvento = [
+        formData.horario ? `Horário: ${formData.horario}` : null,
+        formData.repeticao ? `Repetição: ${formData.repeticao}` : null,
+      ]
+        .filter(Boolean)
+        .join(" • ");
 
-      if (precisaAcesso) {
-        await criarUsuario({
-          idPessoa: novoMembro.id,
-          idCargo: Number(formData.cargo),
-          email: formData.email,
-          senha: formData.senha,
-        });
-      }
+      const eventoCriado = await criarEvento({
+        nome: nomeEvento,
+        tipo: formData.tipo || "Reunião",
+        dataInicio: dataIso,
+        dataFim: dataIso,
+        descricao: descricaoEvento || `Evento agendado para ${dataIso}`,
+      });
 
-      if (foto) {
-        await enviarDocumento(novoMembro.id, "foto", foto);
-      }
-
-      for (const documento of DOCUMENTOS) {
-        const arquivo = documents[documento.id]?.arquivo;
-        if (arquivo) {
-          await enviarDocumento(novoMembro.id, documento.id, arquivo);
-        }
-      }
-
-      onCadastrar?.(novoMembro);
-      resetarTudo(true);
+      onCadastrar?.(eventoCriado);
+      setFormData({});
       onFechar();
     } catch (erroRequisicao) {
       const dados = erroRequisicao.response?.data;
       const mensagem =
         dados?.erro ??
         (dados && Object.values(dados)[0]) ??
-        "Não foi possível cadastrar o desbravador. Tente novamente.";
+        "Não foi possível adicionar o evento. Tente novamente.";
       setErroSubmissao(mensagem);
     } finally {
       setEnviando(false);
@@ -428,32 +246,21 @@ export function AdicionarEventoModal({ aberto, onFechar, onCadastrar }) {
           <button
             type="button"
             className={styles.botaoCancelar}
-            onClick={primeiraEtapa ? aoFechar : aoVoltar}
+            onClick={aoFechar}
             disabled={enviando}
           >
-            {primeiraEtapa ? "Cancelar" : "Voltar"}
+            {"Cancelar"}
           </button>
           <button
             type="button"
             className={styles.botaoCadastrar}
-            onClick={ultimaEtapa ? aoCadastrar : aoAvancar}
-            disabled={enviando || catalogos.carregandoCatalogos}
+            onClick={aoCadastrar}
+            disabled={enviando}
           >
-            {ultimaEtapa
-              ? enviando
-                ? "Cadastrando..."
-                : "Cadastrar Desbravador"
-              : "Adicionar Evento"}
+            {enviando ? "Adicionando..." : "Adicionar Evento"}
           </button>
         </footer>
       </div>
-
-      <UploadDocumentoModal
-        aberto={isUploadOpen}
-        documento={selectedDocument}
-        onFechar={() => setIsUploadOpen(false)}
-        onSalvar={aoSalvarDocumento}
-      />
     </div>
   );
 }
