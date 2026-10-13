@@ -12,7 +12,6 @@ import { MemberTable } from "../components/MemberTable/MemberTable.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
 import { RemoverDesbravadorModal } from "../components/RemoverDesbravadorModal/RemoverDesbravadorModal.jsx";
 import { ReativarDesbravadorModal } from "../components/ReativarDesbravadorModal/ReativarDesbravadorModal.jsx";
-import { CadastroDesbravadorModal } from "../components/CadastroDesbravadorModal/CadastroDesbravadorModal.jsx";
 import {
   getMembros,
   CATEGORIAS,
@@ -43,7 +42,6 @@ export function DesbravadoresPage() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
   const [modalReativarAberto, setModalReativarAberto] = useState(false);
-  const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
 
   const carregarMembros = () => {
     setCarregando(true);
@@ -128,10 +126,6 @@ export function DesbravadoresPage() {
     await carregarMembros();
   };
 
-  const aoCadastrarMembro = () => {
-    carregarMembros();
-  };
-
   const aoSelecionarMembro = (membro) => {
     navegar(`/dashboard/desbravadores/${membro.id}`);
   };
@@ -167,7 +161,7 @@ export function DesbravadoresPage() {
         <ActionButton
           icon={<PersonAddIcon />}
           texto="Cadastrar desbravadores"
-          onClick={() => setModalCadastroAberto(true)}
+          onClick={() => navegar("/dashboard/desbravadores/novo")}
         />
         <ActionButton
           icon={<PersonOffIcon />}
@@ -245,12 +239,6 @@ export function DesbravadoresPage() {
         membros={membrosInativos}
         onFechar={() => setModalReativarAberto(false)}
         onConfirmar={aoConfirmarReativacao}
-      />
-
-      <CadastroDesbravadorModal
-        aberto={modalCadastroAberto}
-        onFechar={() => setModalCadastroAberto(false)}
-        onCadastrar={aoCadastrarMembro}
       />
     </DashboardLayout>
   );

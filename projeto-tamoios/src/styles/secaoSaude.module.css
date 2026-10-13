@@ -1,0 +1,167 @@
+.subsecao + .subsecao {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cinza);
+}
+
+.subsecaoCabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.subsecaoTitulo {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vermelho);
+}
+
+.fichaGrade {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.botaoAdicionar {
+  font-size: 13px;
+}
+
+.vazio {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-style: italic;
+  text-align: left;
+  color: var(--carvao);
+  opacity: 0.7;
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.medicacao {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid var(--cinza);
+  border-radius: 10px;
+  background-color: var(--cremeClaro);
+}
+
+.medicacaoIcone {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--vinhoEscuro);
+}
+
+.medicacaoCorpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.medicacaoTopo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.medicacaoNome {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--carvao);
+}
+
+.medicacaoDose {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vermelho);
+}
+
+.medicacaoLinha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--carvao);
+}
+
+.medicacaoLinha svg {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.horario {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: var(--branco);
+  border: 1px solid var(--cinza);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.observacoes {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--carvao);
+  opacity: 0.8;
+}
+
+.receita {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--verde);
+  font-family: "Fredoka", "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.receita span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.receita:hover span {
+  text-decoration: underline;
+}
+
+.semReceita {
+  font-size: 13px;
+  color: var(--carvao);
+  opacity: 0.55;
+}
+
+.acoes {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.acao svg {
+  font-size: 20px;
+}

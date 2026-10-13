@@ -80,10 +80,14 @@ export const DOCUMENTOS = [
   { id: "carteiraVacinacao", titulo: "Carteira de Vacinação" },
   { id: "carteiraConvenio", titulo: "Carteira do Convênio" },
   { id: "comprovanteEndereco", titulo: "Comprovante de Endereço" },
-  { id: "fichaMedica", titulo: "Ficha Médica" },
-  { id: "receitaMedica", titulo: "Receita Médica" },
   { id: "autorizacaoClube", titulo: "Autorização do Clube" },
 ];
+
+// A foto é guardada como documento, mas fica fora de DOCUMENTOS porque não
+// entra na contagem de documentação digitalizada.
+export const DOCUMENTO_FOTO = { id: "foto", titulo: "Foto" };
+
+export const DOCUMENTO_FICHA_MEDICA = { id: "fichaMedica", titulo: "Ficha Médica" };
 
 export const CAMPO_NOME = {
   name: "nome",

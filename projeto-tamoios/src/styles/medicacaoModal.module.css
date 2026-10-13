@@ -1,0 +1,112 @@
+.modal {
+  width: 600px;
+  max-height: 90vh;
+}
+
+.subtitulo {
+  text-align: left;
+  padding: 0;
+}
+
+.botaoFechar {
+  flex-shrink: 0;
+}
+
+.botaoRodape {
+  flex: 1;
+}
+
+.dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dia {
+  min-width: 52px;
+  font-size: 13px;
+}
+
+.atalhoDias {
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--vinhoEscuro);
+  font-family: "Fredoka", "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.horarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.horario {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.horario input {
+  width: 120px;
+}
+
+.textoPequeno {
+  font-size: 13px;
+}
+
+.ajuda {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--carvao);
+  opacity: 0.65;
+}
+
+.receita {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border: 1px dashed var(--vinhoEscuro);
+  border-radius: 8px;
+  background-color: var(--branco);
+}
+
+.receitaNome {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--carvao);
+  overflow-wrap: anywhere;
+}
+
+.receitaVazia {
+  flex: 1;
+  font-size: 14px;
+  color: var(--carvao);
+  opacity: 0.7;
+}
+
+.inputOculto {
+  display: none;
+}
+
+.erro {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--vermelho);
+  border-radius: 8px;
+  background-color: var(--branco);
+  color: var(--vermelho);
+  font-size: 14px;
+  text-align: left;
+}

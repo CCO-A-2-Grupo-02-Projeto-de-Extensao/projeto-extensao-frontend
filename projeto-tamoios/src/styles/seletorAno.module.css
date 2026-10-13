@@ -7,6 +7,10 @@
 }
 
 .anoItem {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
   width: auto;
   margin: 0;
   padding: 8px 18px;
@@ -33,8 +37,27 @@
   background-color: var(--vinhoEscuro);
 }
 
-.botaoAdicionarAno {
-  composes: botao icone from "./button.module.css";
-  flex-shrink: 0;
+.anoClasse {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.8;
 }
 
+.novoAno {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inputAno {
+  width: 96px;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--vinhoEscuro);
+  background-color: var(--branco);
+  color: var(--vinhoEscuro);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Fredoka", "Inter", sans-serif;
+}

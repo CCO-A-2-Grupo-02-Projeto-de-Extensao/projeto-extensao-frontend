@@ -2,31 +2,22 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import AddIcon from "@mui/icons-material/Add";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
-import SchoolIcon from "@mui/icons-material/School";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import EditIcon from "@mui/icons-material/Edit";
-import DescriptionIcon from "@mui/icons-material/Description";
-import BadgeIcon from "@mui/icons-material/Badge";
-import VaccinesIcon from "@mui/icons-material/Vaccines";
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import PlaceIcon from "@mui/icons-material/Place";
-import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
-import { HistoricoEscolarModal } from "../components/HistoricoEscolarModal/HistoricoEscolarModal.jsx";
 import { DesempenhoClubeModal } from "../components/DesempenhoClubeModal/DesempenhoClubeModal.jsx";
+import { OcorrenciasModal } from "../components/OcorrenciasModal/OcorrenciasModal.jsx";
 import { UploadDocumentoModal } from "../components/UploadDocumentoModal/UploadDocumentoModal.jsx";
 import { FotoEnquadrada } from "../components/FotoEnquadrada/FotoEnquadrada.jsx";
+import { CartaoDocumento } from "../components/CartaoDocumento/CartaoDocumento.jsx";
+import { SecaoSaude } from "../components/SecaoSaude/SecaoSaude.jsx";
+import { MedicacaoModal } from "../components/MedicacaoModal/MedicacaoModal.jsx";
 import {
   ENQUADRAMENTO_PADRAO,
   normalizarEnquadramento,
@@ -47,10 +38,18 @@ import {
   salvarEnquadramento,
   substituirDocumento,
   urlLocalDoDocumento,
+  abrirDocumento,
 } from "../services/documentosService.js";
+import {
+  listarMedicacoesDaPessoa,
+  removerMedicacao,
+  salvarMedicacao,
+} from "../services/medicacoesService.js";
 import {
   CAMPO_NOME,
   DOCUMENTOS,
+  DOCUMENTO_FICHA_MEDICA,
+  DOCUMENTO_FOTO,
   MAX_RESPONSAVEIS,
   calcularSpans,
   contarResponsaveis,
@@ -66,10 +65,6 @@ import styles from "../styles/desbravadorDetalhePage.module.css";
 // Os campos reaproveitam o visual do formulário de cadastro: as classes de
 // input/label/grid não dependem do modal, só do próprio elemento.
 import formStyles from "../styles/cadastroDesbravadorModal.module.css";
-
-// A foto é guardada como documento, mas fica fora de DOCUMENTOS porque não
-// entra na contagem de documentação digitalizada.
-const DOCUMENTO_FOTO = { id: "foto", titulo: "Foto" };
 
 function formatarData(valor) {
   if (!valor) return null;
@@ -157,78 +152,6 @@ function CartaoResponsavel({ numero, responsavel }) {
   );
 }
 
-// Um ícone por tipo de documento, para que o cartão seja reconhecível antes
-// mesmo de ler o título. Os ids são os de DOCUMENTOS (desbravadorForm.jsx).
-const ICONES_DOCUMENTO = {
-  certidaoNascimento: DescriptionIcon,
-  cartaoSus: BadgeIcon,
-  carteiraVacinacao: VaccinesIcon,
-  carteiraConvenio: LocalHospitalIcon,
-  comprovanteEndereco: PlaceIcon,
-  fichaMedica: MedicalInformationIcon,
-  receitaMedica: ReceiptLongIcon,
-  autorizacaoClube: AssignmentTurnedInIcon,
-};
-
-function CartaoDocumento({ documento, arquivo, onAbrir, onEnviar, onRemover }) {
-  const Icone = ICONES_DOCUMENTO[documento.id] ?? DescriptionIcon;
-  const enviado = Boolean(arquivo);
-
-  return (
-    <li className={`${styles.documento} ${enviado ? styles.documentoEnviado : ""}`}>
-      {/* O cartão inteiro é a ação principal: abre o arquivo quando já existe,
-          abre o upload quando ainda falta. */}
-      <button
-        type="button"
-        className={styles.documentoBotao}
-        onClick={enviado ? onAbrir : onEnviar}
-        title={enviado ? `Abrir ${arquivo.nome}` : `Anexar ${documento.titulo}`}
-      >
-        <span className={styles.documentoSelo} aria-hidden="true">
-          {enviado ? (
-            <CheckCircleIcon className={styles.documentoSeloOk} />
-          ) : (
-            <AddIcon className={styles.documentoSeloPendente} />
-          )}
-        </span>
-
-        <Icone className={styles.documentoIcone} />
-
-        <span className={styles.documentoTitulo}>{documento.titulo}</span>
-
-        <span
-          className={enviado ? styles.documentoStatusOk : styles.documentoStatusPendente}
-        >
-          {enviado ? arquivo.nome : "Pendente"}
-        </span>
-      </button>
-
-      {enviado && (
-        <div className={styles.documentoAcoes}>
-          <button
-            type="button"
-            className={styles.documentoAcao}
-            onClick={onEnviar}
-            title="Substituir arquivo"
-            aria-label={`Substituir ${documento.titulo}`}
-          >
-            <SwapHorizIcon fontSize="small" />
-          </button>
-          <button
-            type="button"
-            className={styles.documentoAcaoRemover}
-            onClick={onRemover}
-            title="Remover arquivo"
-            aria-label={`Remover ${documento.titulo}`}
-          >
-            <DeleteOutlineIcon fontSize="small" />
-          </button>
-        </div>
-      )}
-    </li>
-  );
-}
-
 function ConteudoDesbravador({ idPessoa }) {
   const navegar = useNavigate();
   const catalogos = useCatalogos();
@@ -249,10 +172,13 @@ function ConteudoDesbravador({ idPessoa }) {
   const [salvando, setSalvando] = useState(false);
 
   const [confirmacaoAberta, setConfirmacaoAberta] = useState(false);
-  const [modalHistoricoAberto, setModalHistoricoAberto] = useState(false);
   const [modalDesempenhoAberto, setModalDesempenhoAberto] = useState(false);
+  const [modalOcorrenciasAberto, setModalOcorrenciasAberto] = useState(false);
   const [documentoSelecionado, setDocumentoSelecionado] = useState(null);
   const [documentoARemover, setDocumentoARemover] = useState(null);
+  const [medicacoes, setMedicacoes] = useState([]);
+  const [medicacaoAberta, setMedicacaoAberta] = useState(null);
+  const [medicacaoARemover, setMedicacaoARemover] = useState(null);
 
   // A foto não pode sair direto no src: o endpoint é protegido. Baixamos o
   // arquivo autenticado e guardamos o object URL junto do id que o gerou,
@@ -299,6 +225,18 @@ function ConteudoDesbravador({ idPessoa }) {
         setCarregando(false);
       });
 
+    return () => {
+      ativo = false;
+    };
+  }, [idPessoa]);
+
+  useEffect(() => {
+    let ativo = true;
+    listarMedicacoesDaPessoa(idPessoa)
+      .then((lista) => {
+        if (ativo) setMedicacoes(lista);
+      })
+      .catch(() => {});
     return () => {
       ativo = false;
     };
@@ -460,13 +398,30 @@ function ConteudoDesbravador({ idPessoa }) {
 
   // Mesmo motivo da foto: abrir a URL da API direto cai em 401, porque a
   // aba nova não leva o token.
-  const aoAbrirDocumento = async (documento) => {
+  const aoAbrirDocumento = (documento) => {
     const existente = documentos[documento.id];
-    if (!existente) return;
-    const url = await urlLocalDoDocumento(existente.idDocumento);
-    window.open(url, "_blank");
-    // Revoga depois de dar tempo da aba carregar; antes disso o blob morre.
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    if (existente) abrirDocumento(existente.idDocumento);
+  };
+
+  const aoSalvarMedicacao = async (medicacao, arquivoReceita) => {
+    const salva = await salvarMedicacao(
+      membro.id,
+      medicacao,
+      arquivoReceita,
+      medicacaoAberta.receita
+    );
+    setMedicacoes((atual) =>
+      medicacao.id
+        ? atual.map((item) => (item.id === salva.id ? salva : item))
+        : [...atual, salva]
+    );
+    setMedicacaoAberta(null);
+  };
+
+  const confirmarRemocaoMedicacao = async () => {
+    await removerMedicacao(medicacaoARemover);
+    setMedicacoes((atual) => atual.filter((item) => item.id !== medicacaoARemover.id));
+    setMedicacaoARemover(null);
   };
 
   const confirmarRemocaoDocumento = async () => {
@@ -523,7 +478,9 @@ function ConteudoDesbravador({ idPessoa }) {
 
   return (
     <DashboardLayout>
-      <header className={styles.cabecalho}>
+      <header
+        className={`${styles.cabecalho} ${editando ? styles.cabecalhoFixo : ""}`}
+      >
         <button
           type="button"
           className={styles.botaoVoltar}
@@ -746,6 +703,18 @@ function ConteudoDesbravador({ idPessoa }) {
               </section>
             </>
           )}
+
+          <SecaoSaude
+            fichaMedica={documentos[DOCUMENTO_FICHA_MEDICA.id] ?? null}
+            onAbrirFicha={() => aoAbrirDocumento(DOCUMENTO_FICHA_MEDICA)}
+            onEnviarFicha={() => setDocumentoSelecionado(DOCUMENTO_FICHA_MEDICA)}
+            onRemoverFicha={() => setDocumentoARemover(DOCUMENTO_FICHA_MEDICA)}
+            medicacoes={medicacoes}
+            onAdicionarMedicacao={() => setMedicacaoAberta({})}
+            onEditarMedicacao={setMedicacaoAberta}
+            onRemoverMedicacao={setMedicacaoARemover}
+            onAbrirReceita={(medicacao) => abrirDocumento(medicacao.receita.idDocumento)}
+          />
         </div>
 
         <aside className={styles.colunaLateral}>
@@ -789,12 +758,12 @@ function ConteudoDesbravador({ idPessoa }) {
             <button
               type="button"
               className={styles.atalho}
-              onClick={() => setModalHistoricoAberto(true)}
+              onClick={() => setModalDesempenhoAberto(true)}
             >
-              <SchoolIcon className={styles.atalhoIcone} />
+              <MilitaryTechIcon className={styles.atalhoIcone} />
               <span className={styles.atalhoTexto}>
-                <strong>Histórico Escolar</strong>
-                <small>Notas e série por ano</small>
+                <strong>Desempenho no Clube</strong>
+                <small>Especialidades, histórico escolar e insígnia</small>
               </span>
               <ChevronRightIcon className={styles.atalhoSeta} />
             </button>
@@ -802,12 +771,12 @@ function ConteudoDesbravador({ idPessoa }) {
             <button
               type="button"
               className={styles.atalho}
-              onClick={() => setModalDesempenhoAberto(true)}
+              onClick={() => setModalOcorrenciasAberto(true)}
             >
-              <MilitaryTechIcon className={styles.atalhoIcone} />
+              <ReportProblemIcon className={styles.atalhoIcone} />
               <span className={styles.atalhoTexto}>
-                <strong>Desempenho no Clube</strong>
-                <small>Especialidades e requisitos</small>
+                <strong>Ocorrências</strong>
+                <small>Registros de comportamento</small>
               </span>
               <ChevronRightIcon className={styles.atalhoSeta} />
             </button>
@@ -815,18 +784,14 @@ function ConteudoDesbravador({ idPessoa }) {
         </aside>
       </div>
 
-      <HistoricoEscolarModal
-        aberto={modalHistoricoAberto}
-        membro={membro}
-        onFechar={() => setModalHistoricoAberto(false)}
-      />
 
-      <DesempenhoClubeModal
-        aberto={modalDesempenhoAberto}
-        membro={membro}
-        onFechar={() => setModalDesempenhoAberto(false)}
-        onSalvar={() => setModalDesempenhoAberto(false)}
-      />
+      {modalDesempenhoAberto && (
+        <DesempenhoClubeModal membro={membro} onFechar={() => setModalDesempenhoAberto(false)} />
+      )}
+
+      {modalOcorrenciasAberto && (
+        <OcorrenciasModal membro={membro} onFechar={() => setModalOcorrenciasAberto(false)} />
+      )}
 
       <UploadDocumentoModal
         aberto={Boolean(documentoSelecionado)}
@@ -843,6 +808,24 @@ function ConteudoDesbravador({ idPessoa }) {
         perigo
         onConfirmar={confirmarRemocaoDocumento}
         onCancelar={() => setDocumentoARemover(null)}
+      />
+
+      {medicacaoAberta && (
+        <MedicacaoModal
+          medicacao={medicacaoAberta}
+          onFechar={() => setMedicacaoAberta(null)}
+          onSalvar={aoSalvarMedicacao}
+        />
+      )}
+
+      <ConfirmacaoModal
+        aberto={Boolean(medicacaoARemover)}
+        titulo="Remover medicação"
+        mensagem={`"${medicacaoARemover?.nome}" sai da ficha médica, junto com a receita anexada.`}
+        textoConfirmar="Remover"
+        perigo
+        onConfirmar={confirmarRemocaoMedicacao}
+        onCancelar={() => setMedicacaoARemover(null)}
       />
 
       <ConfirmacaoModal

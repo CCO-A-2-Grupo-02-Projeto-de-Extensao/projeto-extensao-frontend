@@ -41,6 +41,26 @@
   flex-wrap: wrap;
 }
 
+.cabecalhoFixo {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: -20px -20px 24px;
+  padding: 20px;
+  background-color: var(--cremeClaro);
+}
+
+.cabecalhoFixo::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: linear-gradient(var(--cremeClaro), transparent);
+  pointer-events: none;
+}
+
 .cabecalhoTextos {
   flex: 1;
   min-width: 240px;
@@ -96,6 +116,9 @@
 
 .botaoVoltar {
   composes: botao secundario from "./button.module.css";
+}
+
+.cabecalho .botaoVoltar {
   padding: 8px;
   border-radius: 50%;
   margin-top: 4px;
@@ -414,6 +437,7 @@
 
 .documentos {
   padding: 20px 24px;
+  container-type: inline-size;
 }
 
 .documentosCabecalho {
@@ -449,15 +473,25 @@
   transition: width 0.3s ease;
 }
 
-/* Grade de cartões (um por tipo de documento), como no mockup. A coluna
- * lateral comporta 3 cartões; em telas estreitas o auto-fill reflui sozinho. */
 .documentosGrade {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+}
+
+@container (max-width: 340px) {
+  .documentosGrade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 680px) {
+  .documentosGrade {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
 }
 
 .documento {

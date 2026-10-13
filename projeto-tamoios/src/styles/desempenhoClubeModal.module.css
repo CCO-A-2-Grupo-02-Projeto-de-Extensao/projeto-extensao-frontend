@@ -1,150 +1,271 @@
-.mensagemCarregando {
-  font-size: 14px;
-  color: var(--carvao);
-  text-align: center;
-  padding: 24px 0;
+.modal {
+  width: 640px;
+  max-height: 90vh;
 }
 
-.mensagemVazia {
+.subtitulo {
+  text-align: left;
+  padding: 0;
+}
+
+.botaoFechar {
+  flex-shrink: 0;
+}
+
+.mensagem {
+  margin: 0;
+  padding: 16px 0;
   font-size: 14px;
+  font-style: italic;
+  text-align: left;
   color: var(--carvao);
   opacity: 0.75;
 }
 
-.listaEspecialidades {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.erro {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--vermelho);
+  border-radius: 8px;
+  background-color: var(--branco);
+  color: var(--vermelho);
+  font-size: 14px;
+  text-align: left;
 }
 
-.especialidadeItem {
+.painel {
+  padding: 20px;
+  border: 1px solid var(--cinza);
+  border-radius: 12px;
+  background-color: var(--branco);
+}
+
+.painelCabecalho {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: var(--carvao);
-  cursor: pointer;
-}
-
-.especialidadeItem input {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: var(--vinhoEscuro);
-  cursor: pointer;
-}
-
-.listaOcorrencias {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.ocorrenciaItem {
-  display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 6px;
-  background-color: var(--creme);
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cinza);
 }
 
-.ocorrenciaData {
-  font-size: 12px;
+.painelTitulo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--vinhoEscuro);
 }
 
-.ocorrenciaDescricao {
+.painelClasse {
   font-size: 14px;
-  color: var(--carvao);
-  margin-top: 2px;
+  font-weight: 600;
+  color: var(--vermelho);
 }
 
-.botaoRemoverOcorrencia {
-  composes: botao perigo from "./button.module.css";
-  flex-shrink: 0;
-}
-
-.novaOcorrencia {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.inputData,
-.inputDescricao {
-  margin: 0;
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--cinza);
-  background-color: var(--branco);
-  color: var(--text);
-  font-size: 14px;
-  font-family: "Fredoka", "Inter", sans-serif;
-}
-
-.inputData {
-  width: 160px;
-}
-
-.inputDescricao {
-  flex: 1;
-  min-width: 200px;
-}
-
-.botaoAdicionarOcorrencia {
-  composes: botao primario from "./button.module.css";
-}
-
-.insigniaBadge {
+.status {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 16px;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.insigniaApto {
-  background-color: rgba(46, 125, 50, 0.15);
+.statusOk {
+  background-color: rgba(46, 125, 50, 0.12);
   color: var(--verde);
 }
 
-.insigniaNaoApto {
-  background-color: rgba(212, 146, 10, 0.15);
-  color: var(--ambarOuro);
+.statusPendente {
+  background-color: var(--creme);
+  color: var(--carvao);
 }
 
-.listaCriterios {
+.botaoExcluir {
+  font-size: 13px;
+}
+
+.grupo {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--cinza);
+}
+
+.painelCabecalho + .grupo {
+  border-top: none;
+  padding-top: 0;
+}
+
+.grupoTitulo {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: left;
+  color: var(--vinhoEscuro);
+}
+
+.bloco {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.blocoTitulo {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--vermelho);
+}
+
+.ajuda {
+  margin: 2px 0 0;
+  padding: 0;
+  font-size: 13px;
+  text-align: left;
+  color: var(--carvao);
+  opacity: 0.7;
+}
+
+.marcacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.marcacoesCabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.botaoTudo {
+  flex-shrink: 0;
+  width: 210px;
+  font-size: 13px;
+}
+
+.itens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.item {
+  flex: 1 1 150px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.outroClube {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 14px;
+}
+
+.outroClube input {
+  margin: 0;
+}
+
+.alternarClasse {
+  flex: 1;
+  font-size: 13px;
+}
+
+.extras {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.listaExtras {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.criterioItem {
+.extra {
+  display: inline-flex;
+  flex: 1 1 150px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
+  border: 1.5px solid var(--vinhoEscuro);
+  border-radius: 8px;
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+  font-size: 13px;
+}
+
+.removerExtra {
+  display: flex;
+  margin-left: auto;
+  padding: 3px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.removerExtra:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  opacity: 1;
+}
+
+@media (max-width: 560px) {
+  .outroClube {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.arquivos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.criterios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.criterio {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   font-size: 13px;
+  text-align: left;
   color: var(--carvao);
 }
 
-.criterioIconeOk {
-  color: var(--verde);
+.criterioOk {
   flex-shrink: 0;
-  margin-top: 1px;
+  color: var(--verde);
 }
 
-.criterioIconePendente {
-  color: var(--cinza);
+.criterioPendente {
   flex-shrink: 0;
-  margin-top: 1px;
+  color: var(--cinza);
 }

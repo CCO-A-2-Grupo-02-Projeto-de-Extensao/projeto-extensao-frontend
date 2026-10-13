@@ -1,77 +1,51 @@
-const MOCK_DELAY_MS = 300;
+import { api } from "./api";
+import { boletimEntregue, declaracaoCompleta } from "./historicoEscolarService.js";
 
-const ESPECIALIDADES_POR_CLASSE = {
-  Amigo: ["Primeiros Socorros I", "Nós e Amarras", "Natureza I"],
-  Companheiro: ["Primeiros Socorros II", "Acampamento I", "Culinária"],
-  Pesquisador: ["Primeiros Socorros III", "Astronomia", "Orientação no Mato"],
-  Pioneiro: ["Liderança I", "Sobrevivência", "Meio Ambiente"],
-  Excursionista: ["Liderança II", "Cartografia", "Nutrição"],
-  Guia: ["Liderança III", "Missões", "Ética Cristã"],
+const ANO_MATRICULA = 2024;
+
+const CLASSES_POR_IDADE = {
+  10: "Amigo",
+  11: "Companheiro",
+  12: "Pesquisador",
+  13: "Pioneiro",
+  14: "Excursionista",
+  15: "Guia",
 };
 
-// Mock em memória — perdido ao recarregar a página, já que ainda não existe
-// backend para Especialidade/conclusão por pessoa nem para o boletim/declaração.
-const desempenhoPorMembro = new Map();
+const IDADES = Object.keys(CLASSES_POR_IDADE).map(Number);
 
-function gerarBucketAno(membro) {
-  const especialidadesDaClasse = ESPECIALIDADES_POR_CLASSE[membro.classe] ?? [];
+const anoDeNascimento = (dataNascimento) =>
+  dataNascimento ? Number(dataNascimento.slice(0, 4)) : null;
 
-  return {
-    especialidades: especialidadesDaClasse.map((nome, indice) => ({
-      id: `${membro.id}-especialidade-${indice}`,
-      nome,
-      concluida: false,
-    })),
-    boletim: { anoLetivoSerie: "", arquivo: null },
-    declaracaoPais: {
-      obediencia: false,
-      prestatividade: false,
-      participacao: false,
-      arquivo: null,
-    },
-  };
+export function classeNoAno(dataNascimento, ano) {
+  const nascimento = anoDeNascimento(dataNascimento);
+  return nascimento ? CLASSES_POR_IDADE[ano - nascimento] ?? null : null;
 }
 
-// Especialidades, boletim e declaração dos pais são acompanhados por ano
-// (a insígnia de excelência é concedida anualmente, e a classe do membro
-// muda de ano a ano). Ocorrências já vêm do backend real (ver
-// services/ocorrenciasService.js) — não fazem parte deste mock.
-function gerarDesempenhoPadrao(membro) {
-  const anoAtual = new Date().getFullYear();
-
-  return {
-    matriculaAno: 2024,
-    anoSelecionado: anoAtual,
-    anos: [anoAtual],
-    porAno: { [anoAtual]: gerarBucketAno(membro) },
-  };
+export function primeiroAnoDeClasse(dataNascimento) {
+  const nascimento = anoDeNascimento(dataNascimento);
+  return nascimento ? nascimento + Math.min(...IDADES) : null;
 }
 
-export function getDesempenho(membro) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (!desempenhoPorMembro.has(membro.id)) {
-        desempenhoPorMembro.set(membro.id, gerarDesempenhoPadrao(membro));
-      }
-      resolve(desempenhoPorMembro.get(membro.id));
-    }, MOCK_DELAY_MS);
-  });
+const paraConcluida = (dados) => ({
+  id: dados.id,
+  idEspecialidade: dados.idEspecialidade,
+  nome: dados.nomeEspecialidade,
+  ano: dados.ano,
+});
+
+export async function listarEspecialidadesConcluidas(idPessoa) {
+  const { data } = await api.get(`/especialidades-concluidas/pessoa/${idPessoa}`);
+  return data.map(paraConcluida);
 }
 
-export function salvarDesempenho(membro, desempenho) {
-  desempenhoPorMembro.set(membro.id, desempenho);
-  return Promise.resolve(desempenho);
+export async function concluirEspecialidade(idPessoa, idEspecialidade, ano) {
+  const { data } = await api.post("/especialidades-concluidas", { idPessoa, idEspecialidade, ano });
+  return paraConcluida(data);
 }
 
-export function adicionarAno(desempenho, membro) {
-  const proximoAno = Math.max(...desempenho.anos) + 1;
-
-  return {
-    ...desempenho,
-    anos: [...desempenho.anos, proximoAno].sort((a, b) => b - a),
-    anoSelecionado: proximoAno,
-    porAno: { ...desempenho.porAno, [proximoAno]: gerarBucketAno(membro) },
-  };
+export async function desfazerEspecialidade(id) {
+  await api.delete(`/especialidades-concluidas/${id}`);
 }
 
 // Regra da Insígnia de Excelência (Regulamento Interno / Manual Administrativo
@@ -80,46 +54,31 @@ export function adicionarAno(desempenho, membro) {
 // Ocorrências no período, conforme decisão do case do projeto. Avaliada por
 // ano, já que a insígnia é concedida ao final de cada ano. `ocorrenciasDoAno`
 // vem do backend real (ver ocorrenciasService.js), já filtrada pelo ano.
-export function calcularElegibilidadeInsignia(desempenho, ano, ocorrenciasDoAno) {
-  const bucket = desempenho.porAno[ano];
-
-  const especialidadesConcluidas =
-    bucket.especialidades.length > 0 &&
-    bucket.especialidades.every((especialidade) => especialidade.concluida);
-
-  const semOcorrencias = ocorrenciasDoAno.length === 0;
-
-  const declaracaoCompleta =
-    bucket.declaracaoPais.obediencia &&
-    bucket.declaracaoPais.prestatividade &&
-    bucket.declaracaoPais.participacao;
-
-  const boletimEntregue = Boolean(bucket.boletim.anoLetivoSerie && bucket.boletim.arquivo);
-
+export function calcularElegibilidadeInsignia({ ano, especialidades, ocorrenciasDoAno, historico }) {
   const criterios = [
     {
       label: `Membro ativo do clube em ${ano} (matriculado há 1 ano ou mais)`,
-      atendido: Boolean(desempenho.matriculaAno) && ano >= desempenho.matriculaAno,
+      atendido: ano >= ANO_MATRICULA,
     },
     {
       label: "Concluiu a Classe e todas as especialidades pedidas nela",
-      atendido: especialidadesConcluidas,
+      atendido: historico?.outroClube
+        ? historico.classeConcluidaOrigem
+        : especialidades.length > 0 && especialidades.every((especialidade) => especialidade.concluida),
     },
     {
       label: "Sem ocorrências registradas no período (conduta, voto e lei, iniciativa, relacionamento)",
-      atendido: semOcorrencias,
+      atendido: ocorrenciasDoAno.length === 0,
     },
     {
       label: "Desempenho escolar em dia (boletim entregue)",
-      atendido: boletimEntregue,
+      atendido: boletimEntregue(historico),
     },
     {
       label: "Declaração dos pais completa (obediência, prestatividade, participação)",
-      atendido: declaracaoCompleta,
+      atendido: declaracaoCompleta(historico),
     },
   ];
 
-  const apto = criterios.every((criterio) => criterio.atendido);
-
-  return { apto, criterios };
+  return { apto: criterios.every((criterio) => criterio.atendido), criterios };
 }

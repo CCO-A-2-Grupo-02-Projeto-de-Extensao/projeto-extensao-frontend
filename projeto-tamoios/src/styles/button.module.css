@@ -87,6 +87,17 @@
   opacity: 0.88;
 }
 
+.destaque {
+  background-color: var(--cremeClaro);
+  color: var(--carvao);
+  border-color: var(--cinza);
+  font-weight: 600;
+}
+
+.destaque:hover:not(:disabled) {
+  background-color: var(--creme);
+}
+
 /* --------------------------------------------------------------------- formas */
 
 .icone {

@@ -12,6 +12,7 @@ import { ClasseDetalhePage } from "./pages/ClasseDetalhePage.jsx";
 import { EspecialidadesPage } from "./pages/EspecialidadesPage.jsx";
 import { DocumentosPage } from "./pages/DocumentosPage.jsx";
 import { DesbravadorDetalhePage } from "./pages/DesbravadorDetalhePage.jsx";
+import { CadastroDesbravadorPage } from "./pages/CadastroDesbravadorPage.jsx";
 
 function App() {
   return (
@@ -30,6 +31,10 @@ function App() {
         <Route
           path="/dashboard/desbravadores"
           element={<ProtectedRoute element={<DesbravadoresPage />} />}
+        />
+        <Route
+          path="/dashboard/desbravadores/novo"
+          element={<ProtectedRoute element={<CadastroDesbravadorPage />} />}
         />
         <Route
           path="/dashboard/desbravadores/:idPessoa"

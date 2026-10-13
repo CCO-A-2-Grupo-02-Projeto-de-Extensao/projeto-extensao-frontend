@@ -1,0 +1,76 @@
+.mensagemVazia {
+  font-size: 14px;
+  color: var(--carvao);
+  opacity: 0.75;
+}
+
+.erro {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--vermelho);
+  border-radius: 8px;
+  background-color: var(--branco);
+  color: var(--vermelho);
+  font-size: 14px;
+  text-align: left;
+}
+
+.nova {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inputData,
+.inputDescricao {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--cinza);
+  background-color: var(--branco);
+  color: var(--text);
+  font-size: 14px;
+  font-family: "Fredoka", "Inter", sans-serif;
+}
+
+.inputData {
+  width: 160px;
+}
+
+.inputDescricao {
+  flex: 1;
+  min-width: 200px;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: var(--creme);
+}
+
+.data {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+}
+
+.descricao {
+  margin: 2px 0 0;
+  padding: 0;
+  text-align: left;
+  font-size: 14px;
+  color: var(--carvao);
+}

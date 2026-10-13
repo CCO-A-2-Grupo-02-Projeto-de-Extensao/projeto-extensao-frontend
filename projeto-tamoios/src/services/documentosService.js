@@ -102,3 +102,9 @@ export async function urlLocalDoDocumento(idDocumento) {
   });
   return URL.createObjectURL(data);
 }
+
+export async function abrirDocumento(idDocumento) {
+  const url = await urlLocalDoDocumento(idDocumento);
+  window.open(url, "_blank");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
