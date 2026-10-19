@@ -204,13 +204,13 @@ export function CadastroUsuarioPage() {
                       top: "calc(100% + 5px)",
                       left: 0,
                       right: 0,
-                      background: "#fff",
+                      background: "var(--branco)",
                       border: "1px solid var(--vinhoEscuro)",
                       borderRadius: "5px",
                       maxHeight: "220px",
                       overflowY: "auto",
                       zIndex: 20,
-                      boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+                      boxShadow: "var(--sombraModal)",
                     }}
                   >
                     {desbravadoresFiltrados.map((desbravador) => (
@@ -225,19 +225,19 @@ export function CadastroUsuarioPage() {
                           display: "block",
                           width: "100%",
                           border: "none",
-                          background: "#fff",
+                          background: "var(--branco)",
                           textAlign: "left",
                           padding: "10px 12px",
                           cursor: "pointer",
-                          fontFamily: "Fredoka, Inter, sans-serif",
-                          color: "#222",
+                          fontFamily: "var(--fonte)",
+                          color: "var(--carvao)",
                           transition: "background 0.15s ease",
                         }}
                         onMouseEnter={(event) => {
-                          event.currentTarget.style.background = "#f8f3f2";
+                          event.currentTarget.style.background = "var(--creme)";
                         }}
                         onMouseLeave={(event) => {
-                          event.currentTarget.style.background = "#fff";
+                          event.currentTarget.style.background = "var(--branco)";
                         }}
                       >
                         {desbravador.nome}
@@ -254,7 +254,7 @@ export function CadastroUsuarioPage() {
                   <div
                     style={{
                       marginTop: "4px",
-                      color: "#5c1612",
+                      color: "var(--vinhoEscuro)",
                       fontSize: "16px",
                     }}
                   >

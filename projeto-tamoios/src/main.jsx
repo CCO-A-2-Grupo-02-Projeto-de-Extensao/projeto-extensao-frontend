@@ -2,8 +2,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
-import "@fontsource/fredoka";
-import "@fontsource/fredoka/500.css";
+import "@fontsource/plus-jakarta-sans/400.css";
+import "@fontsource/plus-jakarta-sans/500.css";
+import "@fontsource/plus-jakarta-sans/600.css";
+import "@fontsource/plus-jakarta-sans/700.css";
+import "@fontsource/plus-jakarta-sans/800.css";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Adicionando o VLibras
 const initVLibras = () => {
@@ -20,8 +24,21 @@ const initVLibras = () => {
 
 initVLibras();
 
+const tema = createTheme({
+  palette: {
+    primary: { main: "#4a151b" },
+    error: { main: "#e11d48" },
+    success: { main: "#10b981" },
+    warning: { main: "#d97706" },
+    info: { main: "#2563eb" },
+  },
+  typography: { fontFamily: '"Plus Jakarta Sans", sans-serif' },
+});
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
+    <ThemeProvider theme={tema}>
+      <App />
+    </ThemeProvider>
   </StrictMode>
 );

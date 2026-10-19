@@ -34,7 +34,7 @@
   border: none;
   background: none;
   color: var(--vinhoEscuro);
-  font-family: "Fredoka", "Inter", sans-serif;
+  font-family: var(--fonte);
   font-size: 13px;
   font-weight: 600;
   text-decoration: underline;

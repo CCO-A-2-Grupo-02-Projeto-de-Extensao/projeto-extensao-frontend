@@ -11,7 +11,7 @@
  */
 .tituloAcento {
   padding-bottom: 10px;
-  border-bottom: 3px solid var(--vermelho);
+  border-bottom: 3px solid var(--vinhoVivo);
   color: var(--vinhoEscuro);
 }
 
@@ -27,5 +27,5 @@
   width: 4px;
   height: 1em;
   border-radius: 2px;
-  background-color: var(--vermelho);
+  background-color: var(--vinhoVivo);
 }

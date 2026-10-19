@@ -13,7 +13,7 @@
   width: 55px;
   height: 55px;
   border-radius: 8px;
-  background-color: #eeeeee;
+  background-color: var(--superficieSuave);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,7 +27,7 @@
 }
 
 .imagem span {
-  color: #999999;
+  color: var(--textoSuave);
 }
 
 .descricao {

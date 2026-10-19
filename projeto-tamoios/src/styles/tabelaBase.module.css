@@ -4,7 +4,7 @@
  * próprio só para o que é específico delas (largura de coluna, células com
  * ícone, pílulas de status). Antes cada tela repetia o bloco inteiro e as
  * cópias foram divergindo — cabeçalho ora --vinhoEscuro ora --carvao, padding
- * de 10px a 14px, hover ora --cinza ora #fafafa.
+ * de 10px a 14px, hover ora --cinza ora var(--superficieSuave).
  *
  * Ao mexer aqui, você mexe em Desbravadores, Chamada, Especialidades, Dashboard
  * e nas três abas de Classe de uma vez. É esse o objetivo.
@@ -12,29 +12,45 @@
 .tabela {
   width: 100%;
   border-collapse: collapse;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
+  background-color: var(--branco);
+  box-shadow: 0 0 0 1px var(--borda), var(--sombraCartao);
+  font-size: 14px;
+  color: var(--text);
 }
 
 .tabela thead {
-  background-color: var(--vinhoEscuro);
-  color: var(--cremeClaro);
+  background-color: var(--superficieSuave);
+  color: var(--textoSecundario);
 }
 
 .tabela th {
   padding: 12px 16px;
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 18px;
   text-align: left;
+  border-bottom: 1px solid var(--borda);
 }
 
 .tabela td {
   padding: 12px 16px;
   text-align: left;
-  border-bottom: 1px solid var(--cinza);
+  border-bottom: 1px solid #f3ede8;
+}
+
+.tabela tbody tr:nth-child(even) {
+  background-color: #faf8f5;
+}
+
+.tabela tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .tabela tbody tr:hover {
-  background-color: var(--cinza);
+  background-color: var(--creme);
 }
 
 /* Linha que abre um detalhe ao clicar (Desbravadores, agenda do Dashboard). */
@@ -44,7 +60,7 @@
 
 /* Célula sem valor: o traço fica recuado para não competir com os dados reais. */
 .vazio {
-  color: #8a8a8a;
+  color: var(--textoSuave);
 }
 
 @media (max-width: 640px) {

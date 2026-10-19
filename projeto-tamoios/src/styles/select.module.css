@@ -1,10 +1,19 @@
 select {
-  padding: 10px;
-  border: 1px solid var(--vinhoEscuro);
+  padding: 10px 14px;
+  border: 1px solid var(--cinza);
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
   box-sizing: border-box;
   margin: 10px 0;
-  font-size: 16px;
-  font-family: "Fredoka", "Inter", sans-serif;
+  font-size: 14px;
+  font-family: var(--fonte);
+  color: var(--text);
+  background-color: var(--branco);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--vinhoVivo);
+  box-shadow: 0 0 0 2px var(--vinhoVivo);
 }

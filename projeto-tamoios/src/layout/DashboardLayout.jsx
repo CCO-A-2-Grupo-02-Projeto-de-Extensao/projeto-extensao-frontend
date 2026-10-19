@@ -7,8 +7,8 @@ export function DashboardLayout({ children }) {
       <main
         style={{
           flexGrow: 1,
-          padding: "20px",
-          marginLeft: "200px",
+          padding: "32px",
+          marginLeft: "240px",
           backgroundColor: "var(--cremeClaro)",
           minHeight: "100vh",
         }}

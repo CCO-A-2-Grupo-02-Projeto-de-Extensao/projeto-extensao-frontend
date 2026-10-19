@@ -11,9 +11,9 @@
   width: 32px;
   height: 32px;
   margin: 0;
-  border: 1px solid var(--vinhoEscuro);
-  border-radius: 6px;
-  background-color: #ffffff;
+  border: 1px solid var(--bordaForte);
+  border-radius: 9999px;
+  background-color: var(--branco);
   color: var(--text);
   cursor: pointer;
   display: flex;
@@ -24,12 +24,13 @@
 
 .paginaBotao:hover,
 .setaBotao:hover:not(:disabled) {
-  background-color: var(--cinza);
+  background-color: var(--creme);
 }
 
 .paginaAtiva {
   background-color: var(--vinhoEscuro);
-  color: var(--cremeClaro);
+  border-color: var(--vinhoEscuro);
+  color: var(--branco);
 }
 
 .setaBotao:disabled {

@@ -2,8 +2,8 @@
   width: 18px;
   height: 18px;
   box-sizing: border-box;
-  border: 2px solid #dddddd;
-  border-top-color: var(--vermelho);
+  border: 2px solid var(--cinza);
+  border-top-color: var(--vinhoVivo);
   border-radius: 50%;
   animation: girar 0.7s linear infinite;
 }

@@ -8,7 +8,7 @@
  * Substitui o antigo DetalhesDesbravadorModal: os mesmos dados, mas numa
  * página própria, com os dados em blocos sobre o creme do fundo para não
  * ficarem "soltos". Usa só os tokens de cor do app (ver index.css) e a
- * Fredoka herdada do :root. */
+ * fonte herdada do :root. */
 
 .mensagem,
 .mensagemErro,
@@ -77,7 +77,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--vermelho);
+  color: var(--vinhoVivo);
   margin: 0 0 4px;
 }
 
@@ -248,12 +248,12 @@
 }
 
 .tagStatusAtivo {
-  background-color: rgba(46, 125, 50, 0.15);
+  background-color: rgba(16, 185, 129, 0.15);
   color: var(--verde);
 }
 
 .tagStatusInativo {
-  background-color: rgba(168, 27, 22, 0.12);
+  background-color: rgba(225, 29, 72, 0.12);
   color: var(--vermelho);
 }
 
@@ -310,7 +310,7 @@
 }
 
 .link {
-  color: var(--vermelho);
+  color: var(--vinhoVivo);
   text-decoration: none;
 }
 
@@ -367,7 +367,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--vermelho);
+  color: var(--vinhoVivo);
   margin: 0 0 6px;
 }
 
@@ -507,7 +507,7 @@
 
 .documento:hover {
   border-color: var(--vinhoEscuro);
-  box-shadow: 0 4px 10px rgba(92, 22, 18, 0.1);
+  box-shadow: var(--sombraElevada);
   transform: translateY(-2px);
 }
 
@@ -528,7 +528,7 @@
   background: none;
   cursor: pointer;
   text-align: left;
-  font-family: "Fredoka", "Inter", sans-serif;
+  font-family: var(--fonte);
 }
 
 .documentoSelo {

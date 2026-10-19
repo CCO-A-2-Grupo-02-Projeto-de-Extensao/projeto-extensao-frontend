@@ -26,21 +26,19 @@
   gap: 12px;
 }
 
-.indicadores svg {
-  flex: 0 0 auto;
-  font-size: 40px !important;
-}
-
 .indicadores h1:first-child {
-  font-size: 28px;
-  line-height: 1;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 42px;
+  letter-spacing: -0.03em;
 }
 
 .indicadores h1:last-child {
-  margin-top: 4px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.25;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--textoSecundario);
 }
 
 .secao {
@@ -96,9 +94,10 @@
 .painelCalendario {
   min-width: 0;
   padding: var(--espaco-2);
-  border-radius: 7px;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
   background-color: var(--branco);
-  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--sombraCartao);
 }
 
 .painelCalendario {
@@ -144,9 +143,10 @@
 }
 
 .tabelaEventos th {
-  color: var(--branco);
-  background-color: var(--vinhoEscuro);
-  font-weight: 500;
+  color: var(--textoSecundario);
+  background-color: var(--superficieSuave);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .tabelaEventos th:first-child {
@@ -162,7 +162,7 @@
 .mensagemEstado,
 .mensagemErro {
   padding: var(--espaco-3) var(--espaco-1);
-  color: #666666;
+  color: var(--textoSecundario);
   font-size: 15px;
   line-height: 1.4;
   text-align: center;

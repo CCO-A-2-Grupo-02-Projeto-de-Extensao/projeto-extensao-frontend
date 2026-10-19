@@ -7,7 +7,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import desbravadoresLogoImg from "../../assets/desbravadores_logo.png";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
@@ -30,13 +30,22 @@ const itensNavegacao = [
 
 const estiloItem = {
   cursor: "pointer",
-  "&:hover": { backgroundColor: "var(--vermelho)" },
+  margin: "2px 12px",
+  borderRadius: "12px",
+  color: "#c4a8ab",
+  "& .MuiListItemIcon-root": { minWidth: "36px", color: "inherit" },
+  "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)", color: "#ffffff" },
+  "&.Mui-selected, &.Mui-selected:hover": {
+    backgroundColor: "var(--vinhoVivo)",
+    color: "#ffffff",
+  },
 };
 
-const negrito = { primary: { sx: { fontWeight: "bold" } } };
+const negrito = { primary: { sx: { fontSize: "14px", fontWeight: 600 } } };
 
 export function Sidebar() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -53,7 +62,7 @@ export function Sidebar() {
   return (
     <div
       className={styles.sidebar}
-      style={{ backgroundColor: "var(--vinhoEscuro)" }}
+      style={{ backgroundColor: "var(--vinhoProfundo)" }}
     >
       <Drawer
         variant="permanent"
@@ -77,6 +86,11 @@ export function Sidebar() {
             <ListItemButton
               key={path}
               sx={estiloItem}
+              selected={
+                path === "/dashboard"
+                  ? pathname === path
+                  : pathname.startsWith(path)
+              }
               onClick={() => handleNavigate(path)}
             >
               <ListItemIcon>

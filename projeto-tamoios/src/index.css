@@ -9,25 +9,46 @@
 }
 
 :root {
-  --text: #000000;
-  --vermelho: #a81b16;
-  --ambarOuro: #d4920a;
-  --azul: #2a4e9e;
-  --verde: #2e7d32;
-  --cremeClaro: #fff9f2;
-  --creme: #f2ebe0;
-  --cinza: #d7d7d7;
-  --vinhoEscuro: #5c1612;
-  --carvao: #221510;
-  --branco: #f8f9fa;
-  font-family: "Fredoka", "Inter", sans-serif;
+  --text: #1f191a;
+  --vermelho: #e11d48;
+  --perigoSuave: #fee2e2;
+  --ambarOuro: #d97706;
+  --azul: #2563eb;
+  --verde: #10b981;
+  --verdeSuave: #d1fae5;
+  --cremeClaro: #fbf9f7;
+  --creme: #f7f3ef;
+  --cinza: #e4dcd7;
+  --bordaForte: #d5cbc6;
+  --borda: #f0eae5;
+  --superficieSuave: #f7f4f1;
+  --vinhoEscuro: #4a151b;
+  --vinhoProfundo: #380f14;
+  --vinhoVivo: #6e1b24;
+  --carvao: #1f191a;
+  --textoSecundario: #6b5e60;
+  --textoSuave: #8c7d80;
+  --branco: #ffffff;
+  --sombraCartao: 0 1px 3px rgba(56, 15, 20, 0.04), 0 6px 16px rgba(56, 15, 20, 0.03);
+  --sombraElevada: 0 4px 6px rgba(56, 15, 20, 0.04), 0 12px 24px rgba(56, 15, 20, 0.06);
+  --sombraModal: 0 12px 36px rgba(56, 15, 20, 0.12), 0 2px 8px rgba(56, 15, 20, 0.04);
+  --fonte: "Plus Jakarta Sans", sans-serif;
+  font-family: var(--fonte);
   font-size: 16px;
+  color: var(--text);
+}
+
+body {
+  background-color: var(--cremeClaro);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1 {
   font-weight: 700;
   font-size: 24px;
-  color: var(--vinhoEscuro);
+  line-height: 32px;
+  letter-spacing: -0.01em;
+  color: var(--vinhoProfundo);
 }
 
 #center {

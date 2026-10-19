@@ -30,7 +30,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--vinhoEscuro);
+  border: 1px solid var(--bordaForte);
   border-radius: 50%;
   color: var(--vinhoEscuro);
   background-color: transparent;
@@ -62,14 +62,14 @@
   min-height: 40px;
   border-right: 1px solid var(--cinza);
   border-bottom: 1px solid var(--cinza);
-  font-family: "Fredoka", "Inter", sans-serif;
+  font-family: var(--fonte);
   font-size: 13px;
   line-height: 1;
 }
 
 .diaSemana {
   min-height: 32px;
-  color: #666666;
+  color: var(--textoSecundario);
   background-color: var(--cremeClaro);
   font-weight: 500;
 }
@@ -85,7 +85,7 @@
 }
 
 .foraDoMes {
-  color: #a5a5a5;
+  color: var(--textoSuave);
 }
 
 .hoje {

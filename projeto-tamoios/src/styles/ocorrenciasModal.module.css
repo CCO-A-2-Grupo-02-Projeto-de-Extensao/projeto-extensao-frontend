@@ -30,7 +30,7 @@
   background-color: var(--branco);
   color: var(--text);
   font-size: 14px;
-  font-family: "Fredoka", "Inter", sans-serif;
+  font-family: var(--fonte);
 }
 
 .inputData {

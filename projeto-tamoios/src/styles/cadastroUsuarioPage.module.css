@@ -12,36 +12,36 @@
   top: calc(100% + 5px);
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--branco);
   border: 1px solid var(--vinhoEscuro);
   border-radius: 5px;
   max-height: 220px;
   overflow-y: auto;
   z-index: 20;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombraModal);
 }
 
 .itemSugestao {
   display: block;
   width: 100%;
   border: none;
-  background: #fff;
+  background: var(--branco);
   text-align: left;
   padding: 10px 12px;
   cursor: pointer;
-  font-family: "Fredoka", "Inter", sans-serif;
-  color: #222;
+  font-family: var(--fonte);
+  color: var(--carvao);
   transition: background 0.15s ease;
 }
 
 .itemSugestao:hover,
 .itemSugestao:focus {
-  background: #f8f3f2;
+  background: var(--creme);
   outline: none;
 }
 
 .mensagemVazia {
   margin-top: 4px;
-  color: #5c1612;
+  color: var(--vinhoEscuro);
   font-size: 14px;
 }

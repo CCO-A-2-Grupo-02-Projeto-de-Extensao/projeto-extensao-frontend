@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(31, 25, 26, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,9 +18,9 @@
   height: 85vh;
   background-color: var(--cremeClaro);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--sombraModal);
   overflow: hidden;
-  margin-left: 200px;
+  margin-left: 240px;
 }
 
 .painelLista {
@@ -72,7 +72,7 @@
   padding: 8px 10px 8px 16px;
   border-bottom: 1px solid var(--cinza);
   font-size: 16px;
-  color: #333333;
+  color: var(--carvao);
 }
 
 .linha:last-child {
@@ -80,7 +80,7 @@
 }
 
 .linha:hover {
-  background-color: #fafafa;
+  background-color: var(--superficieSuave);
 }
 
 .linhaNome {
@@ -91,14 +91,14 @@
 .linhaDetalhe {
   padding-left: 12px;
   border-left: 1px solid var(--cinza);
-  color: #777777;
+  color: var(--textoSecundario);
   white-space: nowrap;
 }
 
 .vazio {
   padding: 28px 12px;
   text-align: center;
-  color: #999999;
+  color: var(--textoSuave);
   font-size: 14px;
 }
 
@@ -131,7 +131,7 @@
   margin-bottom: 10px;
   padding: 8px 10px;
   border-radius: 5px;
-  background-color: #f8e0e0;
+  background-color: var(--perigoSuave);
   color: var(--vermelho);
   font-size: 14px;
   text-align: center;
@@ -194,7 +194,7 @@
   margin: 0 0 10px;
   padding: 8px 10px;
   border-radius: 6px;
-  background-color: #fdf3e0;
+  background-color: #fef3c7;
   color: var(--carvao);
   font-size: 13px;
   line-height: 1.4;
@@ -209,8 +209,8 @@
   margin-bottom: 10px;
   padding: 8px 10px;
   border-radius: 5px;
-  background-color: #e2efe2;
-  color: #2c6b2f;
+  background-color: var(--verdeSuave);
+  color: #047857;
   font-size: 14px;
   text-align: center;
 }

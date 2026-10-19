@@ -29,13 +29,14 @@
   margin: 0;
   padding: 10px 20px;
   border: 1.5px solid transparent;
-  border-radius: 8px;
-  font-family: "Fredoka", "Inter", sans-serif;
-  font-size: 15px;
+  border-radius: 9999px;
+  font-family: var(--fonte);
+  font-size: 14px;
+  font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease,
-    border-color 0.15s ease, opacity 0.15s ease;
+    border-color 0.15s ease, opacity 0.15s ease, box-shadow 0.2s ease-in-out;
 }
 
 .botao:disabled {
@@ -44,7 +45,7 @@
 }
 
 .botao:focus-visible {
-  outline: 2px solid var(--vinhoEscuro);
+  outline: 2px solid var(--vinhoVivo);
   outline-offset: 2px;
 }
 
@@ -56,17 +57,17 @@
 }
 
 .primario:hover:not(:disabled) {
-  background-color: var(--vermelho);
+  background-color: var(--vinhoVivo);
 }
 
 .secundario {
   background-color: var(--branco);
-  color: var(--text);
-  border-color: var(--vinhoEscuro);
+  color: var(--vinhoEscuro);
+  border-color: var(--bordaForte);
 }
 
 .secundario:hover:not(:disabled) {
-  background-color: var(--cinza);
+  background-color: var(--creme);
 }
 
 .perigo {
@@ -75,7 +76,7 @@
 }
 
 .perigo:hover:not(:disabled) {
-  background-color: var(--vinhoEscuro);
+  background-color: #be123c;
 }
 
 .sucesso {
@@ -90,8 +91,7 @@
 .destaque {
   background-color: var(--cremeClaro);
   color: var(--carvao);
-  border-color: var(--cinza);
-  font-weight: 600;
+  border-color: var(--bordaForte);
 }
 
 .destaque:hover:not(:disabled) {
@@ -102,12 +102,12 @@
 
 .icone {
   padding: 8px;
-  background-color: var(--vermelho);
+  background-color: var(--vinhoEscuro);
   color: var(--branco);
 }
 
 .icone:hover:not(:disabled) {
-  background-color: var(--vinhoEscuro);
+  background-color: var(--vinhoVivo);
 }
 
 .fechar {
@@ -115,15 +115,15 @@
   height: 32px;
   padding: 0;
   background-color: transparent;
-  color: #666666;
-  border-radius: 8px;
+  color: var(--textoSecundario);
+  border-radius: 9999px;
   font-size: 24px;
   line-height: 1;
 }
 
 .fechar:hover:not(:disabled) {
-  background-color: var(--vermelho);
-  color: var(--cremeClaro);
+  background-color: var(--creme);
+  color: var(--vinhoEscuro);
 }
 
 /* Botão de formulário que ocupa a linha inteira (login, cadastro). */
@@ -134,5 +134,5 @@
 /* Versão compacta para barras de ação densas e células de tabela. */
 .compacto {
   padding: 7px 14px;
-  font-size: 14px;
+  font-size: 13px;
 }

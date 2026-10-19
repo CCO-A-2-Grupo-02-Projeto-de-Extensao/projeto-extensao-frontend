@@ -53,12 +53,12 @@
 }
 
 .tagAtivo {
-  background-color: rgba(46, 125, 50, 0.15);
+  background-color: rgba(16, 185, 129, 0.15);
   color: var(--verde);
 }
 
 .tagDesativado {
-  background-color: rgba(198, 40, 40, 0.12);
+  background-color: rgba(225, 29, 72, 0.12);
   color: var(--vermelho);
 }
 

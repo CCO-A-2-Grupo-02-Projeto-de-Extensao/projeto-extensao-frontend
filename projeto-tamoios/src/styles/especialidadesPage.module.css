@@ -8,13 +8,13 @@
   margin: 28px 0 18px;
   font-size: 20px;
   font-weight: 600;
-  color: #333333;
+  color: var(--carvao);
 }
 
 .mensagemEstado {
   text-align: center;
   padding: 50px 20px;
-  color: #777777;
+  color: var(--textoSecundario);
   font-size: 15px;
 }
 
@@ -22,7 +22,7 @@
   padding: 12px;
   margin-bottom: 14px;
   border-radius: 6px;
-  background-color: #f8e8e8;
+  background-color: var(--perigoSuave);
   color: var(--vermelho);
   font-size: 14px;
   text-align: center;

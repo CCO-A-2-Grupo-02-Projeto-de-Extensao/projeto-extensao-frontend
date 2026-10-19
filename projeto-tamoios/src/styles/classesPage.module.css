@@ -43,7 +43,7 @@
 .mensagemEstado {
   text-align: center;
   padding: 50px 20px;
-  color: #777777;
+  color: var(--textoSecundario);
   font-size: 15px;
 }
 

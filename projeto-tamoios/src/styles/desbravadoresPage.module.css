@@ -2,8 +2,10 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  background-color: var(--cinza);
-  border-radius: 10px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraCartao);
   padding: 20px;
   /* Respiro maior embaixo: separa a faixa de ações da seção da lista de membros. */
   margin: 24px 0 40px;

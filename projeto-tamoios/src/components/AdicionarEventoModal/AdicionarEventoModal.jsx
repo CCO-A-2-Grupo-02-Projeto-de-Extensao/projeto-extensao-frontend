@@ -52,12 +52,12 @@ const TOOLTIP_SLOT_PROPS = {
     sx: {
       backgroundColor: "var(--vinhoEscuro)",
       color: "var(--creme)",
-      fontFamily: '"Fredoka", "Inter", sans-serif',
+      fontFamily: "var(--fonte)",
       fontSize: "13px",
       fontWeight: 600,
       padding: "6px 12px",
       borderRadius: "6px",
-      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)",
+      boxShadow: "var(--sombraModal)",
     },
   },
   arrow: {

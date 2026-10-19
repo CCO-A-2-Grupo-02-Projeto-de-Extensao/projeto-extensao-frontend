@@ -1,9 +1,11 @@
 .customDrawerPaper {
-  background-color: var(--vinhoEscuro) !important;
-  color: var(--creme) !important;
+  width: 240px;
+  background-color: var(--vinhoProfundo) !important;
+  color: #c4a8ab !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 .customIcon {
-  fill: var(--creme) !important;
-  font-size: 2rem;
+  fill: currentColor !important;
+  font-size: 20px !important;
 }

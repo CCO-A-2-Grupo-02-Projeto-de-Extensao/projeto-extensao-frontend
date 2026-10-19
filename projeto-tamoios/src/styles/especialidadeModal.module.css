@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(31, 25, 26, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,7 +14,7 @@
   max-width: 520px;
   background-color: var(--cremeClaro);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--sombraModal);
   overflow: hidden;
 }
 
@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 22px 24px;
-  border-bottom: 3px solid var(--vermelho);
+  border-bottom: 3px solid var(--vinhoVivo);
 }
 
 .cabecalho h2 {
@@ -60,7 +60,7 @@
   margin-bottom: 7px;
   font-size: 14px;
   font-weight: 500;
-  color: #444444;
+  color: var(--textoSecundario);
 }
 
 .campo input,
@@ -68,7 +68,7 @@
 .campo textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #dddddd;
+  border: 1px solid var(--cinza);
   border-radius: 7px;
   padding: 11px 12px;
   font-family: inherit;
@@ -101,7 +101,7 @@
   width: 52px;
   height: 52px;
   border-radius: 8px;
-  background-color: #eeeeee;
+  background-color: var(--superficieSuave);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +115,7 @@
 }
 
 .previaImagem span {
-  color: #999999;
+  color: var(--textoSuave);
 }
 
 .botoes {

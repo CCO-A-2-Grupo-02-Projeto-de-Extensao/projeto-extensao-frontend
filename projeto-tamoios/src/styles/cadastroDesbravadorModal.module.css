@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(31, 25, 26, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,7 +17,7 @@
   border-radius: 12px;
   overflow: hidden;
   background-color: var(--cremeClaro);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--sombraModal);
 }
 
 .cabecalho {
@@ -25,7 +25,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 24px 32px;
-  border-bottom: 3px solid var(--vermelho);
+  border-bottom: 3px solid var(--vinhoVivo);
   background-color: var(--branco);
   flex-shrink: 0;
 }

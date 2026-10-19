@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(31, 25, 26, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,7 +20,7 @@
   height: 85vh;
   background-color: var(--cremeClaro);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--sombraModal);
   overflow: hidden;
 }
 
@@ -78,7 +78,7 @@
   padding: 12px 16px;
   border-bottom: 1px solid var(--cinza);
   font-size: 16px;
-  color: #333333;
+  color: var(--carvao);
   cursor: pointer;
 }
 
@@ -87,7 +87,7 @@
 }
 
 .linha:hover {
-  background-color: #fafafa;
+  background-color: var(--superficieSuave);
 }
 
 .checkbox {
@@ -107,14 +107,14 @@
 .linhaDetalhe {
   padding-left: 12px;
   border-left: 1px solid var(--cinza);
-  color: #777777;
+  color: var(--textoSecundario);
   white-space: nowrap;
 }
 
 .vazio {
   padding: 28px 12px;
   text-align: center;
-  color: #999999;
+  color: var(--textoSuave);
   font-size: 13px;
 }
 
@@ -157,10 +157,10 @@
   gap: 10px;
   padding: 10px 14px;
   margin-bottom: 4px;
-  background-color: #c9c9c9;
+  background-color: var(--cinza);
   border-radius: 4px;
   font-size: 15px;
-  color: #333333;
+  color: var(--carvao);
 }
 
 .marca {
@@ -171,7 +171,7 @@
   height: 15px;
   border-radius: 3px;
   background-color: var(--verde);
-  color: #ffffff;
+  color: var(--branco);
   flex-shrink: 0;
 }
 
