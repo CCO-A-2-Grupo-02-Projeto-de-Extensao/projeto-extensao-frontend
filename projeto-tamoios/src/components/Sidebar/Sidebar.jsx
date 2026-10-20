@@ -7,6 +7,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
+import { useLayoutEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import clubeTamoiosLogoImg from "../../assets/clube_tamoios_logo.webp";
 import { itensNavegacao } from "../../utils/navegacao.js";
@@ -20,7 +21,7 @@ const estiloItem = {
   "& .MuiListItemIcon-root": { minWidth: "36px", color: "inherit" },
   "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)", color: "#ffffff" },
   "&.Mui-selected, &.Mui-selected:hover": {
-    backgroundColor: "var(--vinhoVivo)",
+    backgroundColor: "transparent",
     color: "#ffffff",
   },
 };
@@ -30,6 +31,29 @@ const negrito = { primary: { sx: { fontSize: "14px", fontWeight: 600 } } };
 export function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const lista = useRef(null);
+  const indicador = useRef(null);
+  const posicionado = useRef(false);
+
+  useLayoutEffect(() => {
+    const destaque = indicador.current;
+    const ativo = lista.current?.querySelector(".Mui-selected");
+    if (!destaque) return;
+    if (!ativo) {
+      destaque.style.opacity = "0";
+      return;
+    }
+    if (!posicionado.current) destaque.style.transition = "none";
+    destaque.style.height = `${ativo.offsetHeight}px`;
+    destaque.style.transform = `translateY(${ativo.offsetTop}px)`;
+    destaque.style.opacity = "1";
+    if (!posicionado.current) {
+      posicionado.current = true;
+      requestAnimationFrame(() => {
+        destaque.style.transition = "";
+      });
+    }
+  }, [pathname]);
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -57,7 +81,12 @@ export function Sidebar() {
           },
         }}
       >
-        <List>
+        <List ref={lista} className={styles.lista}>
+          <span
+            ref={indicador}
+            className={styles.indicador}
+            aria-hidden="true"
+          />
           <ListItem style={{ justifyContent: "center", padding: "20px 0" }}>
             <span className={styles.logo}>
               <img src={clubeTamoiosLogoImg} alt="Logo do Clube Tamoios" />

@@ -20,7 +20,6 @@ function paraMembro(pessoa) {
     papel: pessoa.nomeCargo,
     categoria: pessoa.categoria,
     ativo: pessoa.ativo,
-    documentacao: false, // recalculado depois de carregar os documentos reais (ver documentosService)
     classe: pessoa.nomeClasse,
     idClasse: pessoa.idClasse,
     genero: pessoa.nomeGenero,
@@ -105,4 +104,9 @@ export async function reativarPessoa(idPessoa) {
 export async function criarUsuario({ idPessoa, idCargo, email, senha }) {
   const { data } = await api.post("/usuarios", { idPessoa, idCargo, email, senha });
   return data;
+}
+
+export async function listarUsuarios() {
+  const { data } = await api.get("/usuarios/todos");
+  return Array.isArray(data) ? data : [];
 }

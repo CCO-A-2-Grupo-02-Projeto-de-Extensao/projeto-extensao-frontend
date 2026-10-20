@@ -1,21 +1,33 @@
-import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
-import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import styles from "../../styles/statusBadge.module.css";
 
-export function StatusBadge({ completo }) {
-  if (completo) {
-    return (
-      <span className={`${styles.badge} ${styles.completo}`}>
-        <SentimentSatisfiedAltIcon fontSize="small" />
-        Documentação completa
-      </span>
-    );
+export function StatusBadge({ enviados, total }) {
+  if (enviados == null) {
+    return <span className={styles.carregando}>—</span>;
   }
 
+  const percentual = Math.round((enviados / total) * 100);
+  const completo = enviados === total;
+
   return (
-    <span className={`${styles.badge} ${styles.incompleto}`}>
-      <SentimentDissatisfiedIcon fontSize="small" />
-      Documentação incompleta
+    <span
+      className={`${styles.badge} ${completo ? styles.completo : styles.incompleto}`}
+      title={`${enviados} de ${total} documentos enviados`}
+    >
+      <span className={styles.barra}>
+        <span
+          className={styles.preenchido}
+          style={{ transform: `scaleX(${percentual / 100})` }}
+        />
+      </span>
+      <span className={styles.valor}>{percentual}%</span>
+      {completo ? (
+        <CheckCircleIcon fontSize="small" />
+      ) : (
+        <span className={styles.contagem}>
+          {enviados} de {total}
+        </span>
+      )}
     </span>
   );
 }

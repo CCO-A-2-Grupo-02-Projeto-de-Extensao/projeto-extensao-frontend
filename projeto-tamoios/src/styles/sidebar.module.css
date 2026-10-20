@@ -16,12 +16,6 @@
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-@keyframes crescerIndicador {
-  from {
-    transform: scaleY(0);
-  }
-}
-
 .logo {
   position: relative;
   display: block;
@@ -61,7 +55,23 @@
   position: relative;
 }
 
-.item::before {
+.lista {
+  position: relative;
+}
+
+.indicador {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  border-radius: 12px;
+  background-color: var(--vinhoVivo);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s ease;
+}
+
+.indicador::before {
   content: "";
   position: absolute;
   left: -12px;
@@ -70,13 +80,6 @@
   width: 4px;
   border-radius: 0 4px 4px 0;
   background-color: var(--ambarOuro);
-  transform: scaleY(0);
-  transform-origin: bottom;
-}
-
-.item:global(.Mui-selected)::before {
-  transform: scaleY(1);
-  animation: crescerIndicador 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .item .customIcon {
@@ -107,7 +110,7 @@
     transform: none;
   }
 
-  .item:global(.Mui-selected)::before {
-    animation: none;
+  .indicador {
+    transition: none;
   }
 }

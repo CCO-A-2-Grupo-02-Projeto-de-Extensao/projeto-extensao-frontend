@@ -7,7 +7,6 @@ import { Card } from "../components/Card/Card.jsx";
 import { CalendarioAcademico } from "../components/CalendarioAcademico/CalendarioAcademico.jsx";
 import Kpi from "../components/Kpi/Kpi.jsx";
 import { Select } from "../components/Select/Select.jsx";
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { getDadosDashboard } from "../services/dashboardService.js";
 import { AdicionarEventoModal } from "../components/AdicionarEventoModal/AdicionarEventoModal.jsx";
 import styles from "../styles/dashboard.module.css";
@@ -78,7 +77,7 @@ function Dashboard() {
   const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
 
   return (
-    <DashboardLayout>
+    <>
       <div className={styles.dashboard}>
         {erro && (
           <p className={styles.mensagemErro} role="alert">
@@ -210,7 +209,7 @@ function Dashboard() {
           }}
         />
       </div>
-    </DashboardLayout>
+    </>
   );
 }
 

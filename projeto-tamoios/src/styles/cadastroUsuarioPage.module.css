@@ -1,47 +1,383 @@
-.containerBusca {
+.aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.avisoSucesso {
+  background-color: var(--verdeSuave);
+  color: #047857;
+}
+
+.avisoErro {
+  background-color: var(--perigoSuave);
+  color: var(--vermelho);
+}
+
+.etapa {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px 0;
+}
+
+.etapa + .etapa {
+  border-top: 1px solid var(--borda);
+}
+
+.etapaTitulo {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+}
+
+.etapaNumero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.etapaCorpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.etapaDica {
+  display: block;
+  margin: 2px 0 14px;
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+.busca {
   position: relative;
-  width: 100%;
+  display: flex;
+  align-items: center;
 }
 
-.inputBusca {
-  width: 100%;
+.busca input {
+  margin: 0;
+  padding-left: 40px;
 }
 
-.listaSugestoes {
+.buscaIcone {
   position: absolute;
-  top: calc(100% + 5px);
+  left: 12px;
+  color: var(--textoSuave);
+  pointer-events: none;
+}
+
+.sugestoes {
+  composes: janela from "./animacoes.module.css";
+  position: absolute;
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: var(--branco);
-  border: 1px solid var(--vinhoEscuro);
-  border-radius: 5px;
-  max-height: 220px;
-  overflow-y: auto;
   z-index: 20;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
   box-shadow: var(--sombraModal);
+  transform-origin: top center;
 }
 
-.itemSugestao {
-  display: block;
+.sugestao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  border: none;
-  background: var(--branco);
-  text-align: left;
-  padding: 10px 12px;
-  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background-color: transparent;
   font-family: var(--fonte);
-  color: var(--carvao);
-  transition: background 0.15s ease;
+  text-align: left;
+  cursor: pointer;
 }
 
-.itemSugestao:hover,
-.itemSugestao:focus {
-  background: var(--creme);
+.sugestao:hover,
+.sugestao:focus-visible {
   outline: none;
+  background-color: var(--creme);
 }
 
-.mensagemVazia {
-  margin-top: 4px;
-  color: var(--vinhoEscuro);
+.vazio {
+  display: block;
+  padding: 12px 10px;
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+.pessoaEscolhida {
+  composes: janela from "./animacoes.module.css";
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--cinza);
+  border-radius: 14px;
+  background-color: var(--superficieSuave);
+}
+
+.pessoaTextos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pessoaNome {
   font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text);
+}
+
+.pessoaDetalhe {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--textoSecundario);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cargos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cargo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--cinza);
+  border-radius: 9999px;
+  background-color: var(--branco);
+  font-family: var(--fonte);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--carvao);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.cargo:hover:not(:disabled) {
+  border-color: var(--bordaForte);
+  background-color: var(--creme);
+}
+
+.cargo:focus-visible {
+  outline: 2px solid var(--vinhoVivo);
+  outline-offset: 2px;
+}
+
+.cargo:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cargoAtivo,
+.cargoAtivo:hover:not(:disabled) {
+  border-color: var(--vinhoEscuro);
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+}
+
+.forca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  --corForca: var(--vermelho);
+}
+
+.forca[data-nivel="2"] {
+  --corForca: var(--ambarOuro);
+}
+
+.forca[data-nivel="3"],
+.forca[data-nivel="4"] {
+  --corForca: var(--verde);
+}
+
+.forcaBarras {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.forcaBarras span {
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--superficieSuave);
+  transition: background-color 0.2s ease;
+}
+
+.forcaBarras .forcaBarraCheia {
+  background-color: var(--corForca);
+}
+
+.forcaRotulo {
+  min-width: 120px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+  color: var(--corForca);
+}
+
+.overlay {
+  composes: fundo from "./animacoes.module.css";
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgba(31, 25, 26, 0.45);
+}
+
+.modal {
+  composes: janela from "./animacoes.module.css";
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 680px;
+  max-height: calc(100vh - 40px);
+  margin-left: 240px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraModal);
+  overflow: hidden;
+}
+
+.modalCabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 18px;
+  border-bottom: 3px solid var(--vinhoVivo);
+}
+
+.modalTitulo {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+}
+
+.modalSubtitulo {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+.modalCorpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 24px;
+}
+
+.modalCorpo .aviso {
+  margin: 16px 0 0;
+}
+
+.modalRodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--borda);
+  background-color: var(--superficieSuave);
+}
+
+.resumo {
+  margin-bottom: 20px;
+}
+
+.resumoValor {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 36px;
+  letter-spacing: -0.03em;
+  color: var(--vinhoEscuro);
+}
+
+.listagem table {
+  box-shadow: 0 0 0 1px var(--cinza);
+}
+
+.tabela {
+  table-layout: fixed;
+}
+
+.tabela th:nth-child(1) {
+  width: 34%;
+}
+
+.tabela th:nth-child(2) {
+  width: 34%;
+}
+
+.tabela th:nth-child(3),
+.tabela th:nth-child(4) {
+  width: 16%;
+}
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.email {
+  overflow: hidden;
+  color: var(--textoSecundario);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .cargos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .modal {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .modalRodape {
+    flex-direction: column-reverse;
+  }
 }

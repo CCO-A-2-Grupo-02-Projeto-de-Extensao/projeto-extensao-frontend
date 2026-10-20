@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { NomePagina } from "../components/NomePagina/NomePagina.jsx";
 import { ClasseCard } from "../components/ClasseCard/ClasseCard.jsx";
 import { Select } from "../components/Select/Select.jsx";
@@ -59,7 +58,7 @@ export function ClassesPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className={styles.cabecalho}>
         <NomePagina titulo="Classes" subtitulo="Resumo das classes" />
       </div>
@@ -104,7 +103,7 @@ export function ClassesPage() {
           ))}
         </div>
       )}
-    </DashboardLayout>
+    </>
   );
 }
 

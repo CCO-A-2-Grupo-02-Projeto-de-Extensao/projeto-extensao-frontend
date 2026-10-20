@@ -1,0 +1,17 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  user-select: none;
+}
+
+.inativo {
+  background-color: var(--textoSuave);
+}

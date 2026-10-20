@@ -4,7 +4,6 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import RestoreIcon from "@mui/icons-material/Restore";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { MemberFilters } from "../components/MemberFilters/MemberFilters.jsx";
 import { MemberTable } from "../components/MemberTable/MemberTable.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
@@ -161,7 +160,7 @@ export function DesbravadoresPage() {
     !carregando && !erro && membrosFiltrados.length === 0;
 
   return (
-    <DashboardLayout>
+    <>
       <header className={detalhe.cabecalho}>
         <button
           type="button"
@@ -291,7 +290,7 @@ export function DesbravadoresPage() {
         onFechar={() => setModalReativarAberto(false)}
         onConfirmar={aoConfirmarReativacao}
       />
-    </DashboardLayout>
+    </>
   );
 }
 

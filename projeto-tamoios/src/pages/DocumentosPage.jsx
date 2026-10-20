@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import NomePagina from "../components/NomePagina/NomePagina.jsx";
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import Documento from "../components/Documento/Documento.jsx";
 import styles from "../styles/documentoPage.module.css";
 import api from "../services/api.js";
@@ -75,7 +74,7 @@ export function DocumentosPage() {
   }, []);
 
   return (
-    <DashboardLayout>
+    <>
       <NomePagina
         titulo="Documentos"
         subtitulo="Principais documentos do clube"
@@ -102,6 +101,6 @@ export function DocumentosPage() {
           </ul>
         )}
       </section>
-    </DashboardLayout>
+    </>
   );
 }

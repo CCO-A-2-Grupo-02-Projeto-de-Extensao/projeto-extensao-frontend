@@ -1,357 +1,345 @@
-import NomePagina from "../components/NomePagina/NomePagina";
-import { DashboardLayout } from "../layout/DashboardLayout";
-import { Input } from "../components/Input/Input.jsx";
-import Select from "../components/Select/Select.jsx";
-import { Button } from "../components/Button/Button.jsx";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { useEffect, useRef, useState } from "react";
-import api from "../services/api.js";
-import { InputSenha } from "../components/InputSenha/InputSenha.jsx";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LockIcon from "@mui/icons-material/Lock";
+import { Input } from "../components/Input/Input.jsx";
+import { Select } from "../components/Select/Select.jsx";
+import { Pagination } from "../components/Pagination/Pagination.jsx";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
+import { CadastroUsuarioModal } from "../components/CadastroUsuarioModal/CadastroUsuarioModal.jsx";
+import { useCatalogos } from "../hooks/useCatalogos.js";
+import {
+  getMembros,
+  listarUsuarios,
+  SITUACOES,
+} from "../services/membrosService.js";
+import { normalizar } from "../services/buscaGlobalService.js";
+import { Avatar } from "../components/Avatar/Avatar.jsx";
+import detalhe from "../styles/desbravadorDetalhePage.module.css";
+import tabela from "../styles/tabelaBase.module.css";
+import filtros from "../styles/memberFilters.module.css";
+import situacao from "../styles/memberTable.module.css";
+import styles from "../styles/cadastroUsuarioPage.module.css";
+
+const CARGOS_COM_ACESSO = ["Diretor", "Secretário", "Tesoureiro", "Instrutor"];
+const CARGOS_QUE_CADASTRAM = ["Diretor", "Secretário"];
+const TODOS = "todos";
+const TAMANHO_PAGINA = 10;
+
+function lerUsuarioLogado() {
+  try {
+    return JSON.parse(localStorage.getItem("usuario")) ?? {};
+  } catch {
+    return {};
+  }
+}
 
 export function CadastroUsuarioPage() {
-  const [desbravadores, setDesbravadores] = useState([]);
+  const navegar = useNavigate();
+  const { cargos } = useCatalogos();
+  const podeCadastrar = CARGOS_QUE_CADASTRAM.includes(
+    lerUsuarioLogado().nomeCargo
+  );
+
+  const [pessoas, setPessoas] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [carregando, setCarregando] = useState(true);
-  const [termoBusca, setTermoBusca] = useState("");
-  const [desbravadorSelecionado, setDesbravadorSelecionado] = useState(null);
-  const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
-  const containerBuscaRef = useRef(null);
-  const [idCargoSelecionado, setIdCargoSelecionado] = useState("");
-  const [idPessoaSelecionado, setIdPessoaSelecionado] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [touched, setTouched] = useState(false);
-  const navigate = useNavigate();
-  const handleCadastroUsuario = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const [erro, setErro] = useState("");
+  const [aviso, setAviso] = useState("");
+  const [modalAberto, setModalAberto] = useState(false);
 
-    try {
-      await api.post("/usuarios", {
-        idPessoa: idPessoaSelecionado,
-        idCargo: idCargoSelecionado,
-        email,
-        senha,
-      });
-      alert("Usuário cadastrado com sucesso!");
-      navigate("/dashboard");
-    } catch (err) {
-      console.log(idPessoaSelecionado, idCargoSelecionado, email, senha);
-      alert(
-        err.response?.data?.message ||
-          "Erro ao cadastrar usuário. Tente novamente.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [ordenacao, setOrdenacao] = useState("az");
+  const [cargo, setCargo] = useState(TODOS);
+  const [filtroSituacao, setFiltroSituacao] = useState(SITUACOES.TODOS);
+  const [busca, setBusca] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1);
 
-  useEffect(() => {
-    let ativo = true;
-
-    async function carregarDesbravadores() {
-      try {
-        const resposta = await api.get(`/pessoas`);
-
-        if (!ativo) {
-          return;
-        }
-
-        setDesbravadores(Array.isArray(resposta.data) ? resposta.data : []);
-        console.log("Desbravadores carregados:", resposta.data);
-      } catch (error) {
-        if (!ativo) {
-          return;
-        }
-
-        console.error("Erro ao carregar desbravadores:", error);
-        setDesbravadores([]);
-      } finally {
-        if (ativo) {
-          setCarregando(false);
-        }
-      }
-    }
-
-    carregarDesbravadores();
-
-    return () => {
-      ativo = false;
-    };
-  }, []);
-
-  const desbravadoresFiltrados = desbravadores.filter((desbravador) =>
-    desbravador?.nome?.toLowerCase().includes(termoBusca.toLowerCase()),
+  const carregar = useCallback(
+    () =>
+      Promise.all([getMembros(), podeCadastrar ? listarUsuarios() : []])
+        .then(([membros, lista]) => {
+          setPessoas(membros.filter((membro) => membro.ativo));
+          setUsuarios(lista);
+          setErro("");
+        })
+        .catch(() => setErro("Não foi possível carregar os usuários."))
+        .finally(() => setCarregando(false)),
+    [podeCadastrar]
   );
 
   useEffect(() => {
-    function handleCliqueFora(event) {
-      if (
-        containerBuscaRef.current &&
-        !containerBuscaRef.current.contains(event.target)
-      ) {
-        setMostrarSugestoes(false);
-      }
-    }
+    carregar();
+  }, [carregar]);
 
-    document.addEventListener("mousedown", handleCliqueFora);
+  const cargosDeAcesso = cargos.filter((item) =>
+    CARGOS_COM_ACESSO.includes(item.nome)
+  );
 
-    return () => {
-      document.removeEventListener("mousedown", handleCliqueFora);
-    };
-  }, []);
+  const pessoasSemAcesso = useMemo(() => {
+    const cpfs = new Set(usuarios.map((usuario) => usuario.cpfPessoa));
+    return pessoas
+      .filter((membro) => !membro.cpf || !cpfs.has(membro.cpf))
+      .sort((a, b) => a.nome.localeCompare(b.nome));
+  }, [pessoas, usuarios]);
 
-  const handleSelecionarDesbravador = (desbravador) => {
-    setIdPessoaSelecionado(Number(desbravador.idPessoa));
-    setDesbravadorSelecionado(desbravador);
-    setTermoBusca(desbravador.nome ?? "");
-    setMostrarSugestoes(false);
+  const filtrados = useMemo(() => {
+    const alvo = normalizar(busca);
+    return usuarios
+      .filter((usuario) => {
+        if (filtroSituacao === SITUACOES.ATIVOS) return usuario.ativo;
+        if (filtroSituacao === SITUACOES.INATIVOS) return !usuario.ativo;
+        return true;
+      })
+      .filter((usuario) => cargo === TODOS || usuario.nomeCargo === cargo)
+      .filter(
+        (usuario) =>
+          !alvo ||
+          normalizar(usuario.nomePessoa).includes(alvo) ||
+          normalizar(usuario.email).includes(alvo)
+      )
+      .sort((a, b) =>
+        ordenacao === "az"
+          ? a.nomePessoa.localeCompare(b.nomePessoa)
+          : b.nomePessoa.localeCompare(a.nomePessoa)
+      );
+  }, [usuarios, filtroSituacao, cargo, busca, ordenacao]);
+
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(filtrados.length / TAMANHO_PAGINA)
+  );
+  const daPagina = filtrados.slice(
+    (paginaAtual - 1) * TAMANHO_PAGINA,
+    paginaAtual * TAMANHO_PAGINA
+  );
+
+  const mudarFiltro = (definir) => (evento) => {
+    definir(evento.target.value);
+    setPaginaAtual(1);
+  };
+
+  const ativos = usuarios.filter((usuario) => usuario.ativo);
+  const resumo = [
+    { rotulo: "Ativos", valor: ativos.length },
+    { rotulo: "Inativos", valor: usuarios.length - ativos.length },
+    ...CARGOS_COM_ACESSO.map((nome) => ({
+      rotulo: nome,
+      valor: ativos.filter((usuario) => usuario.nomeCargo === nome).length,
+    })),
+  ];
+
+  const aoCriar = (nome) => {
+    setModalAberto(false);
+    setAviso(`Acesso criado para ${nome}.`);
+    carregar();
   };
 
   return (
-    <DashboardLayout>
-      <NomePagina
-        titulo="Cadastrar Usuário"
-        subtitulo="Adicionar um novo usuário no clube Tamoios"
-      ></NomePagina>
-      <section
-        style={{
-          marginTop: "20px",
-          marginBottom: "20px",
-          display: "flex",
-          gap: "20px",
-          alignItems: "center",
-          justifyContent: "space-around",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
+    <>
+      <header className={detalhe.cabecalho}>
+        <button
+          type="button"
+          className={detalhe.botaoVoltar}
+          onClick={() => navegar("/dashboard")}
+          aria-label="Voltar para o início"
         >
-          <AccountCircleIcon sx={{ fontSize: 200 }} />
-          <Button
-            variante="secundario"
-            texto={"Adicionar Foto (Opcional)"}
-            mensagemAlert={"Funcionalidade ainda não implementada."}
-          />
-        </div>
-        <div>
-          {localStorage.getItem("usuario") &&
-            JSON.parse(localStorage.getItem("usuario")).nomeCargo !==
-              "Diretor" &&
-            JSON.parse(localStorage.getItem("usuario")).cargo !==
-              "Secretário" && (
-              <div
-                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
-              >
-                {
-                  "Usuário tem que ser Diretor ou Secretário para poder cadastrar uma nova pessoa."
-                }
-              </div>
-            )}
-          <form onSubmit={handleCadastroUsuario} action="">
-            <label htmlFor="">Cargo:</label>
-            <Select
-              placeholder="Selecione o cargo"
-              onChange={(e) =>
-                setIdCargoSelecionado(
-                  e.target.value === "" ? "" : Number(e.target.value),
-                )
-              }
-            >
-              <option value="">Selecione o cargo</option>
-              <option value="1">Diretor</option>
-              <option value="2">Secretário</option>
-              <option value="3">Tesoureiro</option>
-              <option value="5">Instrutor</option>
-            </Select>
-            <br />
-            <label htmlFor="">Associar Desbravador</label>
-            <div
-              ref={containerBuscaRef}
-              style={{ position: "relative", width: "100%" }}
-            >
-              <Input
-                type="text"
-                placeholder="Buscar desbravador pelo nome"
-                value={termoBusca}
-                onChange={(event) => {
-                  const valor = event.target.value;
-                  setTermoBusca(valor);
-                  setDesbravadorSelecionado(null);
-                  setMostrarSugestoes(valor.trim().length > 0);
-                }}
-                onFocus={() => {
-                  if (termoBusca.trim().length > 0) {
-                    setMostrarSugestoes(true);
-                  }
-                }}
-                aria-label="Buscar desbravador"
-              />
+          <ArrowBackIcon fontSize="small" />
+        </button>
 
-              {mostrarSugestoes &&
-                termoBusca &&
-                desbravadoresFiltrados.length > 0 &&
-                !desbravadorSelecionado && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "calc(100% + 5px)",
-                      left: 0,
-                      right: 0,
-                      background: "var(--branco)",
-                      border: "1px solid var(--vinhoEscuro)",
-                      borderRadius: "5px",
-                      maxHeight: "220px",
-                      overflowY: "auto",
-                      zIndex: 20,
-                      boxShadow: "var(--sombraModal)",
-                    }}
-                  >
-                    {desbravadoresFiltrados.map((desbravador) => (
-                      <button
-                        key={desbravador.idPessoa}
-                        type="button"
-                        onClick={() => {
-                          handleSelecionarDesbravador(desbravador);
-                          setTouched(true);
-                        }}
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          border: "none",
-                          background: "var(--branco)",
-                          textAlign: "left",
-                          padding: "10px 12px",
-                          cursor: "pointer",
-                          fontFamily: "var(--fonte)",
-                          color: "var(--carvao)",
-                          transition: "background 0.15s ease",
-                        }}
-                        onMouseEnter={(event) => {
-                          event.currentTarget.style.background = "var(--creme)";
-                        }}
-                        onMouseLeave={(event) => {
-                          event.currentTarget.style.background = "var(--branco)";
-                        }}
-                      >
-                        {desbravador.nome}
-                      </button>
+        <div className={detalhe.cabecalhoTextos}>
+          <p className={detalhe.sobretitulo}>
+            Acesso ao sistema
+            {!carregando && podeCadastrar && (
+              <span className={detalhe.matricula}>
+                {usuarios.length} usuários cadastrados
+              </span>
+            )}
+          </p>
+          <h1 className={detalhe.titulo}>Usuários</h1>
+          <p className={detalhe.subtitulo}>
+            Quem da diretoria e da equipe de instrutores pode entrar no Arandu.
+          </p>
+        </div>
+
+        <div className={detalhe.cabecalhoAcoes}>
+          <button
+            type="button"
+            className={detalhe.botaoPrimario}
+            onClick={() => {
+              setAviso("");
+              setModalAberto(true);
+            }}
+            disabled={!podeCadastrar || carregando}
+          >
+            <PersonAddIcon fontSize="small" />
+            Cadastrar usuário
+          </button>
+        </div>
+      </header>
+
+      {!podeCadastrar && (
+        <p className={`${styles.aviso} ${styles.avisoErro}`} role="alert">
+          <LockIcon fontSize="small" />
+          Só Diretor ou Secretário podem cadastrar e ver os usuários.
+        </p>
+      )}
+
+      {aviso && (
+        <p className={`${styles.aviso} ${styles.avisoSucesso}`} role="status">
+          <CheckCircleIcon fontSize="small" />
+          {aviso}
+        </p>
+      )}
+
+      {podeCadastrar && (
+        <>
+          <section className={`${detalhe.blocoDados} ${styles.resumo}`}>
+            {resumo.map(({ rotulo, valor }) => (
+              <div key={rotulo} className={detalhe.dado}>
+                <span className={detalhe.dadoRotulo}>{rotulo}</span>
+                <span className={styles.resumoValor}>
+                  {carregando ? "—" : valor}
+                </span>
+              </div>
+            ))}
+          </section>
+
+          <section className={`${detalhe.secao} ${styles.listagem}`}>
+            <div className={detalhe.secaoCabecalho}>
+              <h2 className={detalhe.secaoTitulo}>Usuários</h2>
+              {!carregando && !erro && (
+                <span className={detalhe.secaoContagem}>
+                  {filtrados.length}{" "}
+                  {filtrados.length === 1 ? "encontrado" : "encontrados"}
+                </span>
+              )}
+            </div>
+
+            <div className={filtros.filtros}>
+              <div className={filtros.campoOrdenacao}>
+                <Select
+                  value={ordenacao}
+                  onChange={mudarFiltro(setOrdenacao)}
+                  aria-label="Ordenação"
+                >
+                  <option value="az">A-Z</option>
+                  <option value="za">Z-A</option>
+                </Select>
+              </div>
+              <div className={filtros.campoSituacao}>
+                <Select
+                  value={cargo}
+                  onChange={mudarFiltro(setCargo)}
+                  aria-label="Cargo"
+                >
+                  <option value={TODOS}>Todos os cargos</option>
+                  {CARGOS_COM_ACESSO.map((nome) => (
+                    <option key={nome} value={nome}>
+                      {nome}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className={filtros.campoSituacao}>
+                <Select
+                  value={filtroSituacao}
+                  onChange={mudarFiltro(setFiltroSituacao)}
+                  aria-label="Situação"
+                >
+                  <option value={SITUACOES.TODOS}>Ativos e inativos</option>
+                  <option value={SITUACOES.ATIVOS}>Ativos</option>
+                  <option value={SITUACOES.INATIVOS}>Inativos</option>
+                </Select>
+              </div>
+              <div className={filtros.campoBusca}>
+                <Input
+                  type="search"
+                  placeholder="Buscar por nome ou e-mail"
+                  value={busca}
+                  onChange={mudarFiltro(setBusca)}
+                  aria-label="Buscar usuário"
+                />
+              </div>
+            </div>
+
+            {carregando ? (
+              <Esqueleto linhas={6} rotulo="Carregando usuários" />
+            ) : erro ? (
+              <span className={styles.vazio}>{erro}</span>
+            ) : filtrados.length === 0 ? (
+              <span className={styles.vazio}>Nenhum usuário encontrado.</span>
+            ) : (
+              <>
+                <table className={`${tabela.tabela} ${styles.tabela}`}>
+                  <thead>
+                    <tr>
+                      <th>Usuário</th>
+                      <th>E-mail</th>
+                      <th>Cargo</th>
+                      <th>Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {daPagina.map((usuario) => (
+                      <tr key={usuario.idUsuario}>
+                        <td>
+                          <span className={styles.usuario}>
+                            <Avatar
+                              nome={usuario.nomePessoa}
+                              tamanho={32}
+                              inativo={!usuario.ativo}
+                            />
+                            <span className={styles.pessoaNome}>
+                              {usuario.nomePessoa}
+                            </span>
+                          </span>
+                        </td>
+                        <td className={styles.email}>{usuario.email}</td>
+                        <td>
+                          <span className={detalhe.tagPapel}>
+                            {usuario.nomeCargo}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className={`${situacao.tagSituacao} ${
+                              usuario.ativo
+                                ? situacao.tagAtivo
+                                : situacao.tagDesativado
+                            }`}
+                          >
+                            {usuario.ativo ? "Ativo" : "Inativo"}
+                          </span>
+                        </td>
+                      </tr>
                     ))}
-                  </div>
+                  </tbody>
+                </table>
+                {totalPaginas > 1 && (
+                  <Pagination
+                    paginaAtual={paginaAtual}
+                    totalPaginas={totalPaginas}
+                    onPaginaChange={setPaginaAtual}
+                  />
                 )}
+              </>
+            )}
+          </section>
+        </>
+      )}
 
-              {mostrarSugestoes &&
-                termoBusca &&
-                desbravadoresFiltrados.length === 0 &&
-                !carregando &&
-                !desbravadorSelecionado && (
-                  <div
-                    style={{
-                      marginTop: "4px",
-                      color: "var(--vinhoEscuro)",
-                      fontSize: "16px",
-                    }}
-                  >
-                    Nenhum desbravador encontrado.
-                  </div>
-                )}
-            </div>
-            {!desbravadorSelecionado && touched && (
-              <div
-                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
-              >
-                {
-                  "É necessário selecionar um desbravador para associar ao usuário."
-                }
-              </div>
-            )}
-            <br />
-            <label htmlFor="">Email:</label>
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              required
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => setTouched(true)}
-            />
-            {!email && touched && (
-              <div
-                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
-              >
-                {
-                  "É necessário adicionar um email para associar ao usuário. O email será usado para login."
-                }
-              </div>
-            )}
-            <br />
-            <div style={{ display: "flex", gap: "20px" }}>
-              <div>
-                <label htmlFor="">Senha:</label>
-                <InputSenha
-                  placeholder="Sua senha"
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  required
-                  disabled={loading}
-                  onBlur={() => setTouched(true)}
-                />
-              </div>
-              <div>
-                <label htmlFor="">Confirmar Senha:</label>
-                <InputSenha
-                  placeholder="Confirme sua senha"
-                  value={senhaConfirmacao}
-                  onChange={(e) => setSenhaConfirmacao(e.target.value)}
-                  required
-                  disabled={loading}
-                  onBlur={() => setTouched(true)}
-                />
-              </div>
-            </div>
-            {senha.length < 6 && touched && (
-              <div
-                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
-              >
-                {
-                  "A senha deve ter pelo menos 6 caracteres. Por favor, escolha uma senha mais forte."
-                }
-              </div>
-            )}
-            {senha !== senhaConfirmacao && (
-              <div
-                style={{ color: "red", marginBottom: "15px", fontSize: "16px" }}
-              >
-                {
-                  "As senhas não coincidem. Por favor, verifique e tente novamente."
-                }
-              </div>
-            )}
-            <Button
-              texto={loading ? "Carregando..." : "Cadastrar Usuário"}
-              disabled={
-                senha !== senhaConfirmacao ||
-                !desbravadorSelecionado ||
-                !email ||
-                !senha ||
-                !senhaConfirmacao ||
-                JSON.parse(localStorage.getItem("usuario")).nomeCargo !==
-                  "Diretor" ||
-                JSON.parse(localStorage.getItem("usuario")).nomeCargo !==
-                  "Secretário"
-              }
-              type="submit"
-              larguraTotal
-            />
-          </form>
-        </div>
-      </section>
-    </DashboardLayout>
+      {modalAberto && (
+        <CadastroUsuarioModal
+          pessoas={pessoasSemAcesso}
+          cargos={cargosDeAcesso}
+          onFechar={() => setModalAberto(false)}
+          onCriado={aoCriar}
+        />
+      )}
+    </>
   );
 }
+
+export default CadastroUsuarioPage;

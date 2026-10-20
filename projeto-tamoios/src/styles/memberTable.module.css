@@ -24,24 +24,34 @@
   white-space: nowrap;
 }
 
-.colunas th:nth-child(1),
-.colunas td:nth-child(1) {
-  width: 37%;
+.colunas .colunaFoto {
+  width: 64px;
+  padding-right: 0;
+}
+
+.colunas .colunaFoto > * {
+  display: inline-flex;
+  vertical-align: middle;
 }
 
 .colunas th:nth-child(2),
 .colunas td:nth-child(2) {
-  width: 24%;
+  width: 35%;
 }
 
 .colunas th:nth-child(3),
 .colunas td:nth-child(3) {
-  width: 16%;
+  width: 22%;
 }
 
 .colunas th:nth-child(4),
 .colunas td:nth-child(4) {
-  width: 23%;
+  width: 16%;
+}
+
+.colunas th:nth-child(5),
+.colunas td:nth-child(5) {
+  width: 27%;
 }
 
 /* Mesma linguagem das pílulas de status do modal de detalhes

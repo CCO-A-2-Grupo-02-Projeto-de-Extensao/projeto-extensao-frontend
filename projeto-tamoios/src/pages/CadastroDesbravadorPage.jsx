@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import PersonIcon from "@mui/icons-material/Person";
 
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { UploadDocumentoModal } from "../components/UploadDocumentoModal/UploadDocumentoModal.jsx";
 import { FotoEnquadrada } from "../components/FotoEnquadrada/FotoEnquadrada.jsx";
@@ -34,6 +32,7 @@ import {
 import styles from "../styles/desbravadorDetalhePage.module.css";
 import formStyles from "../styles/cadastroDesbravadorModal.module.css";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
+import { Avatar } from "../components/Avatar/Avatar.jsx";
 
 export function CadastroDesbravadorPage() {
   const navegar = useNavigate();
@@ -200,7 +199,7 @@ export function CadastroDesbravadorPage() {
   const percentual = Math.round((enviados / DOCUMENTOS.length) * 100);
 
   return (
-    <DashboardLayout>
+    <>
       <header className={`${styles.cabecalho} ${styles.cabecalhoFixo}`}>
         <button
           type="button"
@@ -258,9 +257,7 @@ export function CadastroDesbravadorPage() {
                   tamanho={120}
                 />
               ) : (
-                <div className={styles.avatar}>
-                  <PersonIcon className={styles.avatarIcone} />
-                </div>
+                <Avatar nome={formData.nome} tamanho={120} />
               )}
 
               <button
@@ -392,7 +389,7 @@ export function CadastroDesbravadorPage() {
         onConfirmar={voltarParaLista}
         onCancelar={() => setConfirmandoDescarte(false)}
       />
-    </DashboardLayout>
+    </>
   );
 }
 

@@ -1,14 +1,51 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 500;
+  gap: 10px;
+  font-weight: 600;
+  --corStatus: var(--ambarOuro);
 }
 
 .completo {
+  --corStatus: var(--verde);
   color: var(--verde);
 }
 
 .incompleto {
-  color: var(--ambarOuro);
+  color: var(--text);
+}
+
+.barra {
+  position: relative;
+  width: 64px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: var(--superficieSuave);
+  box-shadow: inset 0 0 0 1px var(--borda);
+}
+
+.preenchido {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: var(--corStatus);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.valor {
+  min-width: 36px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.contagem {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--textoSecundario);
+}
+
+.carregando {
+  color: var(--textoSuave);
 }

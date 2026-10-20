@@ -42,20 +42,6 @@
   color: var(--textoSecundario);
 }
 
-.avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
 @media (max-width: 640px) {
   .barra {
     padding: 0 16px;

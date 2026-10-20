@@ -12,6 +12,7 @@ import { ClasseDetalhePage } from "./pages/ClasseDetalhePage.jsx";
 import { EspecialidadesPage } from "./pages/EspecialidadesPage.jsx";
 import { DocumentosPage } from "./pages/DocumentosPage.jsx";
 import { DesbravadorDetalhePage } from "./pages/DesbravadorDetalhePage.jsx";
+import { DashboardLayout } from "./layout/DashboardLayout.jsx";
 import { CadastroDesbravadorPage } from "./pages/CadastroDesbravadorPage.jsx";
 
 function App() {
@@ -19,48 +20,40 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={<ProtectedRoute element={<Dashboard />} />}
-        />
         <Route path="/esqueceuSenhaPage" element={<EsqueceuSenhaPage />} />
-        <Route
-          path="/dashboard/cadastrar-usuario"
-          element={<ProtectedRoute element={<CadastroUsuarioPage />} />}
-        />
-        <Route
-          path="/dashboard/desbravadores"
-          element={<ProtectedRoute element={<DesbravadoresPage />} />}
-        />
-        <Route
-          path="/dashboard/desbravadores/novo"
-          element={<ProtectedRoute element={<CadastroDesbravadorPage />} />}
-        />
-        <Route
-          path="/dashboard/desbravadores/:idPessoa"
-          element={<ProtectedRoute element={<DesbravadorDetalhePage />} />}
-        />
-        <Route
-          path="/dashboard/chamada"
-          element={<ProtectedRoute element={<ChamadaPage />} />}
-        />
-        <Route path="/preview/chamada" element={<ChamadaPage />} />
-        <Route
-          path="/dashboard/classes"
-          element={<ProtectedRoute element={<ClassesPage />} />}
-        />
-        <Route
-          path="/dashboard/classes/:idClasse"
-          element={<ProtectedRoute element={<ClasseDetalhePage />} />}
-        />
-        <Route
-          path="/dashboard/especialidades"
-          element={<ProtectedRoute element={<EspecialidadesPage />} />}
-        />
-        <Route
-          path="/dashboard/documentos"
-          element={<ProtectedRoute element={<DocumentosPage />} />}
-        />
+        <Route element={<ProtectedRoute element={<DashboardLayout />} />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/dashboard/cadastrar-usuario"
+            element={<CadastroUsuarioPage />}
+          />
+          <Route
+            path="/dashboard/desbravadores"
+            element={<DesbravadoresPage />}
+          />
+          <Route
+            path="/dashboard/desbravadores/novo"
+            element={<CadastroDesbravadorPage />}
+          />
+          <Route
+            path="/dashboard/desbravadores/:idPessoa"
+            element={<DesbravadorDetalhePage />}
+          />
+          <Route path="/dashboard/chamada" element={<ChamadaPage />} />
+          <Route path="/dashboard/classes" element={<ClassesPage />} />
+          <Route
+            path="/dashboard/classes/:idClasse"
+            element={<ClasseDetalhePage />}
+          />
+          <Route
+            path="/dashboard/especialidades"
+            element={<EspecialidadesPage />}
+          />
+          <Route path="/dashboard/documentos" element={<DocumentosPage />} />
+        </Route>
+        <Route element={<DashboardLayout />}>
+          <Route path="/preview/chamada" element={<ChamadaPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import PersonIcon from "@mui/icons-material/Person";
 import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
@@ -9,7 +8,6 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { DesempenhoClubeModal } from "../components/DesempenhoClubeModal/DesempenhoClubeModal.jsx";
 import { OcorrenciasModal } from "../components/OcorrenciasModal/OcorrenciasModal.jsx";
@@ -66,6 +64,7 @@ import styles from "../styles/desbravadorDetalhePage.module.css";
 // input/label/grid não dependem do modal, só do próprio elemento.
 import formStyles from "../styles/cadastroDesbravadorModal.module.css";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
+import { Avatar } from "../components/Avatar/Avatar.jsx";
 
 function formatarData(valor) {
   if (!valor) return null;
@@ -446,21 +445,21 @@ function ConteudoDesbravador({ idPessoa }) {
 
   if (carregando) {
     return (
-      <DashboardLayout>
+      <>
         <Esqueleto linhas={6} altura={96} rotulo="Carregando desbravador" />
-      </DashboardLayout>
+      </>
     );
   }
 
   if (erro || !membro) {
     return (
-      <DashboardLayout>
+      <>
         <p className={styles.mensagemErro}>{erro || "Desbravador não encontrado."}</p>
         <button type="button" className={styles.botaoVoltar} onClick={() => navegar(-1)}>
           <ArrowBackIcon fontSize="small" />
           Voltar
         </button>
-      </DashboardLayout>
+      </>
     );
   }
 
@@ -478,7 +477,7 @@ function ConteudoDesbravador({ idPessoa }) {
   const percentual = Math.round((enviados / DOCUMENTOS.length) * 100);
 
   return (
-    <DashboardLayout>
+    <>
       <header
         className={`${styles.cabecalho} ${editando ? styles.cabecalhoFixo : ""}`}
       >
@@ -571,9 +570,11 @@ function ConteudoDesbravador({ idPessoa }) {
                   tamanho={editando ? 120 : 92}
                 />
               ) : (
-                <div className={styles.avatar}>
-                  <PersonIcon className={styles.avatarIcone} />
-                </div>
+                <Avatar
+                  nome={membro.nome}
+                  tamanho={editando ? 120 : 92}
+                  inativo={!membro.ativo}
+                />
               )}
 
               {editando && (
@@ -838,7 +839,7 @@ function ConteudoDesbravador({ idPessoa }) {
         onConfirmar={confirmarDesativacao}
         onCancelar={() => setConfirmacaoAberta(false)}
       />
-    </DashboardLayout>
+    </>
   );
 }
 

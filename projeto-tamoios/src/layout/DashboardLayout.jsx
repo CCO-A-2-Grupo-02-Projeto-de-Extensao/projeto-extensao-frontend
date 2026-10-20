@@ -1,8 +1,11 @@
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar/Sidebar";
 import BarraTopo from "../components/BarraTopo/BarraTopo";
 import animacoes from "../styles/animacoes.module.css";
 
-export function DashboardLayout({ children }) {
+export function DashboardLayout() {
+  const { pathname } = useLocation();
+
   return (
     <div style={{ display: "flex" }}>
       <Sidebar />
@@ -16,10 +19,16 @@ export function DashboardLayout({ children }) {
         }}
       >
         <BarraTopo />
-        <div className={animacoes.pagina} style={{ padding: "32px" }}>
-          {children}
+        <div
+          key={pathname}
+          className={animacoes.pagina}
+          style={{ padding: "32px" }}
+        >
+          <Outlet />
         </div>
       </main>
     </div>
   );
 }
+
+export default DashboardLayout;

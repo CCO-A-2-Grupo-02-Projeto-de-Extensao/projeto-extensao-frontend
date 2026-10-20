@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { ClasseParticipantes } from "../components/ClasseParticipantes/ClasseParticipantes.jsx";
 import { ClasseEspecialidades } from "../components/ClasseEspecialidades/ClasseEspecialidades.jsx";
 import { ClasseUnidades } from "../components/ClasseUnidades/ClasseUnidades.jsx";
@@ -45,7 +44,7 @@ export function ClasseDetalhePage() {
   }, [idClasse]);
 
   return (
-    <DashboardLayout>
+    <>
       <h1 className={styles.titulo}>
         {carregando ? "Carregando..." : `Classe ${classe?.nome ?? ""}`}
       </h1>
@@ -83,7 +82,7 @@ export function ClasseDetalhePage() {
           )}
         </div>
       )}
-    </DashboardLayout>
+    </>
   );
 }
 

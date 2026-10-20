@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { NomePagina } from "../components/NomePagina/NomePagina.jsx";
 import { ActionButton } from "../components/ActionButton/ActionButton.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
@@ -162,7 +161,7 @@ export function EspecialidadesPage() {
   const nenhumEncontrado = especialidadesFiltradas.length === 0;
 
   return (
-    <DashboardLayout>
+    <>
       <NomePagina
         titulo="Especialidades"
         subtitulo="Resumo das disciplinas e requisitos para os desbravadores."
@@ -237,7 +236,7 @@ export function EspecialidadesPage() {
         onConfirmar={confirmarExclusao}
         onCancelar={() => setAExcluir(null)}
       />
-    </DashboardLayout>
+    </>
   );
 }
 

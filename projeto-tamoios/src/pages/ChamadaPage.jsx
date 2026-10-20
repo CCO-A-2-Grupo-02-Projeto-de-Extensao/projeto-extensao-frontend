@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import NomePagina from "../components/NomePagina/NomePagina.jsx";
-import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { Input } from "../components/Input/Input.jsx";
 import Select from "../components/Select/Select.jsx";
 import tabela from "../styles/tabelaBase.module.css";
@@ -345,7 +344,7 @@ export function ChamadaPage() {
   const hoje = useMemo(() => new Date(), []);
 
   return (
-    <DashboardLayout>
+    <>
       <section className={styles.page}>
         <NomePagina
           titulo={`Chamada - ${paraDataBr(dataSelecionada)}`}
@@ -524,7 +523,7 @@ export function ChamadaPage() {
           </aside>
         </div>
       </section>
-    </DashboardLayout>
+    </>
   );
 }
 
