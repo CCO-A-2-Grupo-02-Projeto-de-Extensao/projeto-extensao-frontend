@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { ClasseParticipantes } from "../components/ClasseParticipantes/ClasseParticipantes.jsx";
 import { ClasseEspecialidades } from "../components/ClasseEspecialidades/ClasseEspecialidades.jsx";
 import { ClasseUnidades } from "../components/ClasseUnidades/ClasseUnidades.jsx";
 
 import { getClasse } from "../services/classesService.js";
+import { visualDaClasse } from "../utils/classesVisual.js";
 
+import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import styles from "../styles/classeDetalhePage.module.css";
 
 const ABAS = [
@@ -16,6 +19,7 @@ const ABAS = [
 ];
 
 export function ClasseDetalhePage() {
+  const navegar = useNavigate();
   const { idClasse } = useParams();
 
   const [classe, setClasse] = useState(null);
@@ -43,11 +47,39 @@ export function ClasseDetalhePage() {
     };
   }, [idClasse]);
 
+  const visual = visualDaClasse(classe?.nome);
+
   return (
-    <>
-      <h1 className={styles.titulo}>
-        {carregando ? "Carregando..." : `Classe ${classe?.nome ?? ""}`}
-      </h1>
+    // --cor-classe tinge o ponto do cabeçalho e a aba ativa.
+    <div style={{ "--cor-classe": visual.cor }}>
+      <header className={detalhe.cabecalho}>
+        <button
+          type="button"
+          className={detalhe.botaoVoltar}
+          onClick={() => navegar("/dashboard/classes")}
+          aria-label="Voltar para a lista de classes"
+        >
+          <ArrowBackIcon fontSize="small" />
+        </button>
+
+        <div className={detalhe.cabecalhoTextos}>
+          <p className={detalhe.sobretitulo}>
+            <span className={styles.pontoCor} aria-hidden="true" />
+            Clube Tamoios
+            {!carregando && !erro && visual.idade && (
+              <span className={detalhe.matricula}>
+                {visual.idade} anos • Regular
+              </span>
+            )}
+          </p>
+          <h1 className={detalhe.titulo}>
+            {carregando ? "Carregando..." : `Classe ${classe?.nome ?? ""}`}
+          </h1>
+          <p className={detalhe.subtitulo}>
+            Participantes, especialidades e unidades desta classe.
+          </p>
+        </div>
+      </header>
 
       <nav className={styles.abas} aria-label="Seções da classe">
         {ABAS.map((aba) => (
@@ -82,7 +114,7 @@ export function ClasseDetalhePage() {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }
 

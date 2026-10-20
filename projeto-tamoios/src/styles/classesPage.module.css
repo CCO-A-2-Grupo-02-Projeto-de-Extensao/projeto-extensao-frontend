@@ -1,22 +1,58 @@
-/* Título, subtítulo e a régua do NomePagina na mesma caixa dos cards. O
-   NomePagina é compartilhado com Desbravadores, Especialidades e Documentos —
-   por isso a largura é imposta por fora, num wrapper só desta tela, em vez de
-   dentro do componente. */
-.cabecalho {
-  max-width: 940px;
-  margin: 0 auto;
+/* KPI "Inscritos" no canto do cabeçalho, no mesmo estilo dos cartões. */
+.kpi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px 10px 12px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraCartao);
 }
 
-/* Mesma largura e mesmo centro da grade: o filtro começa onde o primeiro card
-   começa e termina onde o último termina. Ao mexer no max-width da .grade,
-   mexa aqui junto. */
+.kpiIconeWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: var(--superficieSuave);
+  color: var(--vinhoEscuro);
+}
+
+.kpiTexto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.kpiTexto strong {
+  font-size: 22px;
+  color: var(--vinhoEscuro);
+}
+
+.kpiTexto span {
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+/* Barra de busca e ordenação num cartão, como nas outras telas. */
 .filtros {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 24px auto 28px;
-  width: 100%;
-  max-width: 940px;
+  margin: 24px 0;
+  padding: 10px 12px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraCartao);
+}
+
+.campoBusca {
+  flex: 1;
+  min-width: 0;
 }
 
 .campoOrdenacao {
@@ -24,19 +60,12 @@
   flex-shrink: 0;
 }
 
-.campoBusca {
-  flex: 1;
-}
-
-/* Três colunas fixas, e não auto-fill: com auto-fill a tela larga encaixava
-   quatro cards na primeira linha e dois na segunda. O max-width impede que os
-   cards estiquem em monitores grandes, e o margin auto centraliza a grade. */
+/* Três colunas fixas (e não auto-fill) para as seis classes fecharem em duas
+   linhas de três em tela larga. */
 .grade {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 28px;
-  max-width: 940px;
-  margin: 0 auto;
+  gap: 24px;
   padding-bottom: 32px;
 }
 
@@ -54,7 +83,7 @@
   font-size: 15px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .grade {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -65,13 +94,14 @@
     flex-wrap: wrap;
   }
 
-  .campoOrdenacao,
-  .campoBusca {
+  .campoBusca,
+  .campoOrdenacao {
     width: 100%;
+    flex: none;
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .grade {
     grid-template-columns: minmax(0, 1fr);
   }

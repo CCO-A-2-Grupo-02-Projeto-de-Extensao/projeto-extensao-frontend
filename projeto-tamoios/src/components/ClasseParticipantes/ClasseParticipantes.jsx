@@ -4,7 +4,8 @@ import PersonRemoveAlt1Icon from "@mui/icons-material/PersonRemoveAlt1";
 
 import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
-import { Pagination } from "../Pagination/Pagination.jsx";
+import { Avatar } from "../Avatar/Avatar.jsx";
+import { RodapeTabela } from "../RodapeTabela/RodapeTabela.jsx";
 import { SelecaoModal } from "../SelecaoModal/SelecaoModal.jsx";
 
 import {
@@ -16,6 +17,7 @@ import {
 
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeParticipantes.module.css";
+import interna from "../../styles/classeInterna.module.css";
 import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 15;
@@ -88,11 +90,13 @@ export function ClasseParticipantes({ idClasse }) {
     1,
     Math.ceil(alunos.length / TAMANHO_PAGINA)
   );
+  // Se a lista encolher (busca, remoção), nunca ficamos numa página inexistente.
+  const paginaSegura = Math.min(paginaAlunos, totalPaginasAlunos);
 
   const alunosDaPagina = useMemo(() => {
-    const inicio = (paginaAlunos - 1) * TAMANHO_PAGINA;
+    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
     return alunos.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [alunos, paginaAlunos]);
+  }, [alunos, paginaSegura]);
 
   const abrirModal = async (tipo, acao) => {
     setModal({ tipo, acao, carregando: acao === "adicionar" });
@@ -150,7 +154,8 @@ export function ClasseParticipantes({ idClasse }) {
     }
   };
 
-  const renderTabela = (lista) => (
+  // `rodape` entra dentro do cartão da tabela (usado só na lista de alunos).
+  const renderTabela = (lista, rodape = null) => (
     <div className={styles.tabelaContainer}>
       <table className={tabela.tabela}>
         <thead>
@@ -163,9 +168,20 @@ export function ClasseParticipantes({ idClasse }) {
         </thead>
 
         <tbody>
-          {lista.map((pessoa) => (
-            <tr key={pessoa.id}>
-              <td>{pessoa.nome}</td>
+          {lista.map((pessoa, indice) => (
+            <tr
+              key={pessoa.id}
+              className={`${interna.entra} ${interna.hover}`}
+              style={{ "--i": Math.min(indice, 14) }}
+            >
+              <td>
+                <div className={interna.celulaNome}>
+                  <span className={interna.avatarWrap}>
+                    <Avatar nome={pessoa.nome} tamanho={36} />
+                  </span>
+                  <span>{pessoa.nome}</span>
+                </div>
+              </td>
               <td>{pessoa.unidade || "—"}</td>
               <td>{pessoa.papel || "—"}</td>
               <td>{pessoa.telefoneResponsavel || "—"}</td>
@@ -173,6 +189,8 @@ export function ClasseParticipantes({ idClasse }) {
           ))}
         </tbody>
       </table>
+
+      {rodape}
     </div>
   );
 
@@ -188,7 +206,10 @@ export function ClasseParticipantes({ idClasse }) {
         <div className={styles.campoOrdenacao}>
           <Select
             value={ordenacao}
-            onChange={(e) => setOrdenacao(e.target.value)}
+            onChange={(e) => {
+              setOrdenacao(e.target.value);
+              setPaginaAlunos(1);
+            }}
             aria-label="Ordenação"
           >
             <option value="az">A-Z</option>
@@ -227,7 +248,13 @@ export function ClasseParticipantes({ idClasse }) {
 
       {papel !== PAPEIS.ALUNOS && (
         <section className={styles.secao}>
-          <h2 className={styles.tituloSecao}>Instrutores</h2>
+          <div className={interna.secaoCabecalho}>
+            <h2 className={styles.tituloSecao}>Instrutores</h2>
+            <span className={interna.contagem}>
+              {instrutores.length}{" "}
+              {instrutores.length === 1 ? "instrutor" : "instrutores"}
+            </span>
+          </div>
 
           <div className={styles.acoes}>
             <button
@@ -261,7 +288,12 @@ export function ClasseParticipantes({ idClasse }) {
 
       {papel !== PAPEIS.INSTRUTORES && (
         <section className={styles.secao}>
-          <h2 className={styles.tituloSecao}>Alunos</h2>
+          <div className={interna.secaoCabecalho}>
+            <h2 className={styles.tituloSecao}>Alunos</h2>
+            <span className={interna.contagem}>
+              {alunos.length} {alunos.length === 1 ? "aluno" : "alunos"}
+            </span>
+          </div>
 
           <div className={styles.acoes}>
             <button
@@ -288,15 +320,17 @@ export function ClasseParticipantes({ idClasse }) {
               Nenhum aluno nesta classe.
             </p>
           ) : (
-            <>
-              {renderTabela(alunosDaPagina)}
-
-              <Pagination
-                paginaAtual={paginaAlunos}
+            renderTabela(
+              alunosDaPagina,
+              <RodapeTabela
+                mostrando={alunosDaPagina.length}
+                total={alunos.length}
+                rotulo="alunos registrados"
+                paginaAtual={paginaSegura}
                 totalPaginas={totalPaginasAlunos}
                 onPaginaChange={setPaginaAlunos}
               />
-            </>
+            )
           )}
         </section>
       )}

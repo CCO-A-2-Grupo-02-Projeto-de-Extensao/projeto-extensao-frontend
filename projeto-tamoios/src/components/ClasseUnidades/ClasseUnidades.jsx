@@ -8,7 +8,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
-import { Pagination } from "../Pagination/Pagination.jsx";
+import { RodapeTabela } from "../RodapeTabela/RodapeTabela.jsx";
 import { UnidadeModal } from "../UnidadeModal/UnidadeModal.jsx";
 import { UnidadeDetalheModal } from "../UnidadeDetalheModal/UnidadeDetalheModal.jsx";
 import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
@@ -20,6 +20,7 @@ import {
 
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeUnidades.module.css";
+import interna from "../../styles/classeInterna.module.css";
 import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 10;
@@ -77,11 +78,13 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
   }, [unidades, busca, sexo, ordenacao]);
 
   const totalPaginas = Math.max(1, Math.ceil(filtradas.length / TAMANHO_PAGINA));
+  // Se a lista encolher (filtro, exclusão), nunca ficamos numa página inexistente.
+  const paginaSegura = Math.min(pagina, totalPaginas);
 
   const daPagina = useMemo(() => {
-    const inicio = (pagina - 1) * TAMANHO_PAGINA;
+    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
     return filtradas.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [filtradas, pagina]);
+  }, [filtradas, paginaSegura]);
 
   // O modal se fecha sozinho depois de criar; ao editar ele fica aberto, e aqui
   // só recarregamos a tabela por trás dele.
@@ -110,6 +113,11 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
       {erro && <p className={styles.mensagemErro}>{erro}</p>}
 
       <div className={styles.barraAcoes}>
+        <span className={interna.contagemBarra}>
+          {unidades.length}{" "}
+          {unidades.length === 1 ? "unidade cadastrada" : "unidades cadastradas"}
+        </span>
+
         <button
           type="button"
           className={styles.botaoAcao}
@@ -124,7 +132,10 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
         <div className={styles.campoOrdenacao}>
           <Select
             value={ordenacao}
-            onChange={(e) => setOrdenacao(e.target.value)}
+            onChange={(e) => {
+              setOrdenacao(e.target.value);
+              setPagina(1);
+            }}
             aria-label="Ordenação"
           >
             <option value="az">A-Z</option>
@@ -169,106 +180,112 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
           Nenhuma unidade vinculada a esta classe.
         </p>
       ) : (
-        <>
-          <div className={styles.tabelaContainer}>
-            <table className={tabela.tabela}>
-              <thead>
-                <tr>
-                  <th>Nome da Unidade</th>
-                  <th>Faixa Etária</th>
-                  <th>Sexo</th>
-                  <th>Conselheiro da Unidade</th>
-                  <th>Quantidade de Desbravadores</th>
-                  <th className={styles.colunaAcao}>Ações</th>
+        <div className={styles.tabelaContainer}>
+          <table className={tabela.tabela}>
+            <thead>
+              <tr>
+                <th>Nome da Unidade</th>
+                <th>Faixa Etária</th>
+                <th>Sexo</th>
+                <th>Conselheiro da Unidade</th>
+                <th>Quantidade de Desbravadores</th>
+                <th className={styles.colunaAcao}>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {daPagina.map((unidade, indice) => (
+                <tr
+                  key={unidade.id}
+                  className={`${tabela.linhaClicavel} ${interna.entra}`}
+                  style={{ "--i": Math.min(indice, 14) }}
+                  onClick={() => setVisualizando(unidade)}
+                >
+                  <td>
+                    <span className={styles.celulaNome}>
+                      {unidade.nome}
+                      {unidade.inconsistencias.length > 0 && (
+                        <Tooltip
+                          arrow
+                          placement="top"
+                          title={
+                            <ul className={styles.listaInconsistencias}>
+                              {unidade.inconsistencias.map((problema) => (
+                                <li key={problema}>{problema}</li>
+                              ))}
+                            </ul>
+                          }
+                        >
+                          <WarningAmberIcon
+                            className={styles.alerta}
+                            fontSize="small"
+                            aria-label={`${unidade.inconsistencias.length} problema(s) na unidade ${unidade.nome}`}
+                          />
+                        </Tooltip>
+                      )}
+                    </span>
+                  </td>
+                  <td>{unidade.faixaEtaria || "—"}</td>
+                  <td>{unidade.sexo || "—"}</td>
+                  <td>{unidade.conselheiro || "—"}</td>
+                  <td>{unidade.quantidadeDesbravadores}</td>
+                  <td className={styles.colunaAcao}>
+                    <div className={styles.acoes}>
+                      <button
+                        type="button"
+                        className={styles.botaoAcaoLinha}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setVisualizando(unidade);
+                        }}
+                        aria-label={`Visualizar ${unidade.nome}`}
+                      >
+                        <VisibilityIcon fontSize="small" />
+                      </button>
+
+                      <button
+                        type="button"
+                        className={styles.botaoAcaoLinha}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModal({ modo: "editar", unidade });
+                        }}
+                        aria-label={`Editar ${unidade.nome}`}
+                      >
+                        <EditIcon fontSize="small" />
+                      </button>
+
+                      <button
+                        type="button"
+                        className={styles.botaoAcaoLinha}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAExcluir(unidade);
+                        }}
+                        aria-label={`Excluir ${unidade.nome}`}
+                      >
+                        <DeleteOutlineIcon fontSize="small" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
+              ))}
+            </tbody>
+          </table>
 
-              <tbody>
-                {daPagina.map((unidade) => (
-                  <tr
-                    key={unidade.id}
-                    className={tabela.linhaClicavel}
-                    onClick={() => setVisualizando(unidade)}
-                  >
-                    <td>
-                      <span className={styles.celulaNome}>
-                        {unidade.nome}
-                        {unidade.inconsistencias.length > 0 && (
-                          <Tooltip
-                            arrow
-                            placement="top"
-                            title={
-                              <ul className={styles.listaInconsistencias}>
-                                {unidade.inconsistencias.map((problema) => (
-                                  <li key={problema}>{problema}</li>
-                                ))}
-                              </ul>
-                            }
-                          >
-                            <WarningAmberIcon
-                              className={styles.alerta}
-                              fontSize="small"
-                              aria-label={`${unidade.inconsistencias.length} problema(s) na unidade ${unidade.nome}`}
-                            />
-                          </Tooltip>
-                        )}
-                      </span>
-                    </td>
-                    <td>{unidade.faixaEtaria || "—"}</td>
-                    <td>{unidade.sexo || "—"}</td>
-                    <td>{unidade.conselheiro || "—"}</td>
-                    <td>{unidade.quantidadeDesbravadores}</td>
-                    <td className={styles.colunaAcao}>
-                      <div className={styles.acoes}>
-                        <button
-                          type="button"
-                          className={styles.botaoAcaoLinha}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setVisualizando(unidade);
-                          }}
-                          aria-label={`Visualizar ${unidade.nome}`}
-                        >
-                          <VisibilityIcon fontSize="small" />
-                        </button>
-
-                        <button
-                          type="button"
-                          className={styles.botaoAcaoLinha}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setModal({ modo: "editar", unidade });
-                          }}
-                          aria-label={`Editar ${unidade.nome}`}
-                        >
-                          <EditIcon fontSize="small" />
-                        </button>
-
-                        <button
-                          type="button"
-                          className={styles.botaoAcaoLinha}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setAExcluir(unidade);
-                          }}
-                          aria-label={`Excluir ${unidade.nome}`}
-                        >
-                          <DeleteOutlineIcon fontSize="small" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <Pagination
-            paginaAtual={pagina}
+          <RodapeTabela
+            mostrando={daPagina.length}
+            total={filtradas.length}
+            rotulo={
+              filtradas.length === 1
+                ? "unidade registrada"
+                : "unidades registradas"
+            }
+            paginaAtual={paginaSegura}
             totalPaginas={totalPaginas}
             onPaginaChange={setPagina}
           />
-        </>
+        </div>
       )}
 
       <ConfirmacaoModal

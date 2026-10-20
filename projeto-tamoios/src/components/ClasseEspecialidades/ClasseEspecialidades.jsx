@@ -4,7 +4,7 @@ import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 
 import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
-import { Pagination } from "../Pagination/Pagination.jsx";
+import { RodapeTabela } from "../RodapeTabela/RodapeTabela.jsx";
 import { SelecaoModal } from "../SelecaoModal/SelecaoModal.jsx";
 import { Insignia } from "../Insignia/Insignia.jsx";
 import {
@@ -21,6 +21,7 @@ import {
 
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeEspecialidades.module.css";
+import interna from "../../styles/classeInterna.module.css";
 import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 10;
@@ -72,11 +73,13 @@ export function ClasseEspecialidades({ idClasse }) {
   }, [especialidades, busca, categoria, ordenacao]);
 
   const totalPaginas = Math.max(1, Math.ceil(filtradas.length / TAMANHO_PAGINA));
+  // Se a lista encolher (filtro, remoção), nunca ficamos numa página inexistente.
+  const paginaSegura = Math.min(pagina, totalPaginas);
 
   const daPagina = useMemo(() => {
-    const inicio = (pagina - 1) * TAMANHO_PAGINA;
+    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
     return filtradas.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [filtradas, pagina]);
+  }, [filtradas, paginaSegura]);
 
   const abrirModal = async (acao) => {
     setModal({ acao, carregando: acao === "adicionar" });
@@ -136,6 +139,13 @@ export function ClasseEspecialidades({ idClasse }) {
       {erro && <p className={styles.mensagemErro}>{erro}</p>}
 
       <div className={styles.barraAcoes}>
+        <span className={interna.contagemBarra}>
+          {especialidades.length}{" "}
+          {especialidades.length === 1
+            ? "especialidade vinculada"
+            : "especialidades vinculadas"}
+        </span>
+
         <button
           type="button"
           className={styles.botaoAcao}
@@ -159,7 +169,10 @@ export function ClasseEspecialidades({ idClasse }) {
         <div className={styles.campoOrdenacao}>
           <Select
             value={ordenacao}
-            onChange={(e) => setOrdenacao(e.target.value)}
+            onChange={(e) => {
+              setOrdenacao(e.target.value);
+              setPagina(1);
+            }}
             aria-label="Ordenação"
           >
             <option value="az">A-Z</option>
@@ -205,45 +218,54 @@ export function ClasseEspecialidades({ idClasse }) {
           Nenhuma especialidade vinculada a esta classe.
         </p>
       ) : (
-        <>
-          <div className={styles.tabelaContainer}>
-            <table className={tabela.tabela}>
-              <thead>
-                <tr>
-                  <th>Especialidade</th>
-                  <th>Insígnia</th>
-                  <th>Categoria</th>
-                  <th>Descrição</th>
+        <div className={styles.tabelaContainer}>
+          <table className={tabela.tabela}>
+            <thead>
+              <tr>
+                <th>Especialidade</th>
+                <th>Insígnia</th>
+                <th>Categoria</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {daPagina.map((item, indice) => (
+                <tr
+                  key={item.id}
+                  className={`${interna.entra} ${interna.hover}`}
+                  style={{ "--i": Math.min(indice, 14) }}
+                >
+                  <td>{item.nome}</td>
+
+                  <td>
+                    <Insignia
+                      src={item.imagem}
+                      alt={item.nome}
+                      className={styles.insignia}
+                    />
+                  </td>
+
+                  <td>{item.categoria || "—"}</td>
+                  <td className={styles.descricao}>{item.descricao || "—"}</td>
                 </tr>
-              </thead>
+              ))}
+            </tbody>
+          </table>
 
-              <tbody>
-                {daPagina.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.nome}</td>
-
-                    <td>
-                      <Insignia
-                        src={item.imagem}
-                        alt={item.nome}
-                        className={styles.insignia}
-                      />
-                    </td>
-
-                    <td>{item.categoria || "—"}</td>
-                    <td className={styles.descricao}>{item.descricao || "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <Pagination
-            paginaAtual={pagina}
+          <RodapeTabela
+            mostrando={daPagina.length}
+            total={filtradas.length}
+            rotulo={
+              filtradas.length === 1
+                ? "especialidade registrada"
+                : "especialidades registradas"
+            }
+            paginaAtual={paginaSegura}
             totalPaginas={totalPaginas}
             onPaginaChange={setPagina}
           />
-        </>
+        </div>
       )}
 
       {modal && (

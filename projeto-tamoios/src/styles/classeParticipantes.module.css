@@ -1,8 +1,14 @@
+/* Barra de filtros num cartão, como nas outras telas. */
 .filtros {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
+  padding: 10px 12px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraCartao);
 }
 
 .campoOrdenacao {
@@ -23,12 +29,13 @@
   margin-bottom: 36px;
 }
 
-/* Mesma escala do .tituloGrupo da tabela de Desbravadores. */
+/* Mesma escala do .tituloGrupo da tabela de Desbravadores. A margem inferior
+   fica por conta do cabeçalho da seção (classeInterna.secaoCabecalho). */
 .tituloSecao {
+  margin: 0;
   font-size: 20px;
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 12px;
 }
 
 .acoes {
@@ -42,12 +49,17 @@
   composes: botao secundario from "./button.module.css";
 }
 
-/* O visual da tabela vem de tabelaBase.module.css; aqui fica só o container
-   que garante rolagem horizontal em tela estreita. */
+/* O visual da tabela vem de tabelaBase.module.css; aqui fica o cartão que
+   envolve a tabela e garante rolagem horizontal em tela estreita. */
 .tabelaContainer {
   width: 100%;
   overflow-x: auto;
   margin-bottom: 8px;
+  padding: 6px 12px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraCartao);
 }
 
 .mensagemEstado {

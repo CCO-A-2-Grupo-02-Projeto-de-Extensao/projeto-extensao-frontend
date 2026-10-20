@@ -1,0 +1,117 @@
+/* Detalhes compartilhados pelas abas internas da classe (Participantes,
+   Especialidades e Unidades): avatar na célula, animações de linha, contagens
+   e o rodapé "Mostrando X de Y" com paginação. */
+
+/* Avatar com iniciais ao lado do nome */
+.celulaNome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatarWrap {
+  display: inline-flex;
+  flex-shrink: 0;
+  transition: transform 180ms ease;
+}
+
+/* Hover nas linhas: fundo suave + avatar cresce um pouco.
+   Não vai nas linhas clicáveis de Unidades, que já têm hover próprio. */
+.hover > td {
+  transition: background-color 160ms ease;
+}
+
+.hover:hover > td {
+  background-color: var(--superficieSuave);
+}
+
+.hover:hover .avatarWrap {
+  transform: scale(1.05);
+}
+
+/* Entrada das linhas: fade + subida, escalonado por --i (máx. 14 × 20ms) */
+.entra {
+  animation: linhaEntra 260ms ease-out both;
+  animation-delay: calc(var(--i, 0) * 20ms);
+}
+
+@keyframes linhaEntra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cabeçalho de seção: título à esquerda, contagem à direita */
+.secaoCabecalho {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.contagem {
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+/* Contagem dentro da barra de ações, empurrando os botões para a direita */
+.contagemBarra {
+  margin-right: auto;
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+/* Rodapé da tabela: texto à esquerda, paginação à direita */
+.rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-top: 8px;
+  padding: 14px 4px 8px;
+  border-top: 1px solid var(--borda);
+}
+
+.rodapeTexto {
+  margin: 0;
+  font-size: 14px;
+  color: var(--textoSecundario);
+}
+
+.rodapeTexto strong {
+  color: var(--vinhoEscuro);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entra {
+    animation: none;
+  }
+
+  .hover > td,
+  .avatarWrap {
+    transition: none;
+  }
+
+  .hover:hover .avatarWrap {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .rodape {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contagemBarra {
+    flex-basis: 100%;
+  }
+}

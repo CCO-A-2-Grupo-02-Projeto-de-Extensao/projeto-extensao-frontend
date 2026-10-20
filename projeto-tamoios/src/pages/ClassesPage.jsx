@@ -1,20 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 
-import { NomePagina } from "../components/NomePagina/NomePagina.jsx";
 import { ClasseCard } from "../components/ClasseCard/ClasseCard.jsx";
 import { Select } from "../components/Select/Select.jsx";
 import { Input } from "../components/Input/Input.jsx";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 import { getClasses } from "../services/classesService.js";
+import { getMembros } from "../services/membrosService.js";
 
+import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import styles from "../styles/classesPage.module.css";
-import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 export function ClassesPage() {
   const navigate = useNavigate();
 
   const [classes, setClasses] = useState([]);
+  // null = não foi possível carregar os membros (os cards ficam sem avatares).
+  const [membros, setMembros] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
@@ -24,34 +29,71 @@ export function ClassesPage() {
   useEffect(() => {
     let ativo = true;
 
-    getClasses()
-      .then((lista) => {
+    Promise.allSettled([getClasses(), getMembros()]).then(
+      ([resClasses, resMembros]) => {
         if (!ativo) return;
-        setClasses(lista);
+
+        if (resClasses.status === "fulfilled") {
+          setClasses(resClasses.value);
+        } else {
+          setErro("Não foi possível carregar as classes.");
+        }
+
+        if (resMembros.status === "fulfilled") {
+          setMembros(resMembros.value.filter((m) => m.ativo !== false));
+        }
+
         setCarregando(false);
-      })
-      .catch(() => {
-        if (!ativo) return;
-        setErro("Não foi possível carregar as classes.");
-        setCarregando(false);
-      });
+      }
+    );
 
     return () => {
       ativo = false;
     };
   }, []);
 
-  const classesFiltradas = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
+  // Desbravadores ativos de cada classe, em ordem alfabética, e o total de
+  // inscritos (cada pessoa conta uma vez só).
+  const { porClasse, inscritos } = useMemo(() => {
+    if (!membros) return { porClasse: null, inscritos: null };
 
+    const mapa = new Map();
+    const ids = new Set();
+
+    classes.forEach((classe) => {
+      const lista = membros
+        .filter(
+          (m) =>
+            (m.idClasse != null && String(m.idClasse) === String(classe.id)) ||
+            (m.classe && m.classe === classe.nome)
+        )
+        .sort((a, b) => a.nome.localeCompare(b.nome));
+
+      lista.forEach((m) => ids.add(m.id));
+      mapa.set(classe.id, lista);
+    });
+
+    return { porClasse: mapa, inscritos: ids.size };
+  }, [classes, membros]);
+
+  const termo = busca.trim().toLowerCase();
+  const bateComBusca = (membro) => membro.nome.toLowerCase().includes(termo);
+
+  // A busca é por desbravador: sobram as classes que têm alguém com esse nome.
+  const classesFiltradas = useMemo(() => {
     return [...classes]
-      .filter((classe) => classe.nome.toLowerCase().includes(termo))
+      .filter((classe) => {
+        if (!termo) return true;
+        if (!porClasse) return false;
+        return (porClasse.get(classe.id) ?? []).some(bateComBusca);
+      })
       .sort((a, b) =>
         ordenacao === "az"
           ? a.nome.localeCompare(b.nome)
           : b.nome.localeCompare(a.nome)
       );
-  }, [classes, busca, ordenacao]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- bateComBusca só depende de `termo`
+  }, [classes, porClasse, termo, ordenacao]);
 
   const abrirClasse = (classe) => {
     navigate(`/dashboard/classes/${classe.id}`);
@@ -59,11 +101,55 @@ export function ClassesPage() {
 
   return (
     <>
-      <div className={styles.cabecalho}>
-        <NomePagina titulo="Classes" subtitulo="Resumo das classes" />
-      </div>
+      <header className={detalhe.cabecalho}>
+        <button
+          type="button"
+          className={detalhe.botaoVoltar}
+          onClick={() => navigate("/dashboard")}
+          aria-label="Voltar para o início"
+        >
+          <ArrowBackIcon fontSize="small" />
+        </button>
+
+        <div className={detalhe.cabecalhoTextos}>
+          <p className={detalhe.sobretitulo}>
+            Clube Tamoios
+            {!carregando && !erro && (
+              <span className={detalhe.matricula}>
+                {classes.length} {classes.length === 1 ? "classe" : "classes"}
+              </span>
+            )}
+          </p>
+          <h1 className={detalhe.titulo}>Classes</h1>
+          <p className={detalhe.subtitulo}>
+            Resumo das classes do clube e dos desbravadores de cada uma.
+          </p>
+        </div>
+
+        <div className={detalhe.cabecalhoAcoes}>
+          <div className={styles.kpi}>
+            <div className={styles.kpiIconeWrap}>
+              <GroupRoundedIcon fontSize="small" />
+            </div>
+            <div className={styles.kpiTexto}>
+              <strong>{carregando || inscritos === null ? "—" : inscritos}</strong>
+              <span>Inscritos</span>
+            </div>
+          </div>
+        </div>
+      </header>
 
       <div className={styles.filtros}>
+        <div className={styles.campoBusca}>
+          <Input
+            type="search"
+            placeholder="Busque pelo nome de um desbravador"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            aria-label="Buscar desbravador por nome"
+          />
+        </div>
+
         <div className={styles.campoOrdenacao}>
           <Select
             value={ordenacao}
@@ -74,33 +160,38 @@ export function ClassesPage() {
             <option value="za">Ordem decrescente (classes)</option>
           </Select>
         </div>
-
-        <div className={styles.campoBusca}>
-          <Input
-            type="search"
-            placeholder="Busque pelo nome de uma classe"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            aria-label="Buscar classe por nome"
-          />
-        </div>
       </div>
 
-      {carregando && <Esqueleto linhas={3} altura={120} rotulo="Carregando classes" />}
-
-      {!carregando && erro && (
-        <p className={styles.mensagemErro}>{erro}</p>
+      {carregando && (
+        <Esqueleto linhas={3} altura={120} rotulo="Carregando classes" />
       )}
 
+      {!carregando && erro && <p className={styles.mensagemErro}>{erro}</p>}
+
       {!carregando && !erro && classesFiltradas.length === 0 && (
-        <p className={styles.mensagemEstado}>Nenhuma classe encontrada.</p>
+        <p className={styles.mensagemEstado}>
+          {termo ? "Nenhum desbravador encontrado." : "Nenhuma classe encontrada."}
+        </p>
       )}
 
       {!carregando && !erro && classesFiltradas.length > 0 && (
         <div className={styles.grade}>
-          {classesFiltradas.map((classe) => (
-            <ClasseCard key={classe.id} classe={classe} onAbrir={abrirClasse} />
-          ))}
+          {classesFiltradas.map((classe, indice) => {
+            const lista = porClasse ? porClasse.get(classe.id) ?? [] : null;
+            const exibidos = lista && termo ? lista.filter(bateComBusca) : lista;
+
+            return (
+              <ClasseCard
+                key={classe.id}
+                classe={classe}
+                participantes={exibidos}
+                total={lista ? lista.length : null}
+                buscando={Boolean(termo)}
+                indice={indice}
+                onAbrir={abrirClasse}
+              />
+            );
+          })}
         </div>
       )}
     </>

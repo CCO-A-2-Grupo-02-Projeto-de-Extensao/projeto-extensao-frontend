@@ -14,11 +14,17 @@
   composes: botao secundario from "./button.module.css";
 }
 
+/* Barra de filtros num cartão, como nas outras telas. */
 .filtros {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraCartao);
 }
 
 .campoOrdenacao {
@@ -35,12 +41,17 @@
   flex: 1;
 }
 
-/* O visual da tabela vem de tabelaBase.module.css; aqui fica só o container
-   que garante rolagem horizontal em tela estreita. */
+/* O visual da tabela vem de tabelaBase.module.css; aqui fica o cartão que
+   envolve a tabela e garante rolagem horizontal em tela estreita. */
 .tabelaContainer {
   width: 100%;
   overflow-x: auto;
   margin-bottom: 8px;
+  padding: 6px 12px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraCartao);
 }
 
 .insignia {
@@ -48,6 +59,7 @@
   height: 52px;
   border-radius: 50%;
   background-color: var(--superficieSuave);
+  border: 1px solid var(--borda);
   display: flex;
   align-items: center;
   justify-content: center;
