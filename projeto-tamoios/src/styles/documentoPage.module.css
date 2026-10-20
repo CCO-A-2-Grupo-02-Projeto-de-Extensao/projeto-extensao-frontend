@@ -1,4 +1,361 @@
-.listaDocumento {
-  display: block;
-  margin: 0rem 2rem 0rem 2rem;
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.cabecalhoTextos {
+  min-width: 240px;
+}
+
+.sobretitulo {
+  margin: 0 0 4px;
+  padding: 0;
+  color: var(--vinhoVivo);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.titulo {
+  margin: 0;
+  color: var(--vinhoEscuro);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 6px 0 0;
+  padding: 0;
+  color: var(--textoSecundario);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.contador {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--branco);
+  color: var(--vinhoEscuro);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.painel {
+  overflow: hidden;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  background: var(--branco);
+  box-shadow: var(--sombraCartao);
+}
+
+.painelCabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.tituloPainel {
+  margin: 0;
+  color: var(--vinhoEscuro);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.descricaoPainel {
+  margin: 3px 0 0;
+  padding: 0;
+  color: var(--textoSecundario);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.busca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 280px);
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  background: var(--cremeClaro);
+  color: var(--textoSecundario);
+}
+
+.busca:focus-within {
+  border-color: var(--vinhoVivo);
+  outline: 2px solid color-mix(in srgb, var(--vinhoVivo) 16%, transparent);
+}
+
+.busca svg {
+  flex: 0 0 auto;
+  font-size: 20px;
+}
+
+.busca input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--carvao);
+  font: inherit;
+  font-size: 13px;
+}
+
+.busca input::placeholder {
+  color: var(--textoSecundario);
+  opacity: 0.8;
+}
+
+.mensagemErro {
+  margin: 16px 24px 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--vermelho) 25%, white);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--vermelho) 7%, white);
+  color: var(--vermelho);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.carregando {
+  padding: 20px 24px;
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--borda);
+  transition: background-color 0.15s ease;
+}
+
+.item:last-child {
+  border-bottom: 0;
+}
+
+.item:hover {
+  background: var(--cremeClaro);
+}
+
+.avatar {
+  display: flex;
+  flex: 0 0 46px;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid color-mix(in srgb, var(--vinhoVivo) 14%, white);
+  border-radius: 14px;
+  background: var(--cremeClaro);
+  color: var(--vinhoEscuro);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.detalhes {
+  flex: 1;
+  min-width: 0;
+}
+
+.nomeDocumento {
+  overflow: hidden;
+  margin: 0;
+  color: var(--carvao);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metadados {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 4px 0 0;
+  padding: 0;
+  color: var(--textoSecundario);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.acoes {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.botaoVisualizar {
+  composes: botao compacto secundario from "./button.module.css";
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.botaoVisualizar svg,
+.botaoBaixar svg,
+.botaoExcluir svg {
+  font-size: 18px;
+}
+
+.botaoBaixar {
+  composes: botao compacto sucesso from "./button.module.css";
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.botaoExcluir {
+  composes: botao from "./button.module.css";
+  width: 38px;
+  height: 38px;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--vermelho) 24%, white);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--vermelho) 7%, white);
+  color: var(--vermelho);
+}
+
+.botaoExcluir:hover:not(:disabled) {
+  border-color: var(--vermelho);
+  background: var(--vermelho);
+  color: var(--branco);
+}
+
+.estadoVazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.iconeVazio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  background: var(--cremeClaro);
+  color: var(--vinhoVivo);
+}
+
+.iconeVazio svg {
+  font-size: 26px;
+}
+
+.estadoVazio h3 {
+  margin: 0;
+  color: var(--vinhoEscuro);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.estadoVazio p {
+  margin: 6px 0 0;
+  padding: 0;
+  color: var(--textoSecundario);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .painelCabecalho {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .busca {
+    width: auto;
+  }
+
+  .item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 16px 18px;
+  }
+
+  .detalhes {
+    align-self: center;
+    width: calc(100% - 62px);
+  }
+
+  .acoes {
+    width: 100%;
+    justify-content: flex-end;
+    padding-left: 62px;
+  }
+
+  .carregando {
+    padding: 18px;
+  }
+
+  .mensagemErro {
+    margin-right: 18px;
+    margin-left: 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .titulo {
+    font-size: 26px;
+  }
+
+  .acoes {
+    gap: 6px;
+    padding-left: 0;
+  }
+
+  .botaoVisualizar,
+  .botaoBaixar {
+    gap: 5px;
+    padding: 7px 9px;
+  }
 }
