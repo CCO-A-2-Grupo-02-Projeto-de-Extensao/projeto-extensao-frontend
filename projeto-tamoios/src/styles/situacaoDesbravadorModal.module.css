@@ -272,3 +272,26 @@
     width: 100%;
   }
 }
+
+/* A propria pessoa logada aparece na lista, mas sem poder se desativar. */
+.linhaBloqueada {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.linhaBloqueada:hover {
+  background-color: transparent;
+}
+
+.selo {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  background-color: var(--cinza);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--textoSecundario);
+  vertical-align: middle;
+}

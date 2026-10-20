@@ -7,6 +7,7 @@ import { Avatar } from "../Avatar/Avatar.jsx";
 import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
 import { normalizar } from "../../services/buscaGlobalService.js";
+import { ehMesmaPessoa, lerUsuarioLogado } from "../../utils/sessao.js";
 import styles from "../../styles/situacaoDesbravadorModal.module.css";
 
 /**
@@ -16,6 +17,7 @@ import styles from "../../styles/situacaoDesbravadorModal.module.css";
  */
 const VARIANTES = {
   desativar: {
+    bloqueioProprio: "Você não pode desativar o seu próprio cadastro.",
     titulo: "Desativar desbravadores",
     subtitulo:
       "Quem for desativado sai das listagens ativas. O cadastro e o histórico continuam no sistema.",
@@ -43,6 +45,12 @@ export function SituacaoDesbravadorModal({
   onConfirmar,
 }) {
   const textos = VARIANTES[variante];
+  const logado = useMemo(() => lerUsuarioLogado(), []);
+
+  // Desativar a si mesmo tiraria o proprio acesso as listagens; reativar nao
+  // tem esse risco, entao o bloqueio so existe na variante de desativacao.
+  const ehEuMesmo = (membro) =>
+    Boolean(textos.bloqueioProprio) && ehMesmaPessoa(membro, logado);
 
   const [ordenacao, setOrdenacao] = useState("az");
   const [busca, setBusca] = useState("");
@@ -99,7 +107,7 @@ export function SituacaoDesbravadorModal({
   };
 
   const aoConfirmar = () => {
-    onConfirmar?.(selecionados);
+    onConfirmar?.(selecionados.filter((membro) => !ehEuMesmo(membro)));
     setSelecionados([]);
     setBusca("");
     onFechar();
@@ -166,13 +174,15 @@ export function SituacaoDesbravadorModal({
                   key={membro.id}
                   className={`${styles.linha} ${
                     estaSelecionado(membro) ? styles.linhaMarcada : ""
-                  }`}
+                  } ${ehEuMesmo(membro) ? styles.linhaBloqueada : ""}`}
+                  title={ehEuMesmo(membro) ? textos.bloqueioProprio : undefined}
                 >
                   <input
                     type="checkbox"
                     className={styles.checkbox}
                     checked={estaSelecionado(membro)}
                     onChange={() => alternar(membro)}
+                    disabled={ehEuMesmo(membro)}
                   />
                   <Avatar
                     nome={membro.nome}
@@ -180,7 +190,12 @@ export function SituacaoDesbravadorModal({
                     inativo={variante === "reativar"}
                   />
                   <span className={styles.linhaTextos}>
-                    <span className={styles.linhaNome}>{membro.nome}</span>
+                    <span className={styles.linhaNome}>
+                      {membro.nome}
+                      {ehEuMesmo(membro) && (
+                        <span className={styles.selo}>você</span>
+                      )}
+                    </span>
                     {(membro.papel || membro.unidade) && (
                       <span className={styles.linhaDetalhe}>
                         {[membro.papel, membro.unidade]
