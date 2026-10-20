@@ -10,9 +10,9 @@
   z-index: 1000;
 }
 
-/* Mesmas medidas do modal de desativar desbravador
-   (removerDesbravadorModal.module.css): 960px de largura, 85vh de altura e a
-   divisão 60/40 entre a lista e os selecionados. */
+/* Modal de dois painéis: 960px de largura, 85vh de altura e divisão 60/40
+   entre a lista e os selecionados. Os modais de desativar/reativar
+   desbravador já migraram para a casca nova (situacaoDesbravadorModal). */
 .modal {
   composes: janela from "./animacoes.module.css";
   display: grid;

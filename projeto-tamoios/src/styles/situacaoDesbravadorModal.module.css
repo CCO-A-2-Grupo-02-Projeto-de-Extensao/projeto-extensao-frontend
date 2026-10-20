@@ -1,0 +1,274 @@
+/* Modal de desativar/reativar desbravador.
+ *
+ * Segue a casca dos modais novos (Usuários): cartão branco com cabeçalho de
+ * filete vinho, corpo rolável e rodapé em superfície suave. O que era um
+ * painel lateral de selecionados virou a faixa de fichas acima do rodapé —
+ * mesma função, sem a segunda coluna bege que destoava do resto do app.
+ */
+.overlay {
+  composes: fundo from "./animacoes.module.css";
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgba(31, 25, 26, 0.45);
+}
+
+.modal {
+  composes: janela from "./animacoes.module.css";
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 680px;
+  max-height: calc(100vh - 40px);
+  /* Acompanha a largura da sidebar para o cartão nascer centrado no conteúdo. */
+  margin-left: 240px;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombraModal);
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------- cabeçalho */
+
+.cabecalho {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 18px;
+  border-bottom: 3px solid var(--vinhoVivo);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--vinhoEscuro);
+}
+
+.subtitulo {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+/* ------------------------------------------------------------------ corpo */
+
+.corpo {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 24px 4px;
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.campoOrdenacao {
+  width: 92px;
+  flex-shrink: 0;
+}
+
+.campoBusca {
+  flex: 1;
+  min-width: 0;
+}
+
+.contagem {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--textoSecundario);
+}
+
+.lista {
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  background-color: var(--branco);
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3ede8;
+  transition: background-color 0.15s ease;
+}
+
+.linha:last-child {
+  border-bottom: none;
+}
+
+.linha:hover {
+  background-color: var(--superficieSuave);
+}
+
+.linhaMarcada {
+  background-color: #fdf4f2;
+}
+
+.linhaMarcada:hover {
+  background-color: #fbeae6;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--vinhoVivo);
+}
+
+.linhaTextos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.linhaNome {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.linhaDetalhe {
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--textoSecundario);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vazio {
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--textoSecundario);
+}
+
+/* -------------------------------------------------------------- selecionados */
+
+.selecionados {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 96px;
+  overflow-y: auto;
+  padding: 12px 24px;
+  border-top: 1px solid var(--borda);
+}
+
+.ficha {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px 5px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 9999px;
+  background-color: var(--superficieSuave);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.fichaRemover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background-color: transparent;
+  color: var(--textoSecundario);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.fichaRemover:hover {
+  background-color: var(--cinza);
+  color: var(--vinhoEscuro);
+}
+
+.fichaRemover:focus-visible {
+  outline: 2px solid var(--vinhoVivo);
+  outline-offset: 1px;
+}
+
+/* ----------------------------------------------------------------- rodapé */
+
+.rodape {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--borda);
+  background-color: var(--superficieSuave);
+}
+
+.resumo {
+  font-size: 13px;
+  color: var(--textoSecundario);
+}
+
+.botoes {
+  display: flex;
+  gap: 10px;
+}
+
+.botaoCancelar {
+  composes: botao secundario from "./button.module.css";
+}
+
+.botaoDesativar {
+  composes: botao perigo from "./button.module.css";
+}
+
+.botaoReativar {
+  composes: botao sucesso from "./button.module.css";
+}
+
+@media (max-width: 900px) {
+  .modal {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .rodape {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .botoes {
+    flex-direction: column-reverse;
+  }
+
+  .botaoCancelar,
+  .botaoDesativar,
+  .botaoReativar {
+    width: 100%;
+  }
+}
