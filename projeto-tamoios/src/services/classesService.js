@@ -6,7 +6,11 @@ import { api } from "./api";
 // classe->unidade (tabela Turma).
 
 function paraClasse(catalogo) {
-  return { id: catalogo.id, nome: catalogo.nome };
+  return {
+    id: catalogo.id,
+    nome: catalogo.nome,
+    idade: catalogo.idade ?? catalogo.idadeMinima ?? catalogo.idade_minima ?? null,
+  };
 }
 
 // A tabela de Participantes mostra o responsável e a unidade, que já vêm no

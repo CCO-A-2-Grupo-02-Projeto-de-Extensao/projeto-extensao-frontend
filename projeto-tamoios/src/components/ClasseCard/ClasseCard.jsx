@@ -57,9 +57,7 @@ export function ClasseCard({
               {visual.idade ? `${visual.idade} anos • Regular` : "Regular"}
             </span>
             <h2 className={styles.nome}>{classe.nome}</h2>
-            {visual.subtitulo && (
-              <p className={styles.subtitulo}>{visual.subtitulo}</p>
-            )}
+            <p className={styles.subtitulo}>{visual.subtitulo || "\u00A0"}</p>
           </div>
 
           {rotuloContagem && (

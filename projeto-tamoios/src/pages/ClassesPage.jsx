@@ -10,9 +10,18 @@ import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 import { getClasses } from "../services/classesService.js";
 import { getMembros } from "../services/membrosService.js";
+import { visualDaClasse } from "../utils/classesVisual.js";
 
 import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import styles from "../styles/classesPage.module.css";
+
+function obterIdadeDaClasse(classe) {
+  if (typeof classe?.idade === "number" && !isNaN(classe.idade)) {
+    return classe.idade;
+  }
+  const visual = visualDaClasse(classe?.nome);
+  return typeof visual?.idade === "number" ? visual.idade : null;
+}
 
 export function ClassesPage() {
   const navigate = useNavigate();
@@ -23,7 +32,7 @@ export function ClassesPage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  const [ordenacao, setOrdenacao] = useState("az");
+  const [ordenacao, setOrdenacao] = useState("crescente");
   const [busca, setBusca] = useState("");
 
   useEffect(() => {
@@ -87,11 +96,21 @@ export function ClassesPage() {
         if (!porClasse) return false;
         return (porClasse.get(classe.id) ?? []).some(bateComBusca);
       })
-      .sort((a, b) =>
-        ordenacao === "az"
+      .sort((a, b) => {
+        const idadeA = obterIdadeDaClasse(a);
+        const idadeB = obterIdadeDaClasse(b);
+        const ehCrescente = ordenacao === "crescente" || ordenacao === "az";
+
+        if (idadeA !== null && idadeB !== null && idadeA !== idadeB) {
+          return ehCrescente ? idadeA - idadeB : idadeB - idadeA;
+        }
+        if (idadeA !== null && idadeB === null) return -1;
+        if (idadeA === null && idadeB !== null) return 1;
+
+        return ehCrescente
           ? a.nome.localeCompare(b.nome)
-          : b.nome.localeCompare(a.nome)
-      );
+          : b.nome.localeCompare(a.nome);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- bateComBusca só depende de `termo`
   }, [classes, porClasse, termo, ordenacao]);
 
@@ -156,8 +175,8 @@ export function ClassesPage() {
             onChange={(e) => setOrdenacao(e.target.value)}
             aria-label="Ordenação das classes"
           >
-            <option value="az">Ordem crescente (classes)</option>
-            <option value="za">Ordem decrescente (classes)</option>
+            <option value="crescente">Ordem crescente (idade)</option>
+            <option value="decrescente">Ordem decrescente (idade)</option>
           </Select>
         </div>
       </div>
