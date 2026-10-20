@@ -1,17 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
-import NomePagina from "../components/NomePagina/NomePagina.jsx";
 import { Input } from "../components/Input/Input.jsx";
 import Select from "../components/Select/Select.jsx";
+import { Avatar } from "../components/Avatar/Avatar.jsx";
+import { Pagination } from "../components/Pagination/Pagination.jsx";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 import tabela from "../styles/tabelaBase.module.css";
 import styles from "../styles/chamada.module.css";
+// Mesmo visual de cabeçalho e botões das telas de Desbravadores.
+import detalhe from "../styles/desbravadorDetalhePage.module.css";
+// Detalhes novos desta tela (avatar na tabela, ícone de falta, rodapé).
+import extras from "../styles/chamadaPadrao.module.css";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import SentimentDissatisfiedRoundedIcon from "@mui/icons-material/SentimentDissatisfiedRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { useNavigate } from "react-router-dom";
 
 import { getMembros } from "../services/membrosService.js";
 import {
@@ -20,7 +29,8 @@ import {
   salvarChamadaCompleta,
   deletarChamadaCompleta,
 } from "../services/chamadasService.js";
-import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
+
+const TAMANHO_PAGINA = 15;
 
 function paraDataIso(data) {
   const ano = data.getFullYear();
@@ -90,6 +100,7 @@ function StatCard({ icon: Icon, value, label }) {
 }
 
 export function ChamadaPage() {
+  const navegar = useNavigate();
   const [dataSelecionada, setDataSelecionada] = useState(() => new Date());
   const [mesExibido, setMesExibido] = useState(() => {
     const hoje = new Date();
@@ -105,10 +116,14 @@ export function ChamadaPage() {
   const [order, setOrder] = useState("alfabetica");
   const [presenceFilter, setPresenceFilter] = useState("todos");
   const [search, setSearch] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  // Só a linha clicada anima o ícone ("pop"); carregar ou paginar não dispara.
+  const [ultimoAlterado, setUltimoAlterado] = useState(null);
 
   const carregarDadosDaData = async (data) => {
     setCarregando(true);
     setErro(null);
+    setUltimoAlterado(null);
 
     try {
       const dataIso = paraDataIso(data);
@@ -193,12 +208,25 @@ export function ChamadaPage() {
     carregarDadosDaData(dataSelecionada);
   }, [dataSelecionada]);
 
+  const aoMudarPagina = (pagina) => {
+    setUltimoAlterado(null);
+    setPaginaAtual(pagina);
+  };
+
   const togglePresente = (id) => {
+    setUltimoAlterado(id);
     setRows((prev) =>
       prev.map((row) =>
         row.id === id ? { ...row, present: !row.present } : row
       )
     );
+  };
+
+  const aoTeclarPresenca = (evento, id) => {
+    if (evento.key === "Enter" || evento.key === " ") {
+      evento.preventDefault();
+      togglePresente(id);
+    }
   };
 
   const handleSalvar = async () => {
@@ -290,9 +318,25 @@ export function ChamadaPage() {
 
   const handleSelecionarData = (data) => {
     setDataSelecionada(data);
+    setPaginaAtual(1);
     if (data.getMonth() !== mesExibido.getMonth()) {
       setMesExibido(new Date(data.getFullYear(), data.getMonth(), 1));
     }
+  };
+
+  const aoMudarOrdem = (valor) => {
+    setOrder(valor);
+    setPaginaAtual(1);
+  };
+
+  const aoMudarFiltroPresenca = (valor) => {
+    setPresenceFilter(valor);
+    setPaginaAtual(1);
+  };
+
+  const aoMudarBusca = (valor) => {
+    setSearch(valor);
+    setPaginaAtual(1);
   };
 
   const visibleRows = useMemo(() => {
@@ -314,6 +358,18 @@ export function ChamadaPage() {
 
     return result;
   }, [rows, order, presenceFilter, search]);
+
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(visibleRows.length / TAMANHO_PAGINA)
+  );
+  // Se a lista encolher (filtro, busca), nunca ficamos numa página que não existe.
+  const paginaSegura = Math.min(paginaAtual, totalPaginas);
+
+  const linhasDaPagina = useMemo(() => {
+    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
+    return visibleRows.slice(inicio, inicio + TAMANHO_PAGINA);
+  }, [visibleRows, paginaSegura]);
 
   const stats = useMemo(() => {
     const total = rows.length;
@@ -343,37 +399,62 @@ export function ChamadaPage() {
   );
   const hoje = useMemo(() => new Date(), []);
 
+  const nenhumEncontrado = !carregando && visibleRows.length === 0;
+
   return (
     <>
       <section className={styles.page}>
-        <NomePagina
-          titulo={`Chamada - ${paraDataBr(dataSelecionada)}`}
-          subtitulo={
-            chamadaAtual
-              ? "Chamada registrada no sistema"
-              : "Nova chamada para a data selecionada"
-          }
-        />
+        <header className={detalhe.cabecalho}>
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={() => navegar("/dashboard")}
+            aria-label="Voltar para o início"
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
 
-        <div className={styles.toolbar}>
-          <button
-            className={styles.toolbarButton}
-            type="button"
-            onClick={handleSalvar}
-            disabled={salvando || carregando}
-          >
-            <SaveOutlinedIcon className={styles.toolbarButtonIcon} />
-            {salvando ? "Salvando..." : "Salvar"}
-          </button>
-          <button
-            className={styles.toolbarButton}
-            type="button"
-            onClick={handleDeletar}
-            disabled={salvando || carregando}
-          >
-            <DeleteOutlineOutlinedIcon className={styles.toolbarButtonIcon} />
-            Deletar
-          </button>
+          <div className={detalhe.cabecalhoTextos}>
+            <p className={detalhe.sobretitulo}>
+              Clube Tamoios
+              <span className={detalhe.matricula}>
+                {paraDataBr(dataSelecionada)}
+              </span>
+            </p>
+            <h1 className={detalhe.titulo}>Chamada</h1>
+            <p className={detalhe.subtitulo}>
+              {chamadaAtual
+                ? "Chamada registrada no sistema para a data selecionada."
+                : "Nova chamada para a data selecionada. Marque as faltas e salve."}
+            </p>
+          </div>
+
+          <div className={detalhe.cabecalhoAcoes}>
+            <button
+              type="button"
+              className={detalhe.botaoDesativar}
+              onClick={handleDeletar}
+              disabled={salvando || carregando}
+            >
+              <DeleteOutlineOutlinedIcon fontSize="small" />
+              Deletar
+            </button>
+            <button
+              type="button"
+              className={detalhe.botaoPrimario}
+              onClick={handleSalvar}
+              disabled={salvando || carregando}
+            >
+              <SaveOutlinedIcon fontSize="small" />
+              {salvando ? "Salvando..." : "Salvar"}
+            </button>
+          </div>
+        </header>
+
+        <div className={extras.kpis}>
+          {stats.map((stat) => (
+            <StatCard key={stat.label} {...stat} />
+          ))}
         </div>
 
         <div className={styles.filtersRow}>
@@ -381,7 +462,7 @@ export function ChamadaPage() {
             <Select
               defaultValue="alfabetica"
               style={{ margin: 0 }}
-              onChange={(event) => setOrder(event.target.value)}
+              onChange={(event) => aoMudarOrdem(event.target.value)}
             >
               <option value="alfabetica">Ordem alfabética (normal)</option>
               <option value="reversa">Ordem alfabética (reversa)</option>
@@ -392,7 +473,7 @@ export function ChamadaPage() {
             <Select
               defaultValue="todos"
               style={{ margin: 0 }}
-              onChange={(event) => setPresenceFilter(event.target.value)}
+              onChange={(event) => aoMudarFiltroPresenca(event.target.value)}
             >
               <option value="todos">Todos</option>
               <option value="presentes">Presentes</option>
@@ -405,7 +486,7 @@ export function ChamadaPage() {
               placeholder="Buscar"
               style={{ margin: 0 }}
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => aoMudarBusca(event.target.value)}
             />
           </div>
         </div>
@@ -426,27 +507,48 @@ export function ChamadaPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {visibleRows.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.name}</td>
+                  {linhasDaPagina.map((row, indice) => (
+                    <tr
+                      key={row.id}
+                      className={extras.linha}
+                      style={{ "--i": Math.min(indice, 14) }}
+                    >
+                      <td>
+                        <div className={extras.celulaNome}>
+                          <span className={extras.avatarWrap}>
+                            <Avatar nome={row.name} tamanho={36} />
+                          </span>
+                          <span>{row.name}</span>
+                        </div>
+                      </td>
                       <td>{row.role}</td>
                       <td
                         className={styles.presentCell}
                         onClick={() => togglePresente(row.id)}
+                        onKeyDown={(evento) => aoTeclarPresenca(evento, row.id)}
                         role="button"
                         tabIndex={0}
                         style={{ cursor: "pointer" }}
                         title="Clique para alternar presença"
+                        aria-pressed={row.present}
                       >
                         {row.present ? (
-                          <CheckCircleIcon className={styles.presentIcon} />
+                          <CheckCircleIcon
+                            className={`${styles.presentIcon} ${
+                              ultimoAlterado === row.id ? extras.pop : ""
+                            }`}
+                          />
                         ) : (
-                          <span className={styles.absentMark}>-</span>
+                          <CancelIcon
+                            className={`${styles.presentIcon} ${extras.iconeAusente} ${
+                              ultimoAlterado === row.id ? extras.pop : ""
+                            }`}
+                          />
                         )}
                       </td>
                     </tr>
                   ))}
-                  {visibleRows.length === 0 && (
+                  {nenhumEncontrado && (
                     <tr>
                       <td
                         colSpan={3}
@@ -458,6 +560,20 @@ export function ChamadaPage() {
                   )}
                 </tbody>
               </table>
+            )}
+
+            {!carregando && visibleRows.length > 0 && (
+              <div className={extras.rodape}>
+                <p className={extras.rodapeTexto}>
+                  Mostrando <strong>{linhasDaPagina.length}</strong> de{" "}
+                  <strong>{visibleRows.length}</strong> desbravadores registrados
+                </p>
+                <Pagination
+                  paginaAtual={paginaSegura}
+                  totalPaginas={totalPaginas}
+                  onPaginaChange={aoMudarPagina}
+                />
+              </div>
             )}
           </div>
 
@@ -513,12 +629,6 @@ export function ChamadaPage() {
                   );
                 })}
               </div>
-            </div>
-
-            <div className={styles.statsStack}>
-              {stats.map((stat) => (
-                <StatCard key={stat.label} {...stat} />
-              ))}
             </div>
           </aside>
         </div>
