@@ -8,7 +8,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import desbravadoresLogoImg from "../../assets/desbravadores_logo.png";
+import clubeTamoiosLogoImg from "../../assets/clube_tamoios_logo.webp";
 import { itensNavegacao } from "../../utils/navegacao.js";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -60,10 +60,10 @@ export function Sidebar() {
         <List>
           <ListItem style={{ justifyContent: "center", padding: "20px 0" }}>
             <img
-              src={desbravadoresLogoImg}
+              src={clubeTamoiosLogoImg}
               className="base"
-              alt="Logo dos Desbravadores"
-              style={{ width: "90px", height: "auto" }}
+              alt="Logo do Clube Tamoios"
+              style={{ width: "120px", height: "120px", borderRadius: "50%" }}
             />
           </ListItem>
           {itensNavegacao.map(({ texto, Icone, path }) => (
