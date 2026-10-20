@@ -25,7 +25,7 @@ export function ConfirmacaoModal({
           {titulo}
         </h2>
 
-        <p className={styles.mensagem}>{mensagem}</p>
+        {mensagem && <p className={styles.mensagem}>{mensagem}</p>}
 
         <div className={styles.botoes}>
           <button

@@ -24,7 +24,12 @@ const VARIANTES = {
     rotulo: "Desativar",
     classeBotao: "botaoDesativar",
     vazio: "Nenhum desbravador ativo encontrado.",
+    efeitoSingular: "sai das listagens ativas, das chamadas e das classes",
+    efeitoPlural: "saem das listagens ativas, das chamadas e das classes",
     acao: "desativação",
+    tituloConfirmar: "Confirmar desativação",
+    emAndamento: "Desativando...",
+    perigo: true,
   },
   reativar: {
     titulo: "Reativar desbravadores",
@@ -33,9 +38,39 @@ const VARIANTES = {
     rotulo: "Reativar",
     classeBotao: "botaoReativar",
     vazio: "Nenhum desbravador inativo encontrado.",
+    efeitoSingular: "volta a aparecer nas listagens, nas chamadas e nas classes",
+    efeitoPlural: "voltam a aparecer nas listagens, nas chamadas e nas classes",
     acao: "reativação",
+    tituloConfirmar: "Confirmar reativação",
+    emAndamento: "Reativando...",
+    perigo: false,
   },
 };
+
+// Ate tres nomes a confirmacao lista; acima disso so a quantidade, senao a
+// caixa vira uma parede de texto.
+function descreverSelecionados(selecionados) {
+  const nomes = selecionados.map((membro) => membro.nome);
+
+  if (nomes.length > 3) {
+    return <strong>{`Os ${nomes.length} desbravadores selecionados`}</strong>;
+  }
+
+  const ultimo = nomes[nomes.length - 1];
+  const anteriores = nomes.slice(0, -1);
+
+  return (
+    <>
+      {anteriores.map((nome) => (
+        <span key={nome}>
+          <strong>{nome}</strong>
+          {anteriores[anteriores.length - 1] === nome ? " e " : ", "}
+        </span>
+      ))}
+      <strong>{ultimo}</strong>
+    </>
+  );
+}
 
 export function SituacaoDesbravadorModal({
   aberto,
@@ -56,6 +91,8 @@ export function SituacaoDesbravadorModal({
   const [busca, setBusca] = useState("");
   const [selecionados, setSelecionados] = useState([]);
   const [confirmandoDescarte, setConfirmandoDescarte] = useState(false);
+  const [confirmandoAcao, setConfirmandoAcao] = useState(false);
+  const [aplicando, setAplicando] = useState(false);
 
   // Clicar fora preserva a seleção feita; Cancelar é que pergunta antes.
   const fecharAoClicarFora = useFecharAoClicarFora(onFechar);
@@ -106,11 +143,17 @@ export function SituacaoDesbravadorModal({
     setConfirmandoDescarte(true);
   };
 
-  const aoConfirmar = () => {
-    onConfirmar?.(selecionados.filter((membro) => !ehEuMesmo(membro)));
-    setSelecionados([]);
-    setBusca("");
-    onFechar();
+  const aoConfirmar = async () => {
+    setAplicando(true);
+    try {
+      await onConfirmar?.(selecionados.filter((membro) => !ehEuMesmo(membro)));
+      setSelecionados([]);
+      setBusca("");
+      setConfirmandoAcao(false);
+      onFechar();
+    } finally {
+      setAplicando(false);
+    }
   };
 
   if (!aberto) return null;
@@ -246,7 +289,7 @@ export function SituacaoDesbravadorModal({
             <button
               type="button"
               className={styles[textos.classeBotao]}
-              onClick={aoConfirmar}
+              onClick={() => setConfirmandoAcao(true)}
               disabled={total === 0}
             >
               {textos.rotulo}
@@ -255,6 +298,21 @@ export function SituacaoDesbravadorModal({
           </div>
         </div>
       </div>
+
+      <ConfirmacaoModal
+        aberto={confirmandoAcao}
+        titulo={textos.tituloConfirmar}
+        mensagem={
+          <>
+            {descreverSelecionados(selecionados)}{" "}
+            {total === 1 ? textos.efeitoSingular : textos.efeitoPlural}.
+          </>
+        }
+        textoConfirmar={aplicando ? textos.emAndamento : textos.rotulo}
+        perigo={textos.perigo}
+        onConfirmar={aoConfirmar}
+        onCancelar={() => !aplicando && setConfirmandoAcao(false)}
+      />
 
       <ConfirmacaoModal
         aberto={confirmandoDescarte}

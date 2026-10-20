@@ -7,11 +7,12 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import clubeTamoiosLogoImg from "../../assets/clube_tamoios_logo.webp";
 import { itensNavegacao } from "../../utils/navegacao.js";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
 
 const estiloItem = {
   cursor: "pointer",
@@ -34,6 +35,7 @@ export function Sidebar() {
   const lista = useRef(null);
   const indicador = useRef(null);
   const posicionado = useRef(false);
+  const [confirmandoSaida, setConfirmandoSaida] = useState(false);
 
   useLayoutEffect(() => {
     const destaque = indicador.current;
@@ -64,6 +66,7 @@ export function Sidebar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
+    setConfirmandoSaida(false);
     navigate("/", { replace: true });
   };
 
@@ -115,7 +118,7 @@ export function Sidebar() {
           <ListItemButton
             className={`${styles.item} ${styles.sair}`}
             sx={estiloItem}
-            onClick={handleLogout}
+            onClick={() => setConfirmandoSaida(true)}
           >
             <ListItemIcon>
               <LogoutIcon className={styles.customIcon} />
@@ -124,6 +127,17 @@ export function Sidebar() {
           </ListItemButton>
         </List>
       </Drawer>
+
+      <ConfirmacaoModal
+        aberto={confirmandoSaida}
+        titulo="Sair?"
+        mensagem="Você volta para a tela de login e precisa entrar de novo para continuar."
+        textoConfirmar="Sair"
+        textoCancelar="Não"
+        perigo
+        onConfirmar={handleLogout}
+        onCancelar={() => setConfirmandoSaida(false)}
+      />
     </div>
   );
 }
