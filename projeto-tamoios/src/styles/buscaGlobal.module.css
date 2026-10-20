@@ -57,6 +57,8 @@
 }
 
 .painel {
+  composes: janela from "./animacoes.module.css";
+  transform-origin: top center;
   position: absolute;
   top: calc(100% + 8px);
   left: 0;

@@ -1,0 +1,39 @@
+@keyframes aparecerFundo {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes aparecerJanela {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}
+
+@keyframes entrarPagina {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.fundo {
+  animation: aparecerFundo 180ms ease-out;
+}
+
+.janela {
+  animation: aparecerJanela 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.pagina {
+  animation: entrarPagina 240ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fundo,
+  .janela,
+  .pagina {
+    animation: none;
+  }
+}

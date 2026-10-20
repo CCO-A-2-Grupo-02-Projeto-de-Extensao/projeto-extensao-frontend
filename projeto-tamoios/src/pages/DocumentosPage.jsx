@@ -4,6 +4,7 @@ import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import Documento from "../components/Documento/Documento.jsx";
 import styles from "../styles/documentoPage.module.css";
 import api from "../services/api.js";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 export function DocumentosPage() {
   const [documentos, setDocumentos] = useState([]);
@@ -80,7 +81,7 @@ export function DocumentosPage() {
         subtitulo="Principais documentos do clube"
       ></NomePagina>
       <section className={styles.listaDocumento}>
-        {carregando && <p>Carregando documentos...</p>}
+        {carregando && <Esqueleto linhas={4} altura={72} rotulo="Carregando documentos" />}
 
         {!carregando && erro && <p>{erro}</p>}
 

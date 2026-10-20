@@ -1,5 +1,6 @@
 import Sidebar from "../components/Sidebar/Sidebar";
 import BarraTopo from "../components/BarraTopo/BarraTopo";
+import animacoes from "../styles/animacoes.module.css";
 
 export function DashboardLayout({ children }) {
   return (
@@ -15,7 +16,9 @@ export function DashboardLayout({ children }) {
         }}
       >
         <BarraTopo />
-        <div style={{ padding: "32px" }}>{children}</div>
+        <div className={animacoes.pagina} style={{ padding: "32px" }}>
+          {children}
+        </div>
       </main>
     </div>
   );

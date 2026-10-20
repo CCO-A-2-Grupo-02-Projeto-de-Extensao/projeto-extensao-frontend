@@ -21,6 +21,7 @@ import {
 
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeEspecialidades.module.css";
+import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 10;
 
@@ -127,9 +128,7 @@ export function ClasseEspecialidades({ idClasse }) {
   };
 
   if (carregando) {
-    return (
-      <p className={styles.mensagemEstado}>Carregando especialidades...</p>
-    );
+    return <Esqueleto linhas={6} rotulo="Carregando especialidades" />;
   }
 
   return (

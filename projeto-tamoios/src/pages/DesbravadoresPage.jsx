@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import RestoreIcon from "@mui/icons-material/Restore";
@@ -20,6 +19,7 @@ import {
 } from "../services/membrosService.js";
 import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import styles from "../styles/desbravadoresPage.module.css";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 10;
 
@@ -175,9 +175,11 @@ export function DesbravadoresPage() {
         <div className={detalhe.cabecalhoTextos}>
           <p className={detalhe.sobretitulo}>
             Clube Tamoios
-            <span className={detalhe.matricula}>
-              {membros.length} membros cadastrados
-            </span>
+            {!carregando && (
+              <span className={detalhe.matricula}>
+                {membros.length} membros cadastrados
+              </span>
+            )}
           </p>
           <h1 className={detalhe.titulo}>Desbravadores</h1>
           <p className={detalhe.subtitulo}>
@@ -245,15 +247,7 @@ export function DesbravadoresPage() {
           onBuscaChange={aoMudarBusca}
         />
 
-        {carregando && (
-          <div className={styles.mensagemEstado}>
-            <p>Carregando membros...</p>
-            <CircularProgress
-              size={32}
-              sx={{ color: "var(--vinhoEscuro)", marginTop: "12px" }}
-            />
-          </div>
-        )}
+        {carregando && <Esqueleto linhas={8} rotulo="Carregando membros" />}
 
         {!carregando && erro && <p className={styles.mensagemEstado}>{erro}</p>}
 

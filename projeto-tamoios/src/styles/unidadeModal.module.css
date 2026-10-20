@@ -1,4 +1,5 @@
 .overlay {
+  composes: fundo from "./animacoes.module.css";
   position: fixed;
   inset: 0;
   background-color: rgba(31, 25, 26, 0.45);
@@ -11,6 +12,7 @@
 
 /* Mesmas medidas do modal de desativar desbravador e do SelecaoModal. */
 .modal {
+  composes: janela from "./animacoes.module.css";
   display: grid;
   grid-template-columns: 60% 40%;
   width: 960px;

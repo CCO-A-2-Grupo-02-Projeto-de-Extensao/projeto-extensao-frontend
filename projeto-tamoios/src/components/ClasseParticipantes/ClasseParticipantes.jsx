@@ -16,6 +16,7 @@ import {
 
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeParticipantes.module.css";
+import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 15;
 
@@ -176,7 +177,7 @@ export function ClasseParticipantes({ idClasse }) {
   );
 
   if (carregando) {
-    return <p className={styles.mensagemEstado}>Carregando participantes...</p>;
+    return <Esqueleto linhas={6} rotulo="Carregando participantes" />;
   }
 
   return (

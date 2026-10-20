@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { CircularProgress } from "@mui/material";
 import NomePagina from "../components/NomePagina/NomePagina.jsx";
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { Input } from "../components/Input/Input.jsx";
@@ -22,6 +21,7 @@ import {
   salvarChamadaCompleta,
   deletarChamadaCompleta,
 } from "../services/chamadasService.js";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 function paraDataIso(data) {
   const ano = data.getFullYear();
@@ -416,13 +416,7 @@ export function ChamadaPage() {
         <div className={styles.contentGrid}>
           <div className={styles.tableCard}>
             {carregando ? (
-              <div className={styles.mensagemEstado}>
-                <p>Carregando dados da chamada...</p>
-                <CircularProgress
-                  size={32}
-                  sx={{ color: "var(--vinhoEscuro)", marginTop: "12px" }}
-                />
-              </div>
+              <Esqueleto linhas={8} rotulo="Carregando dados da chamada" />
             ) : (
               <table className={`${tabela.tabela} ${styles.attendanceTable}`}>
                 <thead>

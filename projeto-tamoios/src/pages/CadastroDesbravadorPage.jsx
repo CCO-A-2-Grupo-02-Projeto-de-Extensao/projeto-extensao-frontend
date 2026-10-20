@@ -33,6 +33,7 @@ import {
 
 import styles from "../styles/desbravadorDetalhePage.module.css";
 import formStyles from "../styles/cadastroDesbravadorModal.module.css";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 export function CadastroDesbravadorPage() {
   const navegar = useNavigate();
@@ -281,7 +282,7 @@ export function CadastroDesbravadorPage() {
           </section>
 
           {catalogos.carregandoCatalogos ? (
-            <p className={styles.mensagem}>Carregando formulário...</p>
+            <Esqueleto linhas={6} altura={56} rotulo="Carregando formulário" />
           ) : (
             <>
               {secoesFormulario.map((secao) => (

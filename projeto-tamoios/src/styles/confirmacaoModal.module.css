@@ -1,6 +1,7 @@
 /* Fica acima dos demais modais (o mais alto em uso é 1400, no upload de
    documento), porque a confirmação sempre abre por cima de um modal já aberto. */
 .overlay {
+  composes: fundo from "./animacoes.module.css";
   position: fixed;
   inset: 0;
   background-color: rgba(31, 25, 26, 0.45);
@@ -12,6 +13,7 @@
 }
 
 .modal {
+  composes: janela from "./animacoes.module.css";
   width: 100%;
   max-width: 420px;
   background-color: var(--cremeClaro);

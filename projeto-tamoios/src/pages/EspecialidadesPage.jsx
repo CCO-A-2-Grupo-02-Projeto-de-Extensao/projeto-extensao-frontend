@@ -22,6 +22,7 @@ import {
 import { TODAS_CATEGORIAS } from "../utils/especialidadeCategorias.js";
 
 import styles from "../styles/especialidadesPage.module.css";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 10;
 
@@ -190,7 +191,7 @@ export function EspecialidadesPage() {
       />
 
       {carregando ? (
-        <p className={styles.mensagemEstado}>Carregando especialidades...</p>
+        <Esqueleto linhas={8} rotulo="Carregando especialidades" />
       ) : nenhumEncontrado ? (
         <p className={styles.mensagemEstado}>
           Nenhuma especialidade encontrada.

@@ -11,6 +11,7 @@ import { DashboardLayout } from "../layout/DashboardLayout.jsx";
 import { getDadosDashboard } from "../services/dashboardService.js";
 import { AdicionarEventoModal } from "../components/AdicionarEventoModal/AdicionarEventoModal.jsx";
 import styles from "../styles/dashboard.module.css";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 const indicadoresIniciais = {
   desbravadores: "--",
@@ -149,9 +150,7 @@ function Dashboard() {
           </h2>
 
           {carregando && (
-            <p className={styles.mensagemEstado} aria-live="polite">
-              Carregando controle acadêmico...
-            </p>
+            <Esqueleto linhas={6} rotulo="Carregando controle acadêmico" />
           )}
 
           {!carregando && controleAcademico && (

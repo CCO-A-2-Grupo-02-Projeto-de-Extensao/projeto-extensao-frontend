@@ -65,6 +65,7 @@ import styles from "../styles/desbravadorDetalhePage.module.css";
 // Os campos reaproveitam o visual do formulário de cadastro: as classes de
 // input/label/grid não dependem do modal, só do próprio elemento.
 import formStyles from "../styles/cadastroDesbravadorModal.module.css";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 function formatarData(valor) {
   if (!valor) return null;
@@ -446,7 +447,7 @@ function ConteudoDesbravador({ idPessoa }) {
   if (carregando) {
     return (
       <DashboardLayout>
-        <p className={styles.mensagem}>Carregando...</p>
+        <Esqueleto linhas={6} altura={96} rotulo="Carregando desbravador" />
       </DashboardLayout>
     );
   }

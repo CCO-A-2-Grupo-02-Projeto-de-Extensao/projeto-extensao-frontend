@@ -1,4 +1,5 @@
 .overlay {
+  composes: fundo from "./animacoes.module.css";
   position: fixed;
   inset: 0;
   background-color: rgba(31, 25, 26, 0.45);
@@ -13,6 +14,7 @@
    (removerDesbravadorModal.module.css): 960px de largura, 85vh de altura e a
    divisão 60/40 entre a lista e os selecionados. */
 .modal {
+  composes: janela from "./animacoes.module.css";
   display: grid;
   grid-template-columns: 60% 40%;
   width: 960px;

@@ -20,6 +20,7 @@ import {
 
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeUnidades.module.css";
+import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 10;
 
@@ -101,7 +102,7 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
   };
 
   if (carregando) {
-    return <p className={styles.mensagemEstado}>Carregando unidades...</p>;
+    return <Esqueleto linhas={4} altura={72} rotulo="Carregando unidades" />;
   }
 
   return (

@@ -59,16 +59,14 @@ export function Sidebar() {
       >
         <List>
           <ListItem style={{ justifyContent: "center", padding: "20px 0" }}>
-            <img
-              src={clubeTamoiosLogoImg}
-              className="base"
-              alt="Logo do Clube Tamoios"
-              style={{ width: "120px", height: "120px", borderRadius: "50%" }}
-            />
+            <span className={styles.logo}>
+              <img src={clubeTamoiosLogoImg} alt="Logo do Clube Tamoios" />
+            </span>
           </ListItem>
           {itensNavegacao.map(({ texto, Icone, path }) => (
             <ListItemButton
               key={path}
+              className={styles.item}
               sx={estiloItem}
               selected={
                 path === "/dashboard"
@@ -85,7 +83,11 @@ export function Sidebar() {
           ))}
         </List>
         <List className={styles.rodape}>
-          <ListItemButton sx={estiloItem} onClick={handleLogout}>
+          <ListItemButton
+            className={`${styles.item} ${styles.sair}`}
+            sx={estiloItem}
+            onClick={handleLogout}
+          >
             <ListItemIcon>
               <LogoutIcon className={styles.customIcon} />
             </ListItemIcon>

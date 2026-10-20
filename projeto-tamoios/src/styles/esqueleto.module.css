@@ -1,0 +1,50 @@
+@keyframes brilho {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.esqueleto {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.barra {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+  background-color: var(--superficieSuave);
+}
+
+.barra:nth-child(3n + 2) {
+  width: 92%;
+}
+
+.barra:nth-child(3n) {
+  width: 84%;
+}
+
+.barra::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.7),
+    transparent
+  );
+  animation: brilho 1.4s ease-in-out infinite;
+  animation-delay: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra::after {
+    animation: none;
+  }
+}

@@ -10,6 +10,7 @@ import { Input } from "../components/Input/Input.jsx";
 import { getClasses } from "../services/classesService.js";
 
 import styles from "../styles/classesPage.module.css";
+import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 export function ClassesPage() {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ export function ClassesPage() {
         </div>
       </div>
 
-      {carregando && <p className={styles.mensagemEstado}>Carregando classes...</p>}
+      {carregando && <Esqueleto linhas={3} altura={120} rotulo="Carregando classes" />}
 
       {!carregando && erro && (
         <p className={styles.mensagemErro}>{erro}</p>
