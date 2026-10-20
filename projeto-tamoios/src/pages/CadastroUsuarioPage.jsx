@@ -4,13 +4,17 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LockIcon from "@mui/icons-material/Lock";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlined";
 import { Input } from "../components/Input/Input.jsx";
 import { Select } from "../components/Select/Select.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 import { CadastroUsuarioModal } from "../components/CadastroUsuarioModal/CadastroUsuarioModal.jsx";
+import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { useCatalogos } from "../hooks/useCatalogos.js";
 import {
+  excluirUsuario,
   getMembros,
   listarUsuarios,
   SITUACOES,
@@ -25,6 +29,9 @@ import styles from "../styles/cadastroUsuarioPage.module.css";
 
 const CARGOS_COM_ACESSO = ["Diretor", "Secretário", "Tesoureiro", "Instrutor"];
 const CARGOS_QUE_CADASTRAM = ["Diretor", "Secretário"];
+// O topo da hierarquia nao pode perder o acesso: sem Diretor ninguem consegue
+// recriar usuarios, entao a exclusao fica bloqueada para todo mundo.
+const CARGO_MAIS_ALTO = "Diretor";
 const TODOS = "todos";
 const TAMANHO_PAGINA = 10;
 
@@ -39,9 +46,8 @@ function lerUsuarioLogado() {
 export function CadastroUsuarioPage() {
   const navegar = useNavigate();
   const { cargos } = useCatalogos();
-  const podeCadastrar = CARGOS_QUE_CADASTRAM.includes(
-    lerUsuarioLogado().nomeCargo
-  );
+  const logado = useMemo(() => lerUsuarioLogado(), []);
+  const podeCadastrar = CARGOS_QUE_CADASTRAM.includes(logado.nomeCargo);
 
   const [pessoas, setPessoas] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -49,6 +55,9 @@ export function CadastroUsuarioPage() {
   const [erro, setErro] = useState("");
   const [aviso, setAviso] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
+  const [aExcluir, setAExcluir] = useState(null);
+  const [excluindo, setExcluindo] = useState(false);
+  const [erroAcao, setErroAcao] = useState("");
 
   const [ordenacao, setOrdenacao] = useState("az");
   const [cargo, setCargo] = useState(TODOS);
@@ -110,9 +119,12 @@ export function CadastroUsuarioPage() {
     1,
     Math.ceil(filtrados.length / TAMANHO_PAGINA)
   );
+  // Derivada, e nao sincronizada por efeito: excluir o ultimo item de uma
+  // pagina encolhe a lista e deixaria paginaAtual fora do intervalo.
+  const pagina = Math.min(paginaAtual, totalPaginas);
   const daPagina = filtrados.slice(
-    (paginaAtual - 1) * TAMANHO_PAGINA,
-    paginaAtual * TAMANHO_PAGINA
+    (pagina - 1) * TAMANHO_PAGINA,
+    pagina * TAMANHO_PAGINA
   );
 
   const mudarFiltro = (definir) => (evento) => {
@@ -130,10 +142,38 @@ export function CadastroUsuarioPage() {
     })),
   ];
 
+  // Devolve o motivo pelo qual o acesso nao pode ser excluido, ou "" se puder.
+  const motivoBloqueio = (usuario) => {
+    if (usuario.idUsuario === logado.idUsuario)
+      return "Você não pode excluir o seu próprio acesso.";
+    if (usuario.nomeCargo === CARGO_MAIS_ALTO)
+      return `O acesso de ${CARGO_MAIS_ALTO} não pode ser excluído.`;
+    return "";
+  };
+
   const aoCriar = (nome) => {
     setModalAberto(false);
     setAviso(`Acesso criado para ${nome}.`);
     carregar();
+  };
+
+  const confirmarExclusao = async () => {
+    setExcluindo(true);
+
+    try {
+      await excluirUsuario(aExcluir.idUsuario);
+      setErroAcao("");
+      setAviso(`Acesso de ${aExcluir.nomePessoa} excluído.`);
+      await carregar();
+    } catch {
+      setAviso("");
+      setErroAcao(
+        `Não foi possível excluir o acesso de ${aExcluir.nomePessoa}.`
+      );
+    } finally {
+      setExcluindo(false);
+      setAExcluir(null);
+    }
   };
 
   return (
@@ -190,6 +230,13 @@ export function CadastroUsuarioPage() {
         <p className={`${styles.aviso} ${styles.avisoSucesso}`} role="status">
           <CheckCircleIcon fontSize="small" />
           {aviso}
+        </p>
+      )}
+
+      {erroAcao && (
+        <p className={`${styles.aviso} ${styles.avisoErro}`} role="alert">
+          <ErrorOutlineIcon fontSize="small" />
+          {erroAcao}
         </p>
       )}
 
@@ -279,6 +326,7 @@ export function CadastroUsuarioPage() {
                       <th>E-mail</th>
                       <th>Cargo</th>
                       <th>Situação</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -313,13 +361,37 @@ export function CadastroUsuarioPage() {
                             {usuario.ativo ? "Ativo" : "Inativo"}
                           </span>
                         </td>
+                        <td>
+                          <div className={styles.acoes}>
+                            <button
+                              type="button"
+                              className={styles.botaoExcluir}
+                              onClick={() => {
+                                setAviso("");
+                                setErroAcao("");
+                                setAExcluir(usuario);
+                              }}
+                              disabled={Boolean(motivoBloqueio(usuario))}
+                              title={
+                                motivoBloqueio(usuario) ||
+                                `Excluir acesso de ${usuario.nomePessoa}`
+                              }
+                              aria-label={
+                                motivoBloqueio(usuario) ||
+                                `Excluir acesso de ${usuario.nomePessoa}`
+                              }
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
                 {totalPaginas > 1 && (
                   <Pagination
-                    paginaAtual={paginaAtual}
+                    paginaAtual={pagina}
                     totalPaginas={totalPaginas}
                     onPaginaChange={setPaginaAtual}
                   />
@@ -338,6 +410,24 @@ export function CadastroUsuarioPage() {
           onCriado={aoCriar}
         />
       )}
+
+      <ConfirmacaoModal
+        aberto={Boolean(aExcluir)}
+        titulo="Excluir acesso"
+        mensagem={
+          aExcluir && (
+            <>
+              <strong>{aExcluir.nomePessoa}</strong> perde o acesso ao Arandu e
+              o login <strong>{aExcluir.email}</strong> deixa de existir. O
+              cadastro da pessoa continua no sistema.
+            </>
+          )
+        }
+        textoConfirmar={excluindo ? "Excluindo..." : "Excluir"}
+        perigo
+        onConfirmar={confirmarExclusao}
+        onCancelar={() => !excluindo && setAExcluir(null)}
+      />
     </>
   );
 }

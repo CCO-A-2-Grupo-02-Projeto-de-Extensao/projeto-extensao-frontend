@@ -110,3 +110,8 @@ export async function listarUsuarios() {
   const { data } = await api.get("/usuarios/todos");
   return Array.isArray(data) ? data : [];
 }
+
+// Remove o acesso ao sistema; a pessoa continua cadastrada.
+export async function excluirUsuario(idUsuario) {
+  await api.delete(`/usuarios/${idUsuario}`);
+}

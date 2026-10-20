@@ -338,16 +338,22 @@
 }
 
 .tabela th:nth-child(1) {
-  width: 34%;
+  width: 30%;
 }
 
 .tabela th:nth-child(2) {
-  width: 34%;
+  width: 30%;
 }
 
 .tabela th:nth-child(3),
 .tabela th:nth-child(4) {
-  width: 16%;
+  width: 15%;
+}
+
+/* Acoes: so o botao de icone, alinhado a direita. */
+.tabela th:nth-child(5) {
+  width: 10%;
+  text-align: right;
 }
 
 .usuario {
@@ -380,4 +386,20 @@
   .modalRodape {
     flex-direction: column-reverse;
   }
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.botaoExcluir {
+  composes: botao icone from "./button.module.css";
+  background-color: var(--vermelho);
+}
+
+.botaoExcluir:hover:not(:disabled) {
+  background-color: #be123c;
 }
