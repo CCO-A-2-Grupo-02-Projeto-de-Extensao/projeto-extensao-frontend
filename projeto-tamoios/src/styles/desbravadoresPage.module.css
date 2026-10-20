@@ -1,27 +1,22 @@
-.acoes {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background-color: var(--branco);
-  border: 1px solid var(--borda);
-  border-radius: 16px;
-  box-shadow: var(--sombraCartao);
-  padding: 20px;
-  /* Respiro maior embaixo: separa a faixa de ações da seção da lista de membros. */
-  margin: 24px 0 40px;
-  flex-wrap: wrap;
+.resumo {
+  margin-bottom: 20px;
 }
 
-.tituloSecao {
-  text-align: center;
-  font-size: 22px;
-  color: var(--text);
-  margin-bottom: 16px;
+.resumoValor {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 36px;
+  letter-spacing: -0.03em;
+  color: var(--vinhoEscuro);
+}
+
+.membros table {
+  box-shadow: 0 0 0 1px var(--cinza);
 }
 
 .mensagemEstado {
   text-align: center;
   padding: 40px 0;
-  color: var(--carvao);
-  font-size: 16px;
+  color: var(--textoSecundario);
+  font-size: 15px;
 }

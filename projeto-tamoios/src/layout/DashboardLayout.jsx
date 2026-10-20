@@ -1,4 +1,5 @@
 import Sidebar from "../components/Sidebar/Sidebar";
+import BarraTopo from "../components/BarraTopo/BarraTopo";
 
 export function DashboardLayout({ children }) {
   return (
@@ -7,13 +8,14 @@ export function DashboardLayout({ children }) {
       <main
         style={{
           flexGrow: 1,
-          padding: "32px",
+          minWidth: 0,
           marginLeft: "240px",
           backgroundColor: "var(--cremeClaro)",
           minHeight: "100vh",
         }}
       >
-        {children}
+        <BarraTopo />
+        <div style={{ padding: "32px" }}>{children}</div>
       </main>
     </div>
   );

@@ -9,24 +9,8 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import desbravadoresLogoImg from "../../assets/desbravadores_logo.png";
-import HomeIcon from "@mui/icons-material/Home";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import ContentPasteIcon from "@mui/icons-material/ContentPaste";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
+import { itensNavegacao } from "../../utils/navegacao.js";
 import LogoutIcon from "@mui/icons-material/Logout";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-
-const itensNavegacao = [
-  { texto: "Início", Icone: HomeIcon, path: "/dashboard" },
-  { texto: "Desbravadores", Icone: PeopleAltIcon, path: "/dashboard/desbravadores" },
-  { texto: "Cadastrar Usuário", Icone: PersonAddIcon, path: "/dashboard/cadastrar-usuario" },
-  { texto: "Chamada", Icone: ContentPasteIcon, path: "/dashboard/chamada" },
-  { texto: "Classes", Icone: MenuBookIcon, path: "/dashboard/classes" },
-  { texto: "Especialidades", Icone: BookmarkIcon, path: "/dashboard/especialidades" },
-  { texto: "Documentos", Icone: DescriptionIcon, path: "/dashboard/documentos" },
-];
 
 const estiloItem = {
   cursor: "pointer",
@@ -99,6 +83,8 @@ export function Sidebar() {
               <ListItemText primary={texto} slotProps={negrito} />
             </ListItemButton>
           ))}
+        </List>
+        <List className={styles.rodape}>
           <ListItemButton sx={estiloItem} onClick={handleLogout}>
             <ListItemIcon>
               <LogoutIcon className={styles.customIcon} />

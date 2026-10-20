@@ -9,3 +9,9 @@
   fill: currentColor !important;
   font-size: 20px !important;
 }
+
+.rodape {
+  margin-top: auto !important;
+  padding-bottom: 16px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}

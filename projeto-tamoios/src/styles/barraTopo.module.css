@@ -1,0 +1,67 @@
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 32px;
+  background-color: rgba(251, 249, 247, 0.85);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 1px 8px rgba(56, 15, 20, 0.04);
+}
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.usuarioTextos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 0;
+}
+
+.usuarioNome {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--text);
+}
+
+.usuarioCargo {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.03em;
+  color: var(--textoSecundario);
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--vinhoEscuro);
+  color: var(--branco);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 640px) {
+  .barra {
+    padding: 0 16px;
+  }
+
+  .usuarioTextos {
+    display: none;
+  }
+}

@@ -17,8 +17,9 @@ export function EspecialidadeFilters({
   categoria,
   onCategoriaChange,
   onBuscaChange,
+  buscaInicial = "",
 }) {
-  const [textoBusca, setTextoBusca] = useState("");
+  const [textoBusca, setTextoBusca] = useState(buscaInicial);
 
   useEffect(() => {
     const timer = setTimeout(() => {

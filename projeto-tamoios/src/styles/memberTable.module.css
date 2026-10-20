@@ -1,12 +1,14 @@
 .grupoTabela {
-  margin-bottom: 32px;
+  margin-top: 24px;
 }
 
 .tituloGrupo {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vinhoVivo);
+  margin-bottom: 10px;
 }
 
 /* O visual base (cabeçalho, padding, bordas, hover) vem de

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 
 import { DashboardLayout } from "../layout/DashboardLayout.jsx";
@@ -25,13 +26,15 @@ import styles from "../styles/especialidadesPage.module.css";
 const TAMANHO_PAGINA = 10;
 
 export function EspecialidadesPage() {
+  const location = useLocation();
+  const buscaInicial = location.state?.busca ?? "";
   const [especialidades, setEspecialidades] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
   const [ordenacao, setOrdenacao] = useState("az");
   const [categoria, setCategoria] = useState(TODAS_CATEGORIAS);
-  const [busca, setBusca] = useState("");
+  const [busca, setBusca] = useState(buscaInicial);
   const [paginaAtual, setPaginaAtual] = useState(1);
 
   const [modalAberto, setModalAberto] = useState(false);
@@ -177,6 +180,8 @@ export function EspecialidadesPage() {
       {erro && <p className={styles.mensagemErro}>{erro}</p>}
 
       <EspecialidadeFilters
+        key={location.key}
+        buscaInicial={buscaInicial}
         ordenacao={ordenacao}
         onOrdenacaoChange={aoMudarOrdenacao}
         categoria={categoria}
