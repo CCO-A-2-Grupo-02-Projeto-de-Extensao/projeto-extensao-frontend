@@ -12,10 +12,13 @@ import { ReativarDesbravadorModal } from "../components/ReativarDesbravadorModal
 import {
   getMembros,
   CATEGORIAS,
+  CLASSES_TODAS,
+  SEM_CLASSE,
   SITUACOES,
   desativarPessoa,
   reativarPessoa,
 } from "../services/membrosService.js";
+import { useCatalogos } from "../hooks/useCatalogos.js";
 import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import styles from "../styles/desbravadoresPage.module.css";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
@@ -30,6 +33,7 @@ const GRUPOS = [
 
 export function DesbravadoresPage() {
   const navegar = useNavigate();
+  const { classes } = useCatalogos();
   const [membros, setMembros] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
@@ -37,6 +41,7 @@ export function DesbravadoresPage() {
   const [ordenacao, setOrdenacao] = useState("az");
   const [categoria, setCategoria] = useState(CATEGORIAS.TODOS);
   const [situacao, setSituacao] = useState(SITUACOES.ATIVOS);
+  const [classe, setClasse] = useState(CLASSES_TODAS);
   const [busca, setBusca] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
@@ -81,6 +86,11 @@ export function DesbravadoresPage() {
     setPaginaAtual(1);
   };
 
+  const aoMudarClasse = (valor) => {
+    setClasse(valor);
+    setPaginaAtual(1);
+  };
+
   const membrosAtivos = useMemo(
     () => membros.filter((membro) => membro.ativo),
     [membros]
@@ -108,12 +118,17 @@ export function DesbravadoresPage() {
         (membro) =>
           categoria === CATEGORIAS.TODOS || membro.categoria === categoria
       )
+      .filter((membro) => {
+        if (classe === CLASSES_TODAS) return true;
+        if (classe === SEM_CLASSE) return membro.idClasse == null;
+        return membro.idClasse === Number(classe);
+      })
       .sort((a, b) =>
         ordenacao === "az"
           ? a.nome.localeCompare(b.nome)
           : b.nome.localeCompare(a.nome)
       );
-  }, [membros, busca, categoria, ordenacao, situacao]);
+  }, [membros, busca, categoria, classe, ordenacao, situacao]);
 
   const aoConfirmarDesativacao = async (selecionados) => {
     await Promise.all(selecionados.map((membro) => desativarPessoa(membro.id)));
@@ -243,6 +258,9 @@ export function DesbravadoresPage() {
           onCategoriaChange={aoMudarCategoria}
           situacao={situacao}
           onSituacaoChange={aoMudarSituacao}
+          classe={classe}
+          onClasseChange={aoMudarClasse}
+          classes={classes}
           onBuscaChange={aoMudarBusca}
         />
 

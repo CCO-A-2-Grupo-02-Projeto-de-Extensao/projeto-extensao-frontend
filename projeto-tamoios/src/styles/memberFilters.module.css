@@ -11,6 +11,12 @@
   flex-shrink: 0;
 }
 
+/* "Todas as classes" cabe em 165px; os nomes das classes são curtos. */
+.campoClasse {
+  width: 165px;
+  flex-shrink: 0;
+}
+
 /* Mais largo que os outros: "Ativos e desativados" é a opção mais longa. */
 .campoSituacao {
   width: 190px;
@@ -28,7 +34,8 @@
 
   .campoOrdenacao,
   .campoCategoria,
-  .campoSituacao {
+  .campoSituacao,
+  .campoClasse {
     width: calc(50% - 6px);
   }
 

@@ -7,6 +7,10 @@ export const CATEGORIAS = {
   ALUNO: "aluno",
 };
 
+// Valores do filtro de classe que não são um id de classe real.
+export const CLASSES_TODAS = "todas";
+export const SEM_CLASSE = "sem-classe";
+
 export const SITUACOES = {
   ATIVOS: "ativos",
   INATIVOS: "inativos",
