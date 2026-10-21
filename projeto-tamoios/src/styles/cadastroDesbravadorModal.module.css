@@ -116,13 +116,13 @@
 }
 
 .stepperCirculoAtivo {
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
+  background-color: var(--vinhoFundo);
+  color: var(--sobreVinho);
 }
 
 .stepperCirculoCompleto {
   background-color: var(--verde);
-  color: var(--branco);
+  color: var(--sobreVinho);
 }
 
 .stepperCirculoClicavel {

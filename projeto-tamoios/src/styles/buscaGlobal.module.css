@@ -19,7 +19,7 @@
   padding: 0 72px 0 40px;
   border: 1px solid transparent;
   border-radius: 10px;
-  background-color: #f3eee9;
+  background-color: var(--creme);
   font-family: var(--fonte);
   font-size: 13px;
   color: var(--text);

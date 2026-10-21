@@ -11,7 +11,7 @@
 /* X vermelho no mesmo estilo do check verde (mesma classe base presentIcon).
    O seletor duplicado garante que a cor vença, independente da ordem de carga. */
 .iconeAusente.iconeAusente {
-  color: #e61e4d;
+  color: var(--vermelho);
 }
 
 /* Rodapé: texto à esquerda, paginação à direita */
@@ -23,17 +23,17 @@
   gap: 0.75rem 1rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--cinza);
 }
 
 .rodapeTexto {
   margin: 0;
   font-size: 0.9rem;
-  color: #6b6b6b;
+  color: var(--textoSecundario);
 }
 
 .rodapeTexto strong {
-  color: #4a1420;
+  color: var(--vinhoEscuro);
   font-weight: 600;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .linha:hover > td {
-  background-color: rgba(74, 20, 32, 0.05);
+  background-color: color-mix(in srgb, var(--vinhoEscuro) 5%, transparent);
 }
 
 .avatarWrap {

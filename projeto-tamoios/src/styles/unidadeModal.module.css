@@ -196,7 +196,7 @@
   margin: 0 0 10px;
   padding: 8px 10px;
   border-radius: 6px;
-  background-color: #fef3c7;
+  background-color: var(--ambarSuave);
   color: var(--carvao);
   font-size: 13px;
   line-height: 1.4;
@@ -212,7 +212,7 @@
   padding: 8px 10px;
   border-radius: 5px;
   background-color: var(--verdeSuave);
-  color: #047857;
+  color: var(--verdeTexto);
   font-size: 14px;
   text-align: center;
 }

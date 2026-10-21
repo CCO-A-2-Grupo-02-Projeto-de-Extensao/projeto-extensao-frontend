@@ -163,7 +163,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0;
-  border: 1px solid rgba(56, 15, 20, 0.1);
+  border: 1px solid color-mix(in srgb, var(--vinhoProfundo) 10%, transparent);
 }
 
 .weekdayCell,
@@ -173,13 +173,13 @@
   justify-content: center;
   aspect-ratio: 1;
   font-size: 0.8rem;
-  border-right: 1px solid rgba(56, 15, 20, 0.08);
-  border-bottom: 1px solid rgba(56, 15, 20, 0.08);
+  border-right: 1px solid color-mix(in srgb, var(--vinhoProfundo) 8%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--vinhoProfundo) 8%, transparent);
 }
 
 .weekdayCell {
   background: var(--superficieSuave);
-  color: rgba(31, 25, 26, 0.8);
+  color: color-mix(in srgb, var(--carvao) 80%, transparent);
   font-weight: 600;
 }
 
@@ -199,7 +199,7 @@
 }
 
 .dayMuted {
-  color: rgba(31, 25, 26, 0.28);
+  color: color-mix(in srgb, var(--carvao) 28%, transparent);
 }
 
 .dayToday {
@@ -210,8 +210,8 @@
 }
 
 .daySelected {
-  background: var(--vinhoEscuro) !important;
-  color: var(--branco) !important;
+  background: var(--vinhoFundo) !important;
+  color: var(--sobreVinho) !important;
   font-weight: 700;
   border-radius: 4px;
 }

@@ -235,7 +235,7 @@
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  background-color: var(--vinhoEscuro);
+  background-color: var(--vinhoFundo);
 }
 
 .corPresencas {

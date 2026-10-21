@@ -77,7 +77,7 @@
   margin-bottom: 18px;
   padding: 10px 12px;
   border-radius: 6px;
-  background-color: #fef3c7;
+  background-color: var(--ambarSuave);
   color: var(--carvao);
   font-size: 13px;
   line-height: 1.5;

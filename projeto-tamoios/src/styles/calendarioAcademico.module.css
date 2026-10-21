@@ -93,13 +93,13 @@
 }
 
 .selecionado {
-  color: var(--branco);
-  background-color: var(--vinhoEscuro);
+  color: var(--sobreVinho);
+  background-color: var(--vinhoFundo);
   font-weight: 700;
 }
 
 .selecionado:hover {
-  background-color: var(--vinhoEscuro);
+  background-color: var(--vinhoFundo);
 }
 
 @media (max-width: 480px) {

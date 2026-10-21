@@ -28,9 +28,9 @@
 }
 
 .paginaAtiva {
-  background-color: var(--vinhoEscuro);
+  background-color: var(--vinhoFundo);
   border-color: var(--vinhoEscuro);
-  color: var(--branco);
+  color: var(--sobreVinho);
 }
 
 .setaBotao:disabled {

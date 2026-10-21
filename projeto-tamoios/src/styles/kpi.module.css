@@ -29,7 +29,7 @@
   height: 56px;
   flex: 0 0 56px;
   border-radius: 50%;
-  background-color: rgba(74, 21, 27, 0.06);
+  background-color: color-mix(in srgb, var(--vinhoEscuro) 6%, transparent);
 }
 
 .customIcon {

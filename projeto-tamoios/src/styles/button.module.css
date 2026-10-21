@@ -52,12 +52,12 @@
 /* ------------------------------------------------------------------ variantes */
 
 .primario {
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
+  background-color: var(--vinhoFundo);
+  color: var(--sobreVinho);
 }
 
 .primario:hover:not(:disabled) {
-  background-color: var(--vinhoVivo);
+  background-color: var(--vinhoFundoVivo);
 }
 
 .secundario {
@@ -72,7 +72,7 @@
 
 .perigo {
   background-color: var(--vermelho);
-  color: var(--branco);
+  color: var(--sobreVinho);
 }
 
 .perigo:hover:not(:disabled) {
@@ -81,7 +81,7 @@
 
 .sucesso {
   background-color: var(--verde);
-  color: var(--branco);
+  color: var(--sobreVinho);
 }
 
 .sucesso:hover:not(:disabled) {
@@ -102,12 +102,12 @@
 
 .icone {
   padding: 8px;
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
+  background-color: var(--vinhoFundo);
+  color: var(--sobreVinho);
 }
 
 .icone:hover:not(:disabled) {
-  background-color: var(--vinhoVivo);
+  background-color: var(--vinhoFundoVivo);
 }
 
 .fechar {

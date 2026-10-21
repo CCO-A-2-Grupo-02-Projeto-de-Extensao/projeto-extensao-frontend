@@ -451,7 +451,7 @@
 
 .barraPreenchida {
   height: 100%;
-  background-color: var(--vinhoEscuro);
+  background-color: var(--vinhoFundo);
   border-radius: 999px;
   transition: width 0.3s ease;
 }

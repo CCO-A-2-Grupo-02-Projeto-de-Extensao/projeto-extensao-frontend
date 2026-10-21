@@ -5,7 +5,7 @@
   height: 9px;
   margin-right: 8px;
   border-radius: 50%;
-  background-color: var(--cor-classe, var(--vinhoEscuro));
+  background-color: var(--cor-classe, var(--vinhoFundo));
   vertical-align: middle;
 }
 
@@ -45,7 +45,7 @@
 
 .aba.abaAtiva,
 .aba.abaAtiva:hover {
-  background-color: var(--cor-classe, var(--vinhoEscuro));
+  background-color: var(--cor-classe, var(--vinhoFundo));
   color: #fff;
   font-weight: 600;
 }

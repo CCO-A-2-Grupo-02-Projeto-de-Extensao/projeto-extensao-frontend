@@ -29,12 +29,12 @@
 }
 
 .anoItemAtivo {
-  background-color: var(--vinhoEscuro);
-  color: var(--branco);
+  background-color: var(--vinhoFundo);
+  color: var(--sobreVinho);
 }
 
 .anoItemAtivo:hover {
-  background-color: var(--vinhoEscuro);
+  background-color: var(--vinhoFundo);
 }
 
 .anoClasse {

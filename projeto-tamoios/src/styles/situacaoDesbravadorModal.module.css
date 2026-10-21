@@ -110,7 +110,7 @@
   width: 100%;
   padding: 10px 14px;
   cursor: pointer;
-  border-bottom: 1px solid #f3ede8;
+  border-bottom: 1px solid var(--borda);
   transition: background-color 0.15s ease;
 }
 
@@ -123,11 +123,11 @@
 }
 
 .linhaMarcada {
-  background-color: #fdf4f2;
+  background-color: color-mix(in srgb, var(--vinhoVivo) 4%, var(--branco));
 }
 
 .linhaMarcada:hover {
-  background-color: #fbeae6;
+  background-color: color-mix(in srgb, var(--vinhoVivo) 8%, var(--branco));
 }
 
 .checkbox {

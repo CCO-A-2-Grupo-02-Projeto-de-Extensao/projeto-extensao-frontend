@@ -116,7 +116,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background-color: var(--cor-classe, var(--vinhoEscuro));
+  background-color: var(--cor-classe, var(--vinhoFundo));
 }
 
 .nome {

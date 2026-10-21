@@ -8,6 +8,9 @@ import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { aplicarTema, lerTema } from "./utils/tema.js";
+
+aplicarTema(lerTema());
 
 // Adicionando o VLibras
 const initVLibras = () => {
