@@ -6,3 +6,10 @@
   flex-direction: column;
   gap: 14px;
 }
+
+.cantoTema {
+  position: fixed;
+  top: 16px;
+  right: 24px;
+  z-index: 10;
+}

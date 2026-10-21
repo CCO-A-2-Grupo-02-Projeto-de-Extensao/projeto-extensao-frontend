@@ -13,6 +13,8 @@ import clubeTamoiosLogoImg from "../../assets/clube_tamoios_logo.webp";
 import { itensNavegacao } from "../../utils/navegacao.js";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
+import { Cortina } from "../Cortina/Cortina.jsx";
+import { prefereMenosMovimento } from "../../utils/movimento.js";
 
 const estiloItem = {
   cursor: "pointer",
@@ -36,6 +38,7 @@ export function Sidebar() {
   const indicador = useRef(null);
   const posicionado = useRef(false);
   const [confirmandoSaida, setConfirmandoSaida] = useState(false);
+  const [saindo, setSaindo] = useState(false);
 
   useLayoutEffect(() => {
     const destaque = indicador.current;
@@ -63,11 +66,16 @@ export function Sidebar() {
 
   // Limpa a sessão antes de sair: sem isto o token continua no localStorage e
   // basta voltar para /dashboard para entrar de novo.
-  const handleLogout = () => {
+  const sair = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
+    navigate("/", { replace: true, state: { saida: true } });
+  };
+
+  const handleLogout = () => {
     setConfirmandoSaida(false);
-    navigate("/", { replace: true });
+    if (prefereMenosMovimento()) sair();
+    else setSaindo(true);
   };
 
   return (
@@ -138,6 +146,7 @@ export function Sidebar() {
         onConfirmar={handleLogout}
         onCancelar={() => setConfirmandoSaida(false)}
       />
+      {saindo && <Cortina variante="cobrir" onFim={sair} />}
     </div>
   );
 }

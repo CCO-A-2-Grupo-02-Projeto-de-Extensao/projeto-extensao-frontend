@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import desbravadoresLogoImg from "../assets/desbravadores_logo.png";
 import "../App.css";
 import { Button } from "../components/Button/Button.jsx";
@@ -10,6 +10,9 @@ import { Modal } from "../components/Modal/Modal.jsx";
 import api from "../services/api.js";
 import { ActionButton } from "../components/ActionButton/ActionButton.jsx";
 import { EsqueceuSenhaModal } from "../components/EsqueceuSenhaModal/EsqueceuSenhaModal.jsx";
+import { Cortina } from "../components/Cortina/Cortina.jsx";
+import { InterruptorTema } from "../components/InterruptorTema/InterruptorTema.jsx";
+import { prefereMenosMovimento } from "../utils/movimento.js";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -17,19 +20,36 @@ function Login() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const [modalEsqueceuSenhaAberto, setModalEsqueceuSenhaAberto] =
     useState(false);
+  const [origemEntrada, setOrigemEntrada] = useState(null);
+  const revelando = location.state?.saida && !prefereMenosMovimento();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErro("");
     setLoading(true);
 
+    const botao = e.nativeEvent.submitter;
+
     try {
       const { data } = await api.post("/usuarios/login", { email, senha });
       localStorage.setItem("token", data.token);
       localStorage.setItem("usuario", JSON.stringify(data));
-      navigate("/dashboard");
+
+      if (prefereMenosMovimento() || !botao) {
+        navigate("/dashboard");
+        return;
+      }
+      const r = botao.getBoundingClientRect();
+      const x = r.left + r.width / 2;
+      const y = r.top + r.height / 2;
+      const raio = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+      setOrigemEntrada({ x, y, raio });
     } catch (err) {
       setErro(
         err.response?.data?.message ||
@@ -37,13 +57,15 @@ function Login() {
             ? "Email ou senha inválidos."
             : "Erro ao fazer login. Tente novamente."),
       );
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <section id="center">
+      <div className={styles.cantoTema}>
+        <InterruptorTema />
+      </div>
       <Modal>
         <div className="hero">
           <img
@@ -91,6 +113,19 @@ function Login() {
         onFechar={() => setModalEsqueceuSenhaAberto(false)}
         //onCadastrar={aoCadastrarMembro}
       />
+      {origemEntrada && (
+        <Cortina
+          variante="abrir"
+          origem={origemEntrada}
+          onFim={() => navigate("/dashboard", { state: { entrada: true } })}
+        />
+      )}
+      {revelando && (
+        <Cortina
+          variante="revelar"
+          onFim={() => navigate("/", { replace: true })}
+        />
+      )}
     </section>
   );
 }
