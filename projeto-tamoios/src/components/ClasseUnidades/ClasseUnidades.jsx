@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEstadoDaTela } from "../../hooks/useEstadoDaTela.js";
 import { Tooltip } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import EditIcon from "@mui/icons-material/Edit";
@@ -32,10 +33,10 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  const [ordenacao, setOrdenacao] = useState("az");
-  const [sexo, setSexo] = useState(SEXOS.TODOS);
-  const [busca, setBusca] = useState("");
-  const [pagina, setPagina] = useState(1);
+  const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
+  const [sexo, setSexo] = useEstadoDaTela("sexo", SEXOS.TODOS);
+  const [busca, setBusca] = useEstadoDaTela("busca", "");
+  const [pagina, setPagina] = useEstadoDaTela("pagina", 1);
 
   // { modo: "criar" | "editar", unidade }
   const [modal, setModal] = useState(null);

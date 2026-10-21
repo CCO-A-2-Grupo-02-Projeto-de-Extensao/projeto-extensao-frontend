@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEstadoDaTela } from "../../hooks/useEstadoDaTela.js";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import PersonRemoveAlt1Icon from "@mui/icons-material/PersonRemoveAlt1";
 
@@ -32,15 +34,16 @@ function ehInstrutor(participante) {
 }
 
 export function ClasseParticipantes({ idClasse }) {
+  const navegar = useNavigate();
   const [participantes, setParticipantes] = useState([]);
   const [candidatos, setCandidatos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  const [ordenacao, setOrdenacao] = useState("az");
-  const [papel, setPapel] = useState(PAPEIS.TODOS);
-  const [busca, setBusca] = useState("");
-  const [paginaAlunos, setPaginaAlunos] = useState(1);
+  const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
+  const [papel, setPapel] = useEstadoDaTela("papel", PAPEIS.TODOS);
+  const [busca, setBusca] = useEstadoDaTela("busca", "");
+  const [paginaAlunos, setPaginaAlunos] = useEstadoDaTela("paginaAlunos", 1);
 
   // { tipo: "instrutor" | "aluno", acao: "adicionar" | "remover" }
   const [modal, setModal] = useState(null);
@@ -171,8 +174,9 @@ export function ClasseParticipantes({ idClasse }) {
           {lista.map((pessoa, indice) => (
             <tr
               key={pessoa.id}
-              className={`${interna.entra} ${interna.hover}`}
+              className={`${tabela.linhaClicavel} ${interna.entra} ${interna.hover}`}
               style={{ "--i": Math.min(indice, 14) }}
+              onClick={() => navegar(`/dashboard/desbravadores/${pessoa.id}`)}
             >
               <td>
                 <div className={interna.celulaNome}>

@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
+import { useVoltar } from "../hooks/useVoltar.js";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import RestoreIcon from "@mui/icons-material/Restore";
+import { Tooltip } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { MemberFilters } from "../components/MemberFilters/MemberFilters.jsx";
 import { MemberTable } from "../components/MemberTable/MemberTable.jsx";
@@ -33,17 +36,18 @@ const GRUPOS = [
 
 export function DesbravadoresPage() {
   const navegar = useNavigate();
+  const voltar = useVoltar("/dashboard");
   const { classes } = useCatalogos();
   const [membros, setMembros] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
 
-  const [ordenacao, setOrdenacao] = useState("az");
-  const [categoria, setCategoria] = useState(CATEGORIAS.TODOS);
-  const [situacao, setSituacao] = useState(SITUACOES.ATIVOS);
-  const [classe, setClasse] = useState(CLASSES_TODAS);
-  const [busca, setBusca] = useState("");
-  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
+  const [categoria, setCategoria] = useEstadoDaTela("categoria", CATEGORIAS.TODOS);
+  const [situacao, setSituacao] = useEstadoDaTela("situacao", SITUACOES.ATIVOS);
+  const [classe, setClasse] = useEstadoDaTela("classe", CLASSES_TODAS);
+  const [busca, setBusca] = useEstadoDaTela("busca", "");
+  const [paginaAtual, setPaginaAtual] = useEstadoDaTela("paginaAtual", 1);
   const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
   const [modalReativarAberto, setModalReativarAberto] = useState(false);
 
@@ -79,7 +83,7 @@ export function DesbravadoresPage() {
   const aoMudarBusca = useCallback((valor) => {
     setBusca(valor);
     setPaginaAtual(1);
-  }, []);
+  }, [setBusca, setPaginaAtual]);
 
   const aoMudarSituacao = (valor) => {
     setSituacao(valor);
@@ -177,14 +181,15 @@ export function DesbravadoresPage() {
   return (
     <>
       <header className={detalhe.cabecalho}>
-        <button
-          type="button"
-          className={detalhe.botaoVoltar}
-          onClick={() => navegar("/dashboard")}
-          aria-label="Voltar para o início"
-        >
-          <ArrowBackIcon fontSize="small" />
-        </button>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
+        </Tooltip>
 
         <div className={detalhe.cabecalhoTextos}>
           <p className={detalhe.sobretitulo}>
@@ -261,6 +266,7 @@ export function DesbravadoresPage() {
           classe={classe}
           onClasseChange={aoMudarClasse}
           classes={classes}
+          busca={busca}
           onBuscaChange={aoMudarBusca}
         />
 

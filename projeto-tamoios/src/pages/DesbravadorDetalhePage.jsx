@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -153,7 +155,7 @@ function CartaoResponsavel({ numero, responsavel }) {
 }
 
 function ConteudoDesbravador({ idPessoa }) {
-  const navegar = useNavigate();
+  const voltar = useVoltar("/dashboard/desbravadores");
   const catalogos = useCatalogos();
 
   const [membro, setMembro] = useState(null);
@@ -455,7 +457,7 @@ function ConteudoDesbravador({ idPessoa }) {
     return (
       <>
         <p className={styles.mensagemErro}>{erro || "Desbravador não encontrado."}</p>
-        <button type="button" className={styles.botaoVoltar} onClick={() => navegar(-1)}>
+        <button type="button" className={styles.botaoVoltar} onClick={voltar}>
           <ArrowBackIcon fontSize="small" />
           Voltar
         </button>
@@ -481,14 +483,15 @@ function ConteudoDesbravador({ idPessoa }) {
       <header
         className={`${styles.cabecalho} ${editando ? styles.cabecalhoFixo : ""}`}
       >
-        <button
-          type="button"
-          className={styles.botaoVoltar}
-          onClick={() => navegar("/dashboard/desbravadores")}
-          aria-label="Voltar para a lista de desbravadores"
-        >
-          <ArrowBackIcon fontSize="small" />
-        </button>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={styles.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
+        </Tooltip>
 
         <div className={styles.cabecalhoTextos}>
           <p className={styles.sobretitulo}>

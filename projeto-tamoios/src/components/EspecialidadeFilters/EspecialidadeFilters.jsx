@@ -16,18 +16,20 @@ export function EspecialidadeFilters({
   onOrdenacaoChange,
   categoria,
   onCategoriaChange,
+  busca,
   onBuscaChange,
-  buscaInicial = "",
 }) {
-  const [textoBusca, setTextoBusca] = useState(buscaInicial);
+  const [textoBusca, setTextoBusca] = useState(busca);
 
   useEffect(() => {
+    if (textoBusca === busca) return;
+
     const timer = setTimeout(() => {
       onBuscaChange(textoBusca);
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [textoBusca, onBuscaChange]);
+  }, [textoBusca, busca, onBuscaChange]);
 
   return (
     <div className={styles.filtros}>

@@ -1,4 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useRolagemDaTela } from "../hooks/useEstadoDaTela.js";
 import Sidebar from "../components/Sidebar/Sidebar";
 import BarraTopo from "../components/BarraTopo/BarraTopo";
 import { Cortina } from "../components/Cortina/Cortina.jsx";
@@ -8,6 +9,7 @@ import animacoes from "../styles/animacoes.module.css";
 export function DashboardLayout() {
   const { pathname, state } = useLocation();
   const navigate = useNavigate();
+  useRolagemDaTela();
   const entrando = state?.entrada && !prefereMenosMovimento();
 
   return (

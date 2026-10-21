@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 
@@ -25,6 +28,7 @@ function obterIdadeDaClasse(classe) {
 
 export function ClassesPage() {
   const navigate = useNavigate();
+  const voltar = useVoltar("/dashboard");
 
   const [classes, setClasses] = useState([]);
   // null = não foi possível carregar os membros (os cards ficam sem avatares).
@@ -32,8 +36,8 @@ export function ClassesPage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  const [ordenacao, setOrdenacao] = useState("crescente");
-  const [busca, setBusca] = useState("");
+  const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "crescente");
+  const [busca, setBusca] = useEstadoDaTela("busca", "");
 
   useEffect(() => {
     let ativo = true;
@@ -121,14 +125,15 @@ export function ClassesPage() {
   return (
     <>
       <header className={detalhe.cabecalho}>
-        <button
-          type="button"
-          className={detalhe.botaoVoltar}
-          onClick={() => navigate("/dashboard")}
-          aria-label="Voltar para o início"
-        >
-          <ArrowBackIcon fontSize="small" />
-        </button>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
+        </Tooltip>
 
         <div className={detalhe.cabecalhoTextos}>
           <p className={detalhe.sobretitulo}>

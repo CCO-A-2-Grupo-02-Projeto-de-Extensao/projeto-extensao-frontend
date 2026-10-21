@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
 import { Add } from "@mui/icons-material";
 
 import { NomePagina } from "../components/NomePagina/NomePagina.jsx";
@@ -32,10 +33,10 @@ export function EspecialidadesPage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  const [ordenacao, setOrdenacao] = useState("az");
-  const [categoria, setCategoria] = useState(TODAS_CATEGORIAS);
-  const [busca, setBusca] = useState(buscaInicial);
-  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
+  const [categoria, setCategoria] = useEstadoDaTela("categoria", TODAS_CATEGORIAS);
+  const [busca, setBusca] = useEstadoDaTela("busca", buscaInicial);
+  const [paginaAtual, setPaginaAtual] = useEstadoDaTela("paginaAtual", 1);
 
   const [modalAberto, setModalAberto] = useState(false);
   const [especialidadeSelecionada, setEspecialidadeSelecionada] =
@@ -72,7 +73,7 @@ export function EspecialidadesPage() {
   const aoMudarBusca = useCallback((valor) => {
     setBusca(valor);
     setPaginaAtual(1);
-  }, []);
+  }, [setBusca, setPaginaAtual]);
 
   const especialidadesFiltradas = useMemo(() => {
     const termo = busca.trim().toLowerCase();
@@ -181,7 +182,7 @@ export function EspecialidadesPage() {
 
       <EspecialidadeFilters
         key={location.key}
-        buscaInicial={buscaInicial}
+        busca={busca}
         ordenacao={ordenacao}
         onOrdenacaoChange={aoMudarOrdenacao}
         categoria={categoria}

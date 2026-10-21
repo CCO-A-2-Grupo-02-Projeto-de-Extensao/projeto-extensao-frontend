@@ -21,17 +21,20 @@ export function MemberFilters({
   classe,
   onClasseChange,
   classes = [],
+  busca,
   onBuscaChange,
 }) {
-  const [textoBusca, setTextoBusca] = useState("");
+  const [textoBusca, setTextoBusca] = useState(busca);
 
   useEffect(() => {
+    if (textoBusca === busca) return;
+
     const timer = setTimeout(() => {
       onBuscaChange(textoBusca);
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [textoBusca, onBuscaChange]);
+  }, [textoBusca, busca, onBuscaChange]);
 
   return (
     <div className={styles.filtros}>

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -44,7 +46,7 @@ function lerUsuarioLogado() {
 }
 
 export function CadastroUsuarioPage() {
-  const navegar = useNavigate();
+  const voltar = useVoltar("/dashboard");
   const { cargos } = useCatalogos();
   const logado = useMemo(() => lerUsuarioLogado(), []);
   const podeCadastrar = CARGOS_QUE_CADASTRAM.includes(logado.nomeCargo);
@@ -59,11 +61,11 @@ export function CadastroUsuarioPage() {
   const [excluindo, setExcluindo] = useState(false);
   const [erroAcao, setErroAcao] = useState("");
 
-  const [ordenacao, setOrdenacao] = useState("az");
-  const [cargo, setCargo] = useState(TODOS);
-  const [filtroSituacao, setFiltroSituacao] = useState(SITUACOES.TODOS);
-  const [busca, setBusca] = useState("");
-  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
+  const [cargo, setCargo] = useEstadoDaTela("cargo", TODOS);
+  const [filtroSituacao, setFiltroSituacao] = useEstadoDaTela("filtroSituacao", SITUACOES.TODOS);
+  const [busca, setBusca] = useEstadoDaTela("busca", "");
+  const [paginaAtual, setPaginaAtual] = useEstadoDaTela("paginaAtual", 1);
 
   const carregar = useCallback(
     () =>
@@ -179,14 +181,15 @@ export function CadastroUsuarioPage() {
   return (
     <>
       <header className={detalhe.cabecalho}>
-        <button
-          type="button"
-          className={detalhe.botaoVoltar}
-          onClick={() => navegar("/dashboard")}
-          aria-label="Voltar para o início"
-        >
-          <ArrowBackIcon fontSize="small" />
-        </button>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
+        </Tooltip>
 
         <div className={detalhe.cabecalhoTextos}>
           <p className={detalhe.sobretitulo}>

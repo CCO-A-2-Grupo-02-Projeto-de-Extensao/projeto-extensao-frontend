@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { ClasseParticipantes } from "../components/ClasseParticipantes/ClasseParticipantes.jsx";
@@ -19,13 +22,13 @@ const ABAS = [
 ];
 
 export function ClasseDetalhePage() {
-  const navegar = useNavigate();
+  const voltar = useVoltar("/dashboard/classes");
   const { idClasse } = useParams();
 
   const [classe, setClasse] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
-  const [abaAtiva, setAbaAtiva] = useState("participantes");
+  const [abaAtiva, setAbaAtiva] = useEstadoDaTela("abaAtiva", "participantes");
 
   useEffect(() => {
     let ativo = true;
@@ -53,14 +56,15 @@ export function ClasseDetalhePage() {
     // --cor-classe tinge o ponto do cabeçalho e a aba ativa.
     <div style={{ "--cor-classe": visual.cor }}>
       <header className={detalhe.cabecalho}>
-        <button
-          type="button"
-          className={detalhe.botaoVoltar}
-          onClick={() => navegar("/dashboard/classes")}
-          aria-label="Voltar para a lista de classes"
-        >
-          <ArrowBackIcon fontSize="small" />
-        </button>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
+        </Tooltip>
 
         <div className={detalhe.cabecalhoTextos}>
           <p className={detalhe.sobretitulo}>

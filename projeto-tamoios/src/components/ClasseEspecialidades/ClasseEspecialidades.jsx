@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEstadoDaTela } from "../../hooks/useEstadoDaTela.js";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 
@@ -32,10 +33,10 @@ export function ClasseEspecialidades({ idClasse }) {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  const [ordenacao, setOrdenacao] = useState("az");
-  const [categoria, setCategoria] = useState(TODAS_CATEGORIAS);
-  const [busca, setBusca] = useState("");
-  const [pagina, setPagina] = useState(1);
+  const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
+  const [categoria, setCategoria] = useEstadoDaTela("categoria", TODAS_CATEGORIAS);
+  const [busca, setBusca] = useEstadoDaTela("busca", "");
+  const [pagina, setPagina] = useEstadoDaTela("pagina", 1);
 
   const [modal, setModal] = useState(null); // "adicionar" | "remover"
 

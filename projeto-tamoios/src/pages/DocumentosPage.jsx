@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -75,7 +76,7 @@ export function DocumentosPage() {
   const [documentos, setDocumentos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
-  const [busca, setBusca] = useState("");
+  const [busca, setBusca] = useEstadoDaTela("busca", "");
   const [documentoParaExcluir, setDocumentoParaExcluir] = useState(null);
   const [acaoEmAndamento, setAcaoEmAndamento] = useState(null);
 

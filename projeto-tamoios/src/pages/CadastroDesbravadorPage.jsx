@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
@@ -141,7 +143,7 @@ export function CadastroDesbravadorPage() {
     Object.keys(arquivos).length > 0 ||
     medicacoes.length > 0;
 
-  const voltarParaLista = () => navegar("/dashboard/desbravadores");
+  const voltarParaLista = useVoltar("/dashboard/desbravadores");
 
   const aoCancelar = () => {
     if (temAlgoPreenchido) {
@@ -201,14 +203,15 @@ export function CadastroDesbravadorPage() {
   return (
     <>
       <header className={`${styles.cabecalho} ${styles.cabecalhoFixo}`}>
-        <button
-          type="button"
-          className={styles.botaoVoltar}
-          onClick={aoCancelar}
-          aria-label="Voltar para a lista de desbravadores"
-        >
-          <ArrowBackIcon fontSize="small" />
-        </button>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={styles.botaoVoltar}
+            onClick={aoCancelar}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
+        </Tooltip>
 
         <div className={styles.cabecalhoTextos}>
           <p className={styles.sobretitulo}>Novo desbravador</p>

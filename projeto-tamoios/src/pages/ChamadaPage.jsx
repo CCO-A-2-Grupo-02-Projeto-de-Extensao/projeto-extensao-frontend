@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
 import { Input } from "../components/Input/Input.jsx";
 import Select from "../components/Select/Select.jsx";
 import { Avatar } from "../components/Avatar/Avatar.jsx";
@@ -14,13 +15,14 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import { Tooltip } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import SentimentDissatisfiedRoundedIcon from "@mui/icons-material/SentimentDissatisfiedRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { useNavigate } from "react-router-dom";
+import { useVoltar } from "../hooks/useVoltar.js";
 
 import { getMembros } from "../services/membrosService.js";
 import {
@@ -100,12 +102,13 @@ function StatCard({ icon: Icon, value, label }) {
 }
 
 export function ChamadaPage() {
-  const navegar = useNavigate();
-  const [dataSelecionada, setDataSelecionada] = useState(() => new Date());
-  const [mesExibido, setMesExibido] = useState(() => {
-    const hoje = new Date();
-    return new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-  });
+  const voltar = useVoltar("/dashboard");
+  const agora = new Date();
+  const [dataSelecionada, setDataSelecionada] = useEstadoDaTela("dataSelecionada", agora);
+  const [mesExibido, setMesExibido] = useEstadoDaTela(
+    "mesExibido",
+    new Date(agora.getFullYear(), agora.getMonth(), 1)
+  );
 
   const [rows, setRows] = useState([]);
   const [chamadaAtual, setChamadaAtual] = useState(null);
@@ -113,10 +116,10 @@ export function ChamadaPage() {
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState(null);
 
-  const [order, setOrder] = useState("alfabetica");
-  const [presenceFilter, setPresenceFilter] = useState("todos");
-  const [search, setSearch] = useState("");
-  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [order, setOrder] = useEstadoDaTela("order", "alfabetica");
+  const [presenceFilter, setPresenceFilter] = useEstadoDaTela("presenceFilter", "todos");
+  const [search, setSearch] = useEstadoDaTela("search", "");
+  const [paginaAtual, setPaginaAtual] = useEstadoDaTela("paginaAtual", 1);
   // Só a linha clicada anima o ícone ("pop"); carregar ou paginar não dispara.
   const [ultimoAlterado, setUltimoAlterado] = useState(null);
 
@@ -405,14 +408,15 @@ export function ChamadaPage() {
     <>
       <section className={styles.page}>
         <header className={detalhe.cabecalho}>
-          <button
-            type="button"
-            className={detalhe.botaoVoltar}
-            onClick={() => navegar("/dashboard")}
-            aria-label="Voltar para o início"
-          >
-            <ArrowBackIcon fontSize="small" />
-          </button>
+          <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+            <button
+              type="button"
+              className={detalhe.botaoVoltar}
+              onClick={voltar}
+            >
+              <ArrowBackIcon fontSize="small" />
+            </button>
+          </Tooltip>
 
           <div className={detalhe.cabecalhoTextos}>
             <p className={detalhe.sobretitulo}>
