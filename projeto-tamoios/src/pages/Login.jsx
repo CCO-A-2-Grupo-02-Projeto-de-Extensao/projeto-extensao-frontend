@@ -12,6 +12,7 @@ import { ActionButton } from "../components/ActionButton/ActionButton.jsx";
 import { EsqueceuSenhaModal } from "../components/EsqueceuSenhaModal/EsqueceuSenhaModal.jsx";
 import { Cortina } from "../components/Cortina/Cortina.jsx";
 import { InterruptorTema } from "../components/InterruptorTema/InterruptorTema.jsx";
+import { MenuAcessibilidade } from "../components/MenuAcessibilidade/MenuAcessibilidade.jsx";
 import { prefereMenosMovimento } from "../utils/movimento.js";
 
 function Login() {
@@ -64,6 +65,7 @@ function Login() {
   return (
     <section id="center">
       <div className={styles.cantoTema}>
+        <MenuAcessibilidade />
         <InterruptorTema />
       </div>
       <Modal>

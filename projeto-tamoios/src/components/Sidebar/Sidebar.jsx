@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import clubeTamoiosLogoImg from "../../assets/clube_tamoios_logo.webp";
 import { itensNavegacao } from "../../utils/navegacao.js";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
@@ -98,9 +97,10 @@ export function Sidebar() {
             className={styles.indicador}
             aria-hidden="true"
           />
-          <ListItem style={{ justifyContent: "center", padding: "20px 0" }}>
-            <span className={styles.logo}>
-              <img src={clubeTamoiosLogoImg} alt="Logo do Clube Tamoios" />
+          <ListItem className={styles.marca}>
+            <span className={styles.marcaTextos}>
+              <span className={styles.marcaNome}>Clube Tamoios</span>
+              <span className={styles.marcaSubtitulo}>DESBRAVADORES</span>
             </span>
           </ListItem>
           {itensNavegacao.map(({ texto, Icone, path }) => (

@@ -16,39 +16,33 @@
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.logo {
-  position: relative;
-  display: block;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+.marca {
+  display: flex !important;
+  align-items: center;
+  padding: 20px 16px 20px 28px !important;
 }
 
-.logo::after {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  box-shadow: 0 0 24px 4px rgba(217, 119, 6, 0.45);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
+.marcaTextos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
 }
 
-.logo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
+.marcaNome {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
-.logo:hover {
-  transform: scale(1.04);
-}
-
-.logo:hover::after {
-  opacity: 1;
+.marcaSubtitulo {
+  margin-top: 2px;
+  color: #ffb3b8;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 .item {
@@ -99,13 +93,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo,
-  .logo::after,
   .item .customIcon {
     transition: none;
   }
 
-  .logo:hover,
   .item:hover .customIcon {
     transform: none;
   }

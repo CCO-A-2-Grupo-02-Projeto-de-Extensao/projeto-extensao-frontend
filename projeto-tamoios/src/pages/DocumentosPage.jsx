@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -10,6 +13,7 @@ import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 import api from "../services/api.js";
 import { removerDocumento } from "../services/documentosService.js";
 import styles from "../styles/documentoPage.module.css";
+import detalhe from "../styles/desbravadorDetalhePage.module.css";
 
 function obterIniciais(nome = "") {
   const nomeSemExtensao = nome.replace(/\.[^.]+$/, "");
@@ -73,6 +77,7 @@ function obterTipo(documento) {
 }
 
 export function DocumentosPage() {
+  const voltar = useVoltar("/dashboard");
   const [documentos, setDocumentos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -239,20 +244,32 @@ export function DocumentosPage() {
 
   return (
     <section className={styles.page}>
-      <header className={styles.cabecalho}>
-        <div className={styles.cabecalhoTextos}>
-          <p className={styles.sobretitulo}>Clube Tamoios</p>
-          <h1 className={styles.titulo}>Documentos</h1>
-          <p className={styles.subtitulo}>
+      <header className={detalhe.cabecalho}>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </button>
+        </Tooltip>
+
+        <div className={detalhe.cabecalhoTextos}>
+          <p className={detalhe.sobretitulo}>
+            Clube Tamoios
+            {!carregando && !erro && (
+              <span className={detalhe.matricula}>
+                {documentos.length}{" "}
+                {documentos.length === 1 ? "documento" : "documentos"}
+              </span>
+            )}
+          </p>
+          <h1 className={detalhe.titulo}>Documentos</h1>
+          <p className={detalhe.subtitulo}>
             Acesse e organize os documentos vinculados ao seu cadastro.
           </p>
         </div>
-        {!carregando && !erro && (
-          <span className={styles.contador}>
-            {documentos.length}{" "}
-            {documentos.length === 1 ? "documento" : "documentos"}
-          </span>
-        )}
       </header>
 
       <section className={styles.painel} aria-label="Lista de documentos">

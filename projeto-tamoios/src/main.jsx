@@ -9,23 +9,14 @@ import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { aplicarTema, lerTema } from "./utils/tema.js";
+import { aplicarAcessibilidade, lerAcessibilidade } from "./utils/acessibilidade.js";
 
 aplicarTema(lerTema());
 
-// Adicionando o VLibras
-const initVLibras = () => {
-  if (window.VLibras) {
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-    return;
-  }
-  const s = document.createElement('script');
-  s.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
-  s.async = true;
-  s.onload = () => new window.VLibras.Widget('https://vlibras.gov.br/app');
-  document.body.appendChild(s);
-};
-
-initVLibras();
+// Antes da primeira pintura, para a escala e o contraste salvos não entrarem
+// como um salto na tela. O VLibras não entra aqui: quem carrega é o
+// MenuAcessibilidade, e só quando a opção está ligada.
+aplicarAcessibilidade(lerAcessibilidade());
 
 const tema = createTheme({
   palette: {

@@ -1,9 +1,11 @@
+
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
-import { Add } from "@mui/icons-material";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
+import { Add, ArrowBack } from "@mui/icons-material";
 
-import { NomePagina } from "../components/NomePagina/NomePagina.jsx";
 import { ActionButton } from "../components/ActionButton/ActionButton.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
 
@@ -22,12 +24,14 @@ import {
 import { TODAS_CATEGORIAS } from "../utils/especialidadeCategorias.js";
 
 import styles from "../styles/especialidadesPage.module.css";
+import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 
 const TAMANHO_PAGINA = 10;
 
 export function EspecialidadesPage() {
   const location = useLocation();
+  const voltar = useVoltar("/dashboard");
   const buscaInicial = location.state?.busca ?? "";
   const [resultado, setResultado] = useState(null);
   const [versao, setVersao] = useState(0);
@@ -151,54 +155,71 @@ export function EspecialidadesPage() {
 
   return (
     <>
-      <NomePagina
-        titulo="Especialidades"
-        subtitulo="Resumo das disciplinas e requisitos para os desbravadores."
-      />
+      <header className={detalhe.cabecalho}>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBack fontSize="small" />
+          </button>
+        </Tooltip>
 
-      <div className={styles.acoes}>
-        <ActionButton
-          icon={<Add />}
-          texto="Adicionar disciplina"
-          onClick={abrirModalAdicionar}
+        <div className={detalhe.cabecalhoTextos}>
+          <p className={detalhe.sobretitulo}>Clube Tamoios</p>
+          <h1 className={detalhe.titulo}>Especialidades</h1>
+          <p className={detalhe.subtitulo}>
+            Resumo das disciplinas e requisitos para os desbravadores.
+          </p>
+        </div>
+
+        <div className={detalhe.cabecalhoAcoes}>
+          <ActionButton
+            icon={<Add />}
+            texto="Adicionar disciplina"
+            onClick={abrirModalAdicionar}
+          />
+        </div>
+      </header>
+
+      <section className={styles.secaoEspecialidades}>
+        <h2 className={styles.tituloSecao}>Especialidades cadastradas</h2>
+
+        {erro && <p className={styles.mensagemErro}>{erro}</p>}
+
+        <EspecialidadeFilters
+          key={location.key}
+          busca={busca}
+          ordenacao={ordenacao}
+          onOrdenacaoChange={aoMudarOrdenacao}
+          categoria={categoria}
+          onCategoriaChange={aoMudarCategoria}
+          onBuscaChange={aoMudarBusca}
         />
-      </div>
 
-      <h2 className={styles.tituloSecao}>Especialidades</h2>
+        {carregando ? (
+          <Esqueleto linhas={8} rotulo="Carregando especialidades" />
+        ) : nenhumEncontrado ? (
+          <p className={styles.mensagemEstado}>
+            Nenhuma especialidade encontrada.
+          </p>
+        ) : (
+          <>
+            <EspecialidadeTable
+              especialidades={especialidadesDaPagina}
+              onEditar={abrirModalEditar}
+              onExcluir={setAExcluir}
+            />
 
-      {erro && <p className={styles.mensagemErro}>{erro}</p>}
-
-      <EspecialidadeFilters
-        key={location.key}
-        busca={busca}
-        ordenacao={ordenacao}
-        onOrdenacaoChange={aoMudarOrdenacao}
-        categoria={categoria}
-        onCategoriaChange={aoMudarCategoria}
-        onBuscaChange={aoMudarBusca}
-      />
-
-      {carregando ? (
-        <Esqueleto linhas={8} rotulo="Carregando especialidades" />
-      ) : nenhumEncontrado ? (
-        <p className={styles.mensagemEstado}>
-          Nenhuma especialidade encontrada.
-        </p>
-      ) : (
-        <>
-          <EspecialidadeTable
-            especialidades={especialidadesDaPagina}
-            onEditar={abrirModalEditar}
-            onExcluir={setAExcluir}
-          />
-
-          <Pagination
-            paginaAtual={paginaAtual}
-            totalPaginas={totalPaginas}
-            onPaginaChange={setPaginaAtual}
-          />
-        </>
-      )}
+            <Pagination
+              paginaAtual={paginaAtual}
+              totalPaginas={totalPaginas}
+              onPaginaChange={setPaginaAtual}
+            />
+          </>
+        )}
+      </section>
 
       <EspecialidadeModal
         aberto={modalAberto}

@@ -30,6 +30,11 @@
   --textoSuave: #8c7d80;
   --branco: #ffffff;
   --sobreVinho: #ffffff;
+  /* Azul do gov.br, o mesmo que o widget do VLibras usa. Fora da paleta vinho
+     de propósito: acessibilidade é sinalizada em azul por convenção. */
+  --azulAcessibilidade: #1351b4;
+  --azulAcessibilidadeVivo: #0f4196;
+  --sobreAzul: #ffffff;
   --vinhoFundo: #4a151b;
   --vinhoFundoVivo: #6e1b24;
   --vinhoFundoProfundo: #380f14;
@@ -39,10 +44,14 @@
   --sombraElevada: 0 4px 6px rgba(56, 15, 20, 0.04), 0 12px 24px rgba(56, 15, 20, 0.06);
   --sombraModal: 0 12px 36px rgba(56, 15, 20, 0.12), 0 2px 8px rgba(56, 15, 20, 0.04);
   --fonte: "Plus Jakarta Sans", sans-serif;
+  --escalaConteudo: 1;
   font-family: var(--fonte);
   font-size: 16px;
   color: var(--text);
   color-scheme: light;
+  /* Ampliação do painel de acessibilidade. É `zoom` e não `font-size` porque a
+     tipografia do app é toda em px, que não acompanha a raiz. */
+  zoom: var(--escalaConteudo);
 }
 
 :root[data-tema="escuro"] {
@@ -73,7 +82,39 @@
   --sombraCartao: 0 1px 3px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
   --sombraElevada: 0 4px 6px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.35);
   --sombraModal: 0 12px 36px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  /* Clareado para destacar do fundo escuro, mantendo contraste de 4,8:1 com o
+     ícone branco. */
+  --azulAcessibilidade: #2d6fd1;
+  --azulAcessibilidadeVivo: #3e80e2;
   color-scheme: dark;
+}
+
+/* Alto contraste: endurece bordas e tira a transparência que suaviza textos.
+   Vale sobre os dois temas, por isso vem depois do bloco do tema escuro. */
+:root[data-contraste="alto"] {
+  --borda: var(--carvao);
+  --bordaForte: var(--carvao);
+  --cinza: var(--carvao);
+  --textoSecundario: var(--carvao);
+  --textoSuave: var(--carvao);
+  --superficieSuave: var(--branco);
+  --creme: var(--branco);
+  --cremeClaro: var(--branco);
+}
+
+:root[data-contraste="alto"] * {
+  opacity: 1 !important;
+}
+
+/* Reduzir animações: o mesmo efeito que o `prefers-reduced-motion` do sistema,
+   mas ligado à mão. Ver utils/movimento.js, que também lê este atributo. */
+:root[data-movimento="reduzido"] *,
+:root[data-movimento="reduzido"] *::before,
+:root[data-movimento="reduzido"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 ::view-transition-old(root),
