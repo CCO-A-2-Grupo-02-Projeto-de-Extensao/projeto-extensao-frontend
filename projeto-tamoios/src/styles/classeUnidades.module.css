@@ -95,8 +95,8 @@
   white-space: nowrap;
 }
 
-/* O widget do VLibras é fixo na borda direita da janela e cobria os botões;
-   por isso a folga à direita. */
+/* Com o VLibras ligado, o widget dele fica fixo na borda direita da janela e
+   cobre os botões; por isso a folga à direita. */
 .acoes {
   display: flex;
   justify-content: flex-end;
