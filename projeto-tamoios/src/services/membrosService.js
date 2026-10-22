@@ -54,6 +54,41 @@ export async function getMembros() {
   return data.map(paraMembro);
 }
 
+export async function getMembrosPaginados({
+  pagina,
+  tamanho,
+  busca,
+  situacao,
+  categoria,
+  classe,
+  ordenacao,
+}) {
+  const { data } = await api.get("/pessoas/pagina", {
+    params: {
+      page: pagina - 1,
+      size: tamanho,
+      sort: `nome,${ordenacao === "az" ? "asc" : "desc"}`,
+      busca: busca.trim() || undefined,
+      ativo:
+        situacao === SITUACOES.TODOS ? undefined : situacao === SITUACOES.ATIVOS,
+      categoria: categoria === CATEGORIAS.TODOS ? undefined : categoria,
+      idClasse:
+        classe === CLASSES_TODAS || classe === SEM_CLASSE ? undefined : classe,
+      semClasse: classe === SEM_CLASSE || undefined,
+    },
+  });
+  return {
+    membros: data.conteudo.map(paraMembro),
+    total: data.totalElementos,
+    totalPaginas: data.totalPaginas,
+  };
+}
+
+export async function getResumoMembros() {
+  const { data } = await api.get("/pessoas/resumo");
+  return data;
+}
+
 export async function getMembro(idPessoa) {
   const { data } = await api.get(`/pessoas/${idPessoa}`);
   return paraMembro(data);

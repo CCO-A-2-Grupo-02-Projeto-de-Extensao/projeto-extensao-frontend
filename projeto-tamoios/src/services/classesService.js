@@ -1,4 +1,5 @@
 import { api } from "./api";
+import { TODAS_CATEGORIAS } from "../utils/especialidadeCategorias.js";
 
 // Tudo o que a tela de Classes e suas abas (Participantes, Especialidades,
 // Unidades) precisam do backend. A Classe em si é catálogo somente-leitura; o
@@ -119,6 +120,29 @@ export async function desvincularPessoaDaClasse(idPessoa) {
 export async function getEspecialidades() {
   const { data } = await api.get("/especialidades");
   return data.map(paraEspecialidade);
+}
+
+export async function getEspecialidadesPaginadas({
+  pagina,
+  tamanho,
+  busca,
+  categoria,
+  ordenacao,
+}) {
+  const { data } = await api.get("/especialidades/pagina", {
+    params: {
+      page: pagina - 1,
+      size: tamanho,
+      sort: `nome,${ordenacao === "az" ? "asc" : "desc"}`,
+      busca: busca.trim() || undefined,
+      categoria: categoria === TODAS_CATEGORIAS ? undefined : categoria,
+    },
+  });
+  return {
+    especialidades: data.conteudo.map(paraEspecialidade),
+    total: data.totalElementos,
+    totalPaginas: data.totalPaginas,
+  };
 }
 
 export async function criarEspecialidade(especialidade) {

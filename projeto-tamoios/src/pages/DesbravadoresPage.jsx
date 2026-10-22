@@ -14,9 +14,10 @@ import { RemoverDesbravadorModal } from "../components/RemoverDesbravadorModal/R
 import { ReativarDesbravadorModal } from "../components/ReativarDesbravadorModal/ReativarDesbravadorModal.jsx";
 import {
   getMembros,
+  getMembrosPaginados,
+  getResumoMembros,
   CATEGORIAS,
   CLASSES_TODAS,
-  SEM_CLASSE,
   SITUACOES,
   desativarPessoa,
   reativarPessoa,
@@ -38,8 +39,10 @@ export function DesbravadoresPage() {
   const navegar = useNavigate();
   const voltar = useVoltar("/dashboard");
   const { classes } = useCatalogos();
-  const [membros, setMembros] = useState([]);
-  const [carregando, setCarregando] = useState(true);
+  const [pagina, setPagina] = useState(null);
+  const [resumoMembros, setResumoMembros] = useState(null);
+  const [todosMembros, setTodosMembros] = useState([]);
+  const [versao, setVersao] = useState(0);
   const [erro, setErro] = useState(null);
 
   const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
@@ -51,24 +54,50 @@ export function DesbravadoresPage() {
   const [modalRemoverAberto, setModalRemoverAberto] = useState(false);
   const [modalReativarAberto, setModalReativarAberto] = useState(false);
 
-  const carregarMembros = () => {
-    setCarregando(true);
-    return getMembros()
+  useEffect(() => {
+    let atual = true;
+
+    getMembrosPaginados({
+      pagina: paginaAtual,
+      tamanho: TAMANHO_PAGINA,
+      busca,
+      situacao,
+      categoria,
+      classe,
+      ordenacao,
+    })
       .then((dados) => {
-        setMembros(dados);
+        if (!atual) return;
+        if (dados.totalPaginas > 0 && paginaAtual > dados.totalPaginas) {
+          setPaginaAtual(dados.totalPaginas);
+          return;
+        }
+        setPagina(dados);
         setErro(null);
       })
       .catch(() => {
-        setErro("Não foi possível carregar os membros.");
-      })
-      .finally(() => {
-        setCarregando(false);
+        if (atual) setErro("Não foi possível carregar os membros.");
       });
-  };
+
+    return () => {
+      atual = false;
+    };
+  }, [paginaAtual, busca, situacao, categoria, classe, ordenacao, versao, setPaginaAtual]);
 
   useEffect(() => {
-    carregarMembros();
-  }, []);
+    getResumoMembros()
+      .then(setResumoMembros)
+      .catch(() => setErro("Não foi possível carregar os membros."));
+  }, [versao]);
+
+  const recarregar = () => setVersao((valor) => valor + 1);
+
+  const abrirModal = (abrir) => {
+    getMembros()
+      .then(setTodosMembros)
+      .catch(() => setErro("Não foi possível carregar os membros."));
+    abrir(true);
+  };
 
   const aoMudarOrdenacao = (valor) => {
     setOrdenacao(valor);
@@ -96,67 +125,33 @@ export function DesbravadoresPage() {
   };
 
   const membrosAtivos = useMemo(
-    () => membros.filter((membro) => membro.ativo),
-    [membros]
+    () => todosMembros.filter((membro) => membro.ativo),
+    [todosMembros]
   );
 
   const membrosInativos = useMemo(
-    () => membros.filter((membro) => !membro.ativo),
-    [membros]
+    () => todosMembros.filter((membro) => !membro.ativo),
+    [todosMembros]
   );
-
-  const membrosFiltrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-
-    // Parte de `membros` (todos), e não de `membrosAtivos`: quem decide se os
-    // desativados entram é o filtro de situação. As listas `membrosAtivos` e
-    // `membrosInativos` continuam servindo os modais de desativar/reativar em lote.
-    return membros
-      .filter((membro) => {
-        if (situacao === SITUACOES.ATIVOS) return membro.ativo;
-        if (situacao === SITUACOES.INATIVOS) return !membro.ativo;
-        return true;
-      })
-      .filter((membro) => membro.nome.toLowerCase().includes(termo))
-      .filter(
-        (membro) =>
-          categoria === CATEGORIAS.TODOS || membro.categoria === categoria
-      )
-      .filter((membro) => {
-        if (classe === CLASSES_TODAS) return true;
-        if (classe === SEM_CLASSE) return membro.idClasse == null;
-        return membro.idClasse === Number(classe);
-      })
-      .sort((a, b) =>
-        ordenacao === "az"
-          ? a.nome.localeCompare(b.nome)
-          : b.nome.localeCompare(a.nome)
-      );
-  }, [membros, busca, categoria, classe, ordenacao, situacao]);
 
   const aoConfirmarDesativacao = async (selecionados) => {
     await Promise.all(selecionados.map((membro) => desativarPessoa(membro.id)));
-    await carregarMembros();
+    recarregar();
   };
 
   const aoConfirmarReativacao = async (selecionados) => {
     await Promise.all(selecionados.map((membro) => reativarPessoa(membro.id)));
-    await carregarMembros();
+    recarregar();
   };
 
   const aoSelecionarMembro = (membro) => {
     navegar(`/dashboard/desbravadores/${membro.id}`);
   };
 
-  const totalPaginas = Math.max(
-    1,
-    Math.ceil(membrosFiltrados.length / TAMANHO_PAGINA)
-  );
-
-  const membrosDaPagina = useMemo(() => {
-    const inicio = (paginaAtual - 1) * TAMANHO_PAGINA;
-    return membrosFiltrados.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [membrosFiltrados, paginaAtual]);
+  const carregando = !erro && (pagina === null || resumoMembros === null);
+  const membrosDaPagina = pagina?.membros ?? [];
+  const totalFiltrado = pagina?.total ?? 0;
+  const totalPaginas = Math.max(1, pagina?.totalPaginas ?? 1);
 
   const grupos = GRUPOS.filter(
     (grupo) => categoria === CATEGORIAS.TODOS || grupo.categoria === categoria
@@ -166,17 +161,14 @@ export function DesbravadoresPage() {
   }));
 
   const resumo = [
-    { rotulo: "Ativos", valor: membrosAtivos.length },
-    { rotulo: "Desativados", valor: membrosInativos.length },
-    ...GRUPOS.map((grupo) => ({
-      rotulo: grupo.titulo,
-      valor: membrosAtivos.filter((m) => m.categoria === grupo.categoria)
-        .length,
-    })),
+    { rotulo: "Ativos", valor: resumoMembros?.ativos },
+    { rotulo: "Desativados", valor: resumoMembros?.inativos },
+    { rotulo: "Administrativo", valor: resumoMembros?.administrativos },
+    { rotulo: "Instrutores", valor: resumoMembros?.instrutores },
+    { rotulo: "Alunos", valor: resumoMembros?.alunos },
   ];
 
-  const nenhumEncontrado =
-    !carregando && !erro && membrosFiltrados.length === 0;
+  const nenhumEncontrado = !carregando && !erro && totalFiltrado === 0;
 
   return (
     <>
@@ -196,7 +188,7 @@ export function DesbravadoresPage() {
             Clube Tamoios
             {!carregando && (
               <span className={detalhe.matricula}>
-                {membros.length} membros cadastrados
+                {resumoMembros.total} membros cadastrados
               </span>
             )}
           </p>
@@ -210,7 +202,7 @@ export function DesbravadoresPage() {
           <button
             type="button"
             className={detalhe.botaoSecundario}
-            onClick={() => setModalReativarAberto(true)}
+            onClick={() => abrirModal(setModalReativarAberto)}
           >
             <RestoreIcon fontSize="small" />
             Reativar
@@ -218,7 +210,7 @@ export function DesbravadoresPage() {
           <button
             type="button"
             className={detalhe.botaoDesativar}
-            onClick={() => setModalRemoverAberto(true)}
+            onClick={() => abrirModal(setModalRemoverAberto)}
           >
             <PersonOffIcon fontSize="small" />
             Desativar
@@ -250,8 +242,8 @@ export function DesbravadoresPage() {
           <h2 className={detalhe.secaoTitulo}>Membros</h2>
           {!carregando && !erro && (
             <span className={detalhe.secaoContagem}>
-              {membrosFiltrados.length}{" "}
-              {membrosFiltrados.length === 1 ? "encontrado" : "encontrados"}
+              {totalFiltrado}{" "}
+              {totalFiltrado === 1 ? "encontrado" : "encontrados"}
             </span>
           )}
         </div>
@@ -292,7 +284,7 @@ export function DesbravadoresPage() {
               )
           )}
 
-        {!carregando && !erro && membrosFiltrados.length > 0 && (
+        {!carregando && !erro && totalFiltrado > 0 && (
           <Pagination
             paginaAtual={paginaAtual}
             totalPaginas={totalPaginas}

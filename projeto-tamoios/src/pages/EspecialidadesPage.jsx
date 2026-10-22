@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
 import { Add } from "@mui/icons-material";
@@ -16,7 +16,7 @@ import {
   atualizarEspecialidade,
   criarEspecialidade,
   excluirEspecialidade,
-  getEspecialidades,
+  getEspecialidadesPaginadas,
 } from "../services/classesService.js";
 
 import { TODAS_CATEGORIAS } from "../utils/especialidadeCategorias.js";
@@ -29,8 +29,8 @@ const TAMANHO_PAGINA = 10;
 export function EspecialidadesPage() {
   const location = useLocation();
   const buscaInicial = location.state?.busca ?? "";
-  const [especialidades, setEspecialidades] = useState([]);
-  const [carregando, setCarregando] = useState(true);
+  const [resultado, setResultado] = useState(null);
+  const [versao, setVersao] = useState(0);
   const [erro, setErro] = useState("");
 
   const [ordenacao, setOrdenacao] = useEstadoDaTela("ordenacao", "az");
@@ -46,19 +46,35 @@ export function EspecialidadesPage() {
   const [aExcluir, setAExcluir] = useState(null);
   const [excluindo, setExcluindo] = useState(false);
 
-  const carregar = useCallback(() => {
-    return getEspecialidades()
-      .then((lista) => {
-        setEspecialidades(lista);
+  useEffect(() => {
+    let atual = true;
+
+    getEspecialidadesPaginadas({
+      pagina: paginaAtual,
+      tamanho: TAMANHO_PAGINA,
+      busca,
+      categoria,
+      ordenacao,
+    })
+      .then((dados) => {
+        if (!atual) return;
+        if (dados.totalPaginas > 0 && paginaAtual > dados.totalPaginas) {
+          setPaginaAtual(dados.totalPaginas);
+          return;
+        }
+        setResultado(dados);
         setErro("");
       })
-      .catch(() => setErro("Não foi possível carregar as especialidades."))
-      .finally(() => setCarregando(false));
-  }, []);
+      .catch(() => {
+        if (atual) setErro("Não foi possível carregar as especialidades.");
+      });
 
-  useEffect(() => {
-    carregar();
-  }, [carregar]);
+    return () => {
+      atual = false;
+    };
+  }, [paginaAtual, busca, categoria, ordenacao, versao, setPaginaAtual]);
+
+  const carregar = () => setVersao((valor) => valor + 1);
 
   const aoMudarOrdenacao = (valor) => {
     setOrdenacao(valor);
@@ -75,37 +91,9 @@ export function EspecialidadesPage() {
     setPaginaAtual(1);
   }, [setBusca, setPaginaAtual]);
 
-  const especialidadesFiltradas = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-
-    return [...especialidades]
-      .filter((especialidade) =>
-        especialidade.nome.toLowerCase().includes(termo)
-      )
-      .filter(
-        (especialidade) =>
-          categoria === TODAS_CATEGORIAS ||
-          especialidade.categoria === categoria
-      )
-      .sort((a, b) =>
-        ordenacao === "az"
-          ? a.nome.localeCompare(b.nome)
-          : b.nome.localeCompare(a.nome)
-      );
-  }, [especialidades, busca, categoria, ordenacao]);
-
-  const totalPaginas = Math.max(
-    1,
-    Math.ceil(especialidadesFiltradas.length / TAMANHO_PAGINA)
-  );
-
-  const pagina = Math.min(paginaAtual, totalPaginas);
-
-  const especialidadesDaPagina = useMemo(() => {
-    const inicio = (pagina - 1) * TAMANHO_PAGINA;
-
-    return especialidadesFiltradas.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [especialidadesFiltradas, pagina]);
+  const carregando = resultado === null && !erro;
+  const especialidadesDaPagina = resultado?.especialidades ?? [];
+  const totalPaginas = Math.max(1, resultado?.totalPaginas ?? 1);
 
   const abrirModalAdicionar = () => {
     setEspecialidadeSelecionada(null);
@@ -132,7 +120,7 @@ export function EspecialidadesPage() {
         await criarEspecialidade(dados);
       }
 
-      await carregar();
+      carregar();
       fecharModal();
     } catch {
       setErro(
@@ -150,7 +138,7 @@ export function EspecialidadesPage() {
 
     try {
       await excluirEspecialidade(aExcluir.id);
-      await carregar();
+      carregar();
     } catch {
       setErro(`Não foi possível excluir a especialidade ${aExcluir.nome}.`);
     } finally {
@@ -159,7 +147,7 @@ export function EspecialidadesPage() {
     }
   };
 
-  const nenhumEncontrado = especialidadesFiltradas.length === 0;
+  const nenhumEncontrado = (resultado?.total ?? 0) === 0;
 
   return (
     <>
@@ -205,7 +193,7 @@ export function EspecialidadesPage() {
           />
 
           <Pagination
-            paginaAtual={pagina}
+            paginaAtual={paginaAtual}
             totalPaginas={totalPaginas}
             onPaginaChange={setPaginaAtual}
           />
