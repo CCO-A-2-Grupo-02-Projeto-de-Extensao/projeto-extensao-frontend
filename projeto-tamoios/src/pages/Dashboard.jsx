@@ -1,214 +1,397 @@
-import { useEffect, useState } from "react";
-import EventIcon from "@mui/icons-material/Event";
-import PersonOffIcon from "@mui/icons-material/PersonOff";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Tooltip } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
-import "../App.css";
-import { Card } from "../components/Card/Card.jsx";
+import { Avatar } from "../components/Avatar/Avatar.jsx";
+import { Button } from "../components/Button/Button.jsx";
 import { CalendarioAcademico } from "../components/CalendarioAcademico/CalendarioAcademico.jsx";
-import Kpi from "../components/Kpi/Kpi.jsx";
-import { Select } from "../components/Select/Select.jsx";
-import { getDadosDashboard } from "../services/dashboardService.js";
+import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { AdicionarEventoModal } from "../components/AdicionarEventoModal/AdicionarEventoModal.jsx";
-import styles from "../styles/dashboard.module.css";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
+import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
+import { deletarEvento } from "../services/chamadasService.js";
+import { getDadosDashboard } from "../services/dashboardService.js";
+import { paraChaveData } from "../utils/datas.js";
+import { lerUsuarioLogado } from "../utils/sessao.js";
+import detalhe from "../styles/desbravadorDetalhePage.module.css";
+import desbravadores from "../styles/desbravadoresPage.module.css";
+import styles from "../styles/dashboard.module.css";
 
-const indicadoresIniciais = {
-  desbravadores: "--",
-  especialidades: "--",
-  instrutores: "--",
-  feriados: "--",
-};
+const LIMITE_PROXIMOS = 4;
+const LIMITE_DIAS_EVENTO = 60;
 
-function paraChaveData(data) {
-  const ano = data.getFullYear();
-  const mes = String(data.getMonth() + 1).padStart(2, "0");
-  const dia = String(data.getDate()).padStart(2, "0");
-  return `${ano}-${mes}-${dia}`;
+const formatoDia = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
+const formatoMes = new Intl.DateTimeFormat("pt-BR", { month: "long" });
+const formatoMesCurto = new Intl.DateTimeFormat("pt-BR", { month: "short" });
+
+function paraData(texto) {
+  const [ano, mes, dia] = texto.slice(0, 10).split("-").map(Number);
+  return new Date(ano, mes - 1, dia);
+}
+
+function diasDoEvento(evento) {
+  const dias = [];
+  const dia = paraData(evento.inicio);
+  const fim = paraData(evento.fim);
+  while (dia <= fim && dias.length < LIMITE_DIAS_EVENTO) {
+    dias.push(paraChaveData(dia));
+    dia.setDate(dia.getDate() + 1);
+  }
+  return dias;
+}
+
+function periodo(evento) {
+  if (evento.inicio === evento.fim) return evento.tipo;
+  const fim = paraData(evento.fim);
+  const ate = `até ${fim.getDate()} de ${formatoMes.format(fim)}`;
+  return evento.tipo ? `${evento.tipo} · ${ate}` : ate;
+}
+
+function intervalo(evento) {
+  const inicio = paraData(evento.inicio);
+  const fim = paraData(evento.fim);
+  const diaEMes = (data) => `${data.getDate()} de ${formatoMes.format(data)}`;
+  if (evento.inicio === evento.fim) return diaEMes(inicio);
+  if (inicio.getMonth() === fim.getMonth()) {
+    return `${inicio.getDate()} a ${diaEMes(fim)}`;
+  }
+  return `${diaEMes(inicio)} a ${diaEMes(fim)}`;
 }
 
 function Dashboard() {
-  const [indicadores, setIndicadores] = useState(indicadoresIniciais);
-  const [controleAcademico, setControleAcademico] = useState(null);
-  const [dataSelecionada, setDataSelecionada] = useState(() => new Date());
-  const [mesExibido, setMesExibido] = useState(() => {
-    const hoje = new Date();
-    return new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-  });
-  const [categoriaFaltas, setCategoriaFaltas] = useState("todos");
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState("");
+  const navegar = useNavigate();
+  const usuario = lerUsuarioLogado();
+  const primeiroNome = (usuario.nomePessoa || "").split(" ")[0];
 
-  const carregarDashboard = async () => {
-    setCarregando(true);
-    setErro("");
+  const agora = new Date();
+  const hojeChave = paraChaveData(agora);
+  const [dataSelecionada, setDataSelecionada] = useEstadoDaTela(
+    "dataSelecionada",
+    agora
+  );
+  const [mesExibido, setMesExibido] = useEstadoDaTela(
+    "mesExibido",
+    new Date(agora.getFullYear(), agora.getMonth(), 1)
+  );
 
+  const [dados, setDados] = useState(null);
+  const [modalEventoAberto, setModalEventoAberto] = useState(false);
+  const [eventoAExcluir, setEventoAExcluir] = useState(null);
+  const [erroAgenda, setErroAgenda] = useState("");
+
+  const carregar = () => getDadosDashboard().then(setDados);
+
+  useEffect(() => {
+    void carregar();
+  }, []);
+
+  const membrosAtivos = useMemo(
+    () => dados?.membros?.filter((membro) => membro.ativo) ?? null,
+    [dados]
+  );
+
+  const contarCategoria = (categoria) =>
+    membrosAtivos?.filter(
+      (membro) => membro.categoria?.toLowerCase() === categoria
+    ).length;
+
+  const resumo = [
+    { rotulo: "Membros ativos", valor: membrosAtivos?.length },
+    { rotulo: "Desbravadores", valor: contarCategoria("aluno") },
+    { rotulo: "Instrutores", valor: contarCategoria("instrutor") },
+    { rotulo: "Classes", valor: dados?.totalClasses },
+    { rotulo: "Especialidades", valor: dados?.totalEspecialidades },
+  ];
+
+  const eventos = useMemo(() => dados?.eventos ?? [], [dados]);
+
+  const diasComEvento = useMemo(
+    () => new Set(eventos.flatMap(diasDoEvento)),
+    [eventos]
+  );
+
+  const chaveSelecionada = paraChaveData(dataSelecionada);
+  const eventosDoDia = eventos.filter(
+    (evento) =>
+      evento.inicio <= chaveSelecionada && chaveSelecionada <= evento.fim
+  );
+
+  const proximosEventos = eventos
+    .filter((evento) => evento.fim >= hojeChave)
+    .sort((a, b) => a.inicio.localeCompare(b.inicio))
+    .slice(0, LIMITE_PROXIMOS);
+
+  const aniversariantes = useMemo(
+    () =>
+      (membrosAtivos ?? [])
+        .filter((membro) => membro.dataNascimento)
+        .map((membro) => ({ ...membro, nascimento: paraData(membro.dataNascimento) }))
+        .filter(({ nascimento }) => nascimento.getMonth() === mesExibido.getMonth())
+        .sort((a, b) => a.nascimento.getDate() - b.nascimento.getDate()),
+    [membrosAtivos, mesExibido]
+  );
+
+  const excluirEvento = async () => {
+    const evento = eventoAExcluir;
+    setEventoAExcluir(null);
     try {
-      const dados = await getDadosDashboard();
-      setIndicadores(dados.indicadores);
-      setControleAcademico(dados.controleAcademico);
-    } catch {
-      setErro("Não foi possível carregar os dados do dashboard.");
-    } finally {
-      setCarregando(false);
+      await deletarEvento(evento.id);
+      await carregar();
+    } catch (erroRequisicao) {
+      setErroAgenda(
+        erroRequisicao.response?.data?.erro ??
+          "Não foi possível excluir o evento. Tente novamente."
+      );
     }
   };
 
-  useEffect(() => {
-    void carregarDashboard();
-  }, []);
-
   const selecionarData = (data) => {
+    setErroAgenda("");
     setDataSelecionada(data);
     setMesExibido(new Date(data.getFullYear(), data.getMonth(), 1));
   };
 
-  const eventosDoDia =
-    controleAcademico?.eventos.filter(
-      (evento) => evento.data === paraChaveData(dataSelecionada),
-    ) ?? [];
-  const faltasSelecionadas = controleAcademico?.faltasPorCategoria[
-    categoriaFaltas
-  ] ?? { faltas: 0, presencas: 0 };
-  const totalRegistros =
-    faltasSelecionadas.faltas + faltasSelecionadas.presencas;
-  const percentualFaltas = totalRegistros
-    ? Math.round((faltasSelecionadas.faltas / totalRegistros) * 100)
-    : 0;
-  const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
+  const carregando = dados === null;
+  const falhou =
+    !carregando &&
+    [dados.membros, dados.eventos, dados.totalClasses, dados.totalEspecialidades].some(
+      (valor) => valor === null
+    );
 
   return (
     <>
-      <div className={styles.dashboard}>
-        {erro && (
-          <p className={styles.mensagemErro} role="alert">
-            {erro}
+      <header className={detalhe.cabecalho}>
+        <div className={detalhe.cabecalhoTextos}>
+          <p className={detalhe.sobretitulo}>
+            Clube Tamoios
+            <span className={detalhe.matricula}>{formatoDia.format(agora)}</span>
           </p>
-        )}
+          <h1 className={detalhe.titulo}>
+            {primeiroNome ? `Olá, ${primeiroNome}` : "Início"}
+          </h1>
+          <p className={detalhe.subtitulo}>
+            Agenda, aniversariantes e números do clube.
+          </p>
+        </div>
+      </header>
 
-        <section
-          className={styles.indicadores}
-          aria-label="Indicadores do clube"
-        >
-          <Kpi
-            icone="pessoa"
-            valor={indicadores.desbravadores}
-            texto="Desbravadores"
-          />
-          <Kpi
-            icone="livros"
-            valor={indicadores.especialidades}
-            texto="Especialidades"
-          />
-          <Kpi
-            icone="chapeuEscola"
-            valor={indicadores.instrutores}
-            texto="Instrutores"
-          />
-          <Kpi
-            icone="calendario"
-            valor={indicadores.feriados}
-            texto="Feriados (Mês)"
-          />
-        </section>
+      {falhou && (
+        <p className={styles.mensagemErro} role="alert">
+          Parte dos dados não pôde ser carregada.
+        </p>
+      )}
 
-        <section className={styles.secao} aria-labelledby="titulo-acoes">
-          <h2 id="titulo-acoes" className={styles.tituloSecao}>
-            Ações Rápidas
-          </h2>
-          <div className={styles.acoes}>
-            {/* TODO: conectar à rota de eventos quando a funcionalidade existir. */}
-            <Card
-              titulo="Adicionar Eventos"
-              imagemUrl="iconCalendario.png"
-              mensagemAlert="Funcionalidade em desenvolvimento"
-              onClick={() => {
-                setModalCadastroAberto(true);
-              }}
-            />
-            <Card
-              titulo="Consultar Especialidades"
-              imagemUrl="iconEspecialidade.png"
-              pagina="/dashboard/especialidades"
-            />
-            <Card
-              titulo="Listar Desbravadores"
-              imagemUrl="iconGrupo.png"
-              pagina="/dashboard/desbravadores"
-            />
-            <Card
-              titulo="Consultar Classes"
-              imagemUrl="iconEducacao.png"
-              pagina="/dashboard/classes"
-            />
+      <section
+        className={`${detalhe.blocoDados} ${desbravadores.resumo} ${styles.numeros}`}
+        aria-label="Números do clube"
+      >
+        {resumo.map(({ rotulo, valor }) => (
+          <div key={rotulo} className={detalhe.dado}>
+            <span className={detalhe.dadoRotulo}>{rotulo}</span>
+            <span className={desbravadores.resumoValor}>{valor ?? "—"}</span>
+          </div>
+        ))}
+      </section>
+
+      <div className={styles.grade}>
+        <section className={detalhe.secao} aria-labelledby="titulo-agenda">
+          <div className={`${detalhe.secaoCabecalho} ${styles.cabecalhoSecao}`}>
+            <h2 id="titulo-agenda" className={detalhe.secaoTitulo}>
+              Agenda
+            </h2>
+            <Button
+              variante="destaque"
+              compacto
+              icone={<AddIcon fontSize="small" />}
+              onClick={() => setModalEventoAberto(true)}
+            >
+              Adicionar evento
+            </Button>
+          </div>
+
+          {erroAgenda && (
+            <p className={styles.mensagemErro} role="alert">
+              {erroAgenda}
+            </p>
+          )}
+
+          <div className={styles.agenda}>
+            <div className={styles.calendario}>
+              <CalendarioAcademico
+                mesExibido={mesExibido}
+                dataSelecionada={dataSelecionada}
+                onMudarMes={setMesExibido}
+                onSelecionarData={selecionarData}
+                marcados={diasComEvento}
+              />
+            </div>
+
+            <div className={styles.diaSelecionado}>
+              <h3 className={styles.tituloDia}>
+                {formatoDia.format(dataSelecionada)}
+              </h3>
+
+              {carregando ? (
+                <Esqueleto linhas={2} rotulo="Carregando eventos" />
+              ) : eventosDoDia.length > 0 ? (
+                <ul className={styles.lista}>
+                  {eventosDoDia.map((evento) => (
+                    <li key={evento.id} className={styles.eventoDoDia}>
+                      <span className={styles.itemTextos}>
+                        <span className={styles.itemTitulo}>{evento.titulo}</span>
+                        {periodo(evento) && (
+                          <span className={styles.itemDetalhe}>{periodo(evento)}</span>
+                        )}
+                      </span>
+                      <Tooltip arrow placement="top" title="Excluir evento">
+                        <button
+                          type="button"
+                          className={styles.botaoExcluir}
+                          onClick={() => {
+                            setErroAgenda("");
+                            setEventoAExcluir(evento);
+                          }}
+                        >
+                          <DeleteOutlineIcon fontSize="small" />
+                        </button>
+                      </Tooltip>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={styles.vazio}>Nenhum evento neste dia.</p>
+              )}
+            </div>
           </div>
         </section>
 
-        <section className={styles.secao} aria-labelledby="titulo-controle">
-          <h2 id="titulo-controle" className={styles.tituloSecao}>
-            Controle Acadêmico
-          </h2>
-
-          {carregando && (
-            <Esqueleto linhas={6} rotulo="Carregando controle acadêmico" />
-          )}
-
-          {!carregando && controleAcademico && (
-            <div className={styles.controleAcademico}>
-              <div className={styles.painelCalendario}>
-                <CalendarioAcademico
-                  mesExibido={mesExibido}
-                  dataSelecionada={dataSelecionada}
-                  onMudarMes={setMesExibido}
-                  onSelecionarData={selecionarData}
-                />
-              </div>
-
-              <article className={styles.painel}>
-                <header className={styles.cabecalhoPainel}>
-                  <EventIcon
-                    className={styles.iconePainel}
-                    aria-hidden="true"
-                  />
-                  <h3 className={styles.dataSelecionada}>
-                    {dataSelecionada.toLocaleDateString("pt-BR")}
-                  </h3>
-                </header>
-
-                {eventosDoDia.length > 0 ? (
-                  <table
-                    className={styles.tabelaEventos}
-                    aria-label="Eventos do dia selecionado"
-                  >
-                    <thead>
-                      <tr>
-                        <th>Horário</th>
-                        <th>Evento</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {eventosDoDia.map((evento) => (
-                        <tr key={evento.id}>
-                          <td>{evento.horario}</td>
-                          <td>{evento.titulo}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className={styles.semEventos}>Nenhum evento nesta data.</p>
-                )}
-              </article>
+        <div className={styles.coluna}>
+          <section className={detalhe.secao} aria-labelledby="titulo-proximos">
+            <div className={`${detalhe.secaoCabecalho} ${styles.cabecalhoSecao}`}>
+              <h2 id="titulo-proximos" className={detalhe.secaoTitulo}>
+                Próximos eventos
+              </h2>
             </div>
-          )}
-        </section>
+
+            {carregando ? (
+              <Esqueleto linhas={3} rotulo="Carregando próximos eventos" />
+            ) : proximosEventos.length > 0 ? (
+              <ul className={styles.lista}>
+                {proximosEventos.map((evento) => {
+                  const inicio = paraData(evento.inicio);
+                  return (
+                    <li key={evento.id}>
+                      <button
+                        type="button"
+                        className={styles.item}
+                        onClick={() => selecionarData(inicio)}
+                      >
+                        <span className={styles.selo}>
+                          <span className={styles.seloDia}>{inicio.getDate()}</span>
+                          <span className={styles.seloMes}>
+                            {formatoMesCurto.format(inicio).replace(".", "")}
+                          </span>
+                        </span>
+                        <span className={styles.itemTextos}>
+                          <span className={styles.itemTitulo}>{evento.titulo}</span>
+                          {periodo(evento) && (
+                            <span className={styles.itemDetalhe}>{periodo(evento)}</span>
+                          )}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className={styles.vazio}>Nenhum evento agendado.</p>
+            )}
+          </section>
+
+          <section
+            className={`${detalhe.secao} ${styles.secaoEsticada}`}
+            aria-labelledby="titulo-aniversarios"
+          >
+            <div className={`${detalhe.secaoCabecalho} ${styles.cabecalhoSecao}`}>
+              <h2 id="titulo-aniversarios" className={detalhe.secaoTitulo}>
+                Aniversariantes de {formatoMes.format(mesExibido)}
+              </h2>
+              {!carregando && aniversariantes.length > 0 && (
+                <span className={detalhe.secaoContagem}>
+                  {aniversariantes.length}
+                </span>
+              )}
+            </div>
+
+            {carregando ? (
+              <Esqueleto linhas={3} rotulo="Carregando aniversariantes" />
+            ) : aniversariantes.length > 0 ? (
+              <ul className={styles.lista}>
+                {aniversariantes.map((membro) => {
+                  const dia = membro.nascimento.getDate();
+                  const idade =
+                    mesExibido.getFullYear() - membro.nascimento.getFullYear();
+                  const ehHoje =
+                    dia === agora.getDate() &&
+                    membro.nascimento.getMonth() === agora.getMonth();
+                  return (
+                    <li key={membro.id}>
+                      <button
+                        type="button"
+                        className={styles.item}
+                        onClick={() => navegar(`/dashboard/desbravadores/${membro.id}`)}
+                      >
+                        <Avatar nome={membro.nome} tamanho={36} />
+                        <span className={styles.itemTextos}>
+                          <span className={styles.itemTitulo}>{membro.nome}</span>
+                          <span className={styles.itemDetalhe}>
+                            {idade > 0 ? `Dia ${dia} · faz ${idade} anos` : `Dia ${dia}`}
+                          </span>
+                        </span>
+                        {ehHoje && <span className={styles.tagHoje}>Hoje</span>}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className={styles.vazio}>
+                Ninguém faz aniversário em {formatoMes.format(mesExibido)}.
+              </p>
+            )}
+          </section>
+        </div>
+      </div>
+
+      {modalEventoAberto && (
         <AdicionarEventoModal
-          aberto={modalCadastroAberto}
-          onFechar={() => setModalCadastroAberto(false)}
+          dataInicial={dataSelecionada}
+          onFechar={() => setModalEventoAberto(false)}
           onCadastrar={async () => {
-            await carregarDashboard();
+            await carregar();
+            setModalEventoAberto(false);
           }}
         />
-      </div>
+      )}
+
+      <ConfirmacaoModal
+        aberto={Boolean(eventoAExcluir)}
+        titulo="Excluir evento?"
+        mensagem={
+          eventoAExcluir &&
+          `"${eventoAExcluir.titulo}" (${intervalo(eventoAExcluir)}) sai da agenda.`
+        }
+        textoConfirmar="Excluir"
+        perigo
+        onConfirmar={excluirEvento}
+        onCancelar={() => setEventoAExcluir(null)}
+      />
     </>
   );
 }

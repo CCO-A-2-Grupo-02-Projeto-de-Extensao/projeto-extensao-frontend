@@ -10,6 +10,10 @@ export async function criarEvento(evento) {
   return data;
 }
 
+export async function deletarEvento(idEvento) {
+  await api.delete(`/eventos/${idEvento}`);
+}
+
 export async function getChamadasPorEvento(idEvento) {
   const { data } = await api.get(`/chamadas/evento/${idEvento}`);
   return data;

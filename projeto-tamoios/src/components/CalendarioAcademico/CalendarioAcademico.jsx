@@ -1,6 +1,7 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
+import { paraChaveData } from "../../utils/datas.js";
 import styles from "../../styles/calendarioAcademico.module.css";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -30,7 +31,13 @@ function montarDias(mesExibido) {
   });
 }
 
-export function CalendarioAcademico({ mesExibido, dataSelecionada, onMudarMes, onSelecionarData }) {
+export function CalendarioAcademico({
+  mesExibido,
+  dataSelecionada,
+  onMudarMes,
+  onSelecionarData,
+  marcados,
+}) {
   const dias = montarDias(mesExibido);
   const hoje = new Date();
 
@@ -76,6 +83,7 @@ export function CalendarioAcademico({ mesExibido, dataSelecionada, onMudarMes, o
           const foraDoMes = data.getMonth() !== mesExibido.getMonth();
           const selecionado = mesmaData(data, dataSelecionada);
           const diaAtual = mesmaData(data, hoje);
+          const marcado = marcados?.has(paraChaveData(data));
 
           return (
             <button
@@ -83,7 +91,7 @@ export function CalendarioAcademico({ mesExibido, dataSelecionada, onMudarMes, o
               type="button"
               className={`${styles.dia} ${foraDoMes ? styles.foraDoMes : ""} ${
                 selecionado ? styles.selecionado : ""
-              } ${diaAtual ? styles.hoje : ""}`}
+              } ${diaAtual ? styles.hoje : ""} ${marcado ? styles.marcado : ""}`}
               onClick={() => onSelecionarData(data)}
               aria-pressed={selecionado}
               aria-label={data.toLocaleDateString("pt-BR", {

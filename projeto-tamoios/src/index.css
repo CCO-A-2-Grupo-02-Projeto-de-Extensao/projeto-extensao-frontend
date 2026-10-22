@@ -117,3 +117,10 @@ label {
   color: var(--vinhoEscuro);
   font-size: 24px;
 }
+
+p {
+  font-size: 20px;
+  color: var(--vinhoEscuro);
+  text-align: center;
+  padding: 1rem;
+}

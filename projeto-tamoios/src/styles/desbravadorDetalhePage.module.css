@@ -1,8 +1,7 @@
 /* Tela de detalhes do desbravador.
  *
- * NOTA: card.module.css e documento.module.css declaram `p { ... }` como
- * seletor de ELEMENTO. CSS Modules não escopa isso, então todo <p> do app
- * herda font-size 24px, text-align center e padding 1rem. Por isso as classes
+ * NOTA: index.css declara `p { ... }` global, então todo <p> do app
+ * herda font-size 20px, text-align center e padding 1rem. Por isso as classes
  * abaixo que caem em <p> repetem text-align/padding explicitamente.
  *
  * Substitui o antigo DetalhesDesbravadorModal: os mesmos dados, mas numa
