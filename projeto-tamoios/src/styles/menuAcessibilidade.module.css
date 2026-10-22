@@ -9,23 +9,29 @@
 
 .botao {
   composes: botao from "./button.module.css";
+}
+
+.area .botao {
   width: 36px;
   height: 36px;
   padding: 0;
+  border-radius: 50%;
   flex-shrink: 0;
   background-color: var(--azulAcessibilidade);
   color: var(--sobreAzul);
 }
 
-.botao:hover {
+.area .botao:hover {
   background-color: var(--azulAcessibilidadeVivo);
 }
 
-.botao:focus-visible {
+.area .botao:focus-visible {
   outline-color: var(--azulAcessibilidade);
 }
 
 .painel {
+  composes: janela from "./animacoes.module.css";
+  transform-origin: top right;
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
