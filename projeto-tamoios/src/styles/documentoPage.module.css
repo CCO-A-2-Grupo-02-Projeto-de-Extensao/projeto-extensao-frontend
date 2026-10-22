@@ -4,62 +4,6 @@
   gap: 20px;
 }
 
-.cabecalho {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 4px;
-}
-
-.cabecalhoTextos {
-  min-width: 240px;
-}
-
-.sobretitulo {
-  margin: 0 0 4px;
-  padding: 0;
-  color: var(--vinhoVivo);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.5;
-  text-align: left;
-  text-transform: uppercase;
-}
-
-.titulo {
-  margin: 0;
-  color: var(--vinhoEscuro);
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-}
-
-.subtitulo {
-  margin: 6px 0 0;
-  padding: 0;
-  color: var(--textoSecundario);
-  font-size: 14px;
-  line-height: 1.5;
-  text-align: left;
-}
-
-.contador {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 6px 12px;
-  border: 1px solid var(--borda);
-  border-radius: 999px;
-  background: var(--branco);
-  color: var(--vinhoEscuro);
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .painel {
   overflow: hidden;
   border: 1px solid var(--borda);
@@ -344,10 +288,6 @@
 }
 
 @media (max-width: 420px) {
-  .titulo {
-    font-size: 26px;
-  }
-
   .acoes {
     gap: 6px;
     padding-left: 0;

@@ -2,7 +2,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
-import { Add } from "@mui/icons-material";
+import { useVoltar } from "../hooks/useVoltar.js";
+import { Tooltip } from "@mui/material";
+import { Add, ArrowBack } from "@mui/icons-material";
 
 import { ActionButton } from "../components/ActionButton/ActionButton.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
@@ -29,6 +31,7 @@ const TAMANHO_PAGINA = 10;
 
 export function EspecialidadesPage() {
   const location = useLocation();
+  const voltar = useVoltar("/dashboard");
   const buscaInicial = location.state?.busca ?? "";
   const [resultado, setResultado] = useState(null);
   const [versao, setVersao] = useState(0);
@@ -153,6 +156,16 @@ export function EspecialidadesPage() {
   return (
     <>
       <header className={detalhe.cabecalho}>
+        <Tooltip arrow placement="bottom" title="Voltar para a tela anterior">
+          <button
+            type="button"
+            className={detalhe.botaoVoltar}
+            onClick={voltar}
+          >
+            <ArrowBack fontSize="small" />
+          </button>
+        </Tooltip>
+
         <div className={detalhe.cabecalhoTextos}>
           <p className={detalhe.sobretitulo}>Clube Tamoios</p>
           <h1 className={detalhe.titulo}>Especialidades</h1>
