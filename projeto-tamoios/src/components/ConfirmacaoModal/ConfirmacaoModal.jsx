@@ -7,6 +7,7 @@ export function ConfirmacaoModal({
   textoConfirmar = "Confirmar",
   textoCancelar = "Cancelar",
   perigo = false,
+  children,
   onConfirmar,
   onCancelar,
 }) {
@@ -26,6 +27,8 @@ export function ConfirmacaoModal({
         </h2>
 
         {mensagem && <p className={styles.mensagem}>{mensagem}</p>}
+
+        {children && <div className={styles.conteudo}>{children}</div>}
 
         <div className={styles.botoes}>
           <button

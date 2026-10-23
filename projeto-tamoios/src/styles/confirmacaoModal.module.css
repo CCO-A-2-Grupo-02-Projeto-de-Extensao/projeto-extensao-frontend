@@ -37,6 +37,10 @@
   text-wrap: pretty;
 }
 
+.conteudo {
+  margin-top: 16px;
+}
+
 .botoes {
   display: flex;
   justify-content: flex-end;

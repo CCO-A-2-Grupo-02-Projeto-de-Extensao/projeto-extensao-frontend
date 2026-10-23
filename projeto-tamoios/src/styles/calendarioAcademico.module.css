@@ -105,8 +105,15 @@
   background-color: var(--vinhoFundo);
 }
 
-.marcado {
+.marcado,
+.feriado {
   position: relative;
+}
+
+.seloFeriado {
+  position: absolute;
+  top: 1px;
+  right: 1px;
 }
 
 .marcado::after {

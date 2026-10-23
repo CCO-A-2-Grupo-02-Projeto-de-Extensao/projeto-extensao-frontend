@@ -10,8 +10,13 @@ export async function criarEvento(evento) {
   return data;
 }
 
-export async function deletarEvento(idEvento) {
-  await api.delete(`/eventos/${idEvento}`);
+export async function atualizarEvento(idEvento, evento, escopo = "ESTE") {
+  const { data } = await api.put(`/eventos/${idEvento}`, evento, { params: { escopo } });
+  return data;
+}
+
+export async function deletarEvento(idEvento, escopo = "ESTE") {
+  await api.delete(`/eventos/${idEvento}`, { params: { escopo } });
 }
 
 export async function getChamadasPorEvento(idEvento) {

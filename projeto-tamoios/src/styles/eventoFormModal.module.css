@@ -27,3 +27,9 @@
   font-size: 14px;
   text-align: left;
 }
+
+.escopo {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background-color: var(--superficieSuave);
+}

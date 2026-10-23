@@ -1,18 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import { Avatar } from "../components/Avatar/Avatar.jsx";
 import { Button } from "../components/Button/Button.jsx";
 import { CalendarioAcademico } from "../components/CalendarioAcademico/CalendarioAcademico.jsx";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
-import { AdicionarEventoModal } from "../components/AdicionarEventoModal/AdicionarEventoModal.jsx";
+import { EscolhaEscopo } from "../components/EscolhaEscopo/EscolhaEscopo.jsx";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
+import { EventoDetalheModal } from "../components/EventoDetalheModal/EventoDetalheModal.jsx";
+import { EventoFormModal } from "../components/EventoFormModal/EventoFormModal.jsx";
+import { SeloFeriado } from "../components/SeloFeriado/SeloFeriado.jsx";
 import { useEstadoDaTela } from "../hooks/useEstadoDaTela.js";
-import { deletarEvento } from "../services/chamadasService.js";
+import {
+  atualizarEvento,
+  criarEvento,
+  deletarEvento,
+} from "../services/chamadasService.js";
 import { getDadosDashboard } from "../services/dashboardService.js";
+import { getFeriados } from "../services/feriadosService.js";
 import { paraChaveData } from "../utils/datas.js";
 import { lerUsuarioLogado } from "../utils/sessao.js";
 import detalhe from "../styles/desbravadorDetalhePage.module.css";
@@ -29,6 +36,12 @@ const formatoDia = new Intl.DateTimeFormat("pt-BR", {
 });
 const formatoMes = new Intl.DateTimeFormat("pt-BR", { month: "long" });
 const formatoMesCurto = new Intl.DateTimeFormat("pt-BR", { month: "short" });
+
+const NOMES_REPETICAO = {
+  SEMANAL: "toda semana",
+  QUINZENAL: "a cada 2 semanas",
+  MENSAL: "todo mês",
+};
 
 function paraData(texto) {
   const [ano, mes, dia] = texto.slice(0, 10).split("-").map(Number);
@@ -64,6 +77,14 @@ function intervalo(evento) {
   return `${diaEMes(inicio)} a ${diaEMes(fim)}`;
 }
 
+function resumoRepeticao(evento) {
+  if (!evento.repeticao) return evento.serie ? "Faz parte de uma série." : null;
+  const regra = `Repete ${NOMES_REPETICAO[evento.repeticao]}`;
+  if (!evento.repetirAte) return `${regra}, sem data final.`;
+  const ate = paraData(evento.repetirAte);
+  return `${regra} até ${ate.getDate()} de ${formatoMes.format(ate)} de ${ate.getFullYear()}.`;
+}
+
 function Dashboard() {
   const navegar = useNavigate();
   const usuario = lerUsuarioLogado();
@@ -81,15 +102,40 @@ function Dashboard() {
   );
 
   const [dados, setDados] = useState(null);
-  const [modalEventoAberto, setModalEventoAberto] = useState(false);
+  const [formulario, setFormulario] = useState(null);
+  const [eventoAberto, setEventoAberto] = useState(null);
   const [eventoAExcluir, setEventoAExcluir] = useState(null);
+  const [escopoExclusao, setEscopoExclusao] = useState("ESTE");
   const [erroAgenda, setErroAgenda] = useState("");
+  const [feriados, setFeriados] = useState({});
 
   const carregar = () => getDadosDashboard().then(setDados);
 
   useEffect(() => {
     void carregar();
   }, []);
+
+  const anoExibido = mesExibido.getFullYear();
+  const mesDoAno = mesExibido.getMonth();
+
+  useEffect(() => {
+    const anos = new Set([
+      mesDoAno === 0 ? anoExibido - 1 : anoExibido,
+      anoExibido,
+      mesDoAno === 11 ? anoExibido + 1 : anoExibido,
+    ]);
+    let valido = true;
+    Promise.all([...anos].map(getFeriados)).then((listas) => {
+      if (!valido) return;
+      setFeriados((atuais) => ({
+        ...atuais,
+        ...Object.fromEntries(listas.flat().map(({ data, nome }) => [data, nome])),
+      }));
+    });
+    return () => {
+      valido = false;
+    };
+  }, [anoExibido, mesDoAno]);
 
   const membrosAtivos = useMemo(
     () => dados?.membros?.filter((membro) => membro.ativo) ?? null,
@@ -137,11 +183,13 @@ function Dashboard() {
     [membrosAtivos, mesExibido]
   );
 
+  const repetido = Boolean(eventoAExcluir?.serie);
+
   const excluirEvento = async () => {
     const evento = eventoAExcluir;
     setEventoAExcluir(null);
     try {
-      await deletarEvento(evento.id);
+      await deletarEvento(evento.id, escopoExclusao);
       await carregar();
     } catch (erroRequisicao) {
       setErroAgenda(
@@ -209,7 +257,7 @@ function Dashboard() {
               variante="destaque"
               compacto
               icone={<AddIcon fontSize="small" />}
-              onClick={() => setModalEventoAberto(true)}
+              onClick={() => setFormulario({ evento: null })}
             >
               Adicionar evento
             </Button>
@@ -229,6 +277,7 @@ function Dashboard() {
                 onMudarMes={setMesExibido}
                 onSelecionarData={selecionarData}
                 marcados={diasComEvento}
+                feriados={feriados}
               />
             </div>
 
@@ -237,30 +286,35 @@ function Dashboard() {
                 {formatoDia.format(dataSelecionada)}
               </h3>
 
+              {feriados[chaveSelecionada] && (
+                <div className={styles.feriadoDoDia}>
+                  <SeloFeriado nome={feriados[chaveSelecionada]} grande />
+                  <span className={styles.itemTextos}>
+                    <span className={styles.itemTitulo}>{feriados[chaveSelecionada]}</span>
+                    <span className={styles.itemDetalhe}>Feriado nacional</span>
+                  </span>
+                </div>
+              )}
+
               {carregando ? (
                 <Esqueleto linhas={2} rotulo="Carregando eventos" />
               ) : eventosDoDia.length > 0 ? (
                 <ul className={styles.lista}>
                   {eventosDoDia.map((evento) => (
-                    <li key={evento.id} className={styles.eventoDoDia}>
-                      <span className={styles.itemTextos}>
-                        <span className={styles.itemTitulo}>{evento.titulo}</span>
-                        {periodo(evento) && (
-                          <span className={styles.itemDetalhe}>{periodo(evento)}</span>
-                        )}
-                      </span>
-                      <Tooltip arrow placement="top" title="Excluir evento">
-                        <button
-                          type="button"
-                          className={styles.botaoExcluir}
-                          onClick={() => {
-                            setErroAgenda("");
-                            setEventoAExcluir(evento);
-                          }}
-                        >
-                          <DeleteOutlineIcon fontSize="small" />
-                        </button>
-                      </Tooltip>
+                    <li key={evento.id}>
+                      <button
+                        type="button"
+                        className={styles.eventoDoDia}
+                        onClick={() => setEventoAberto(evento)}
+                      >
+                        <span className={styles.itemTextos}>
+                          <span className={styles.itemTitulo}>{evento.titulo}</span>
+                          {periodo(evento) && (
+                            <span className={styles.itemDetalhe}>{periodo(evento)}</span>
+                          )}
+                        </span>
+                        <ChevronRightIcon fontSize="small" className={styles.seta} />
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -290,7 +344,10 @@ function Dashboard() {
                       <button
                         type="button"
                         className={styles.item}
-                        onClick={() => selecionarData(inicio)}
+                        onClick={() => {
+                          selecionarData(inicio);
+                          setEventoAberto(evento);
+                        }}
                       >
                         <span className={styles.selo}>
                           <span className={styles.seloDia}>{inicio.getDate()}</span>
@@ -369,29 +426,64 @@ function Dashboard() {
         </div>
       </div>
 
-      {modalEventoAberto && (
-        <AdicionarEventoModal
+      {formulario && (
+        <EventoFormModal
+          evento={formulario.evento}
           dataInicial={dataSelecionada}
-          onFechar={() => setModalEventoAberto(false)}
-          onCadastrar={async () => {
+          onFechar={() => setFormulario(null)}
+          onSalvar={async (dadosEvento, escopo) => {
+            if (formulario.evento) {
+              await atualizarEvento(formulario.evento.id, dadosEvento, escopo);
+            } else {
+              await criarEvento(dadosEvento);
+            }
             await carregar();
-            setModalEventoAberto(false);
+            setFormulario(null);
+          }}
+        />
+      )}
+
+      {eventoAberto && (
+        <EventoDetalheModal
+          evento={eventoAberto}
+          quando={intervalo(eventoAberto)}
+          repeticao={resumoRepeticao(eventoAberto)}
+          onFechar={() => setEventoAberto(null)}
+          onEditar={() => {
+            setEventoAberto(null);
+            setFormulario({ evento: eventoAberto });
+          }}
+          onExcluir={() => {
+            setEventoAberto(null);
+            setErroAgenda("");
+            setEscopoExclusao("ESTE");
+            setEventoAExcluir(eventoAberto);
           }}
         />
       )}
 
       <ConfirmacaoModal
         aberto={Boolean(eventoAExcluir)}
-        titulo="Excluir evento?"
+        titulo={repetido ? "Excluir evento repetido?" : "Excluir evento?"}
         mensagem={
           eventoAExcluir &&
-          `"${eventoAExcluir.titulo}" (${intervalo(eventoAExcluir)}) sai da agenda.`
+          (repetido
+            ? `"${eventoAExcluir.titulo}" (${intervalo(eventoAExcluir)}) faz parte de uma série. Ocorrências com chamada registrada não são excluídas.`
+            : `"${eventoAExcluir.titulo}" (${intervalo(eventoAExcluir)}) sai da agenda.`)
         }
         textoConfirmar="Excluir"
         perigo
         onConfirmar={excluirEvento}
         onCancelar={() => setEventoAExcluir(null)}
-      />
+      >
+        {repetido && (
+          <EscolhaEscopo
+            legenda="Excluir"
+            valor={escopoExclusao}
+            onChange={setEscopoExclusao}
+          />
+        )}
+      </ConfirmacaoModal>
     </>
   );
 }

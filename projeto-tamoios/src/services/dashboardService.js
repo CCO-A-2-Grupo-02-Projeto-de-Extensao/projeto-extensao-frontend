@@ -14,6 +14,10 @@ function normalizarEvento(evento) {
     tipo: evento.tipo ?? "",
     inicio,
     fim: evento.dataFim ?? inicio,
+    serie: evento.serie ?? null,
+    repeticao: evento.repeticao ?? null,
+    repetirAte: evento.repetirAte ?? null,
+    descricao: evento.descricao ?? "",
   };
 }
 

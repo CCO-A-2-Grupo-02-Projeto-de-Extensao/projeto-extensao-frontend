@@ -3,13 +3,24 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Button } from "../Button/Button.jsx";
 import { Input } from "../Input/Input.jsx";
 import { Select } from "../Select/Select.jsx";
-import { criarEvento } from "../../services/chamadasService.js";
+import { EscolhaEscopo } from "../EscolhaEscopo/EscolhaEscopo.jsx";
 import { paraChaveData } from "../../utils/datas.js";
 import modalStyles from "../../styles/uploadDocumentoModal.module.css";
 import formStyles from "../../styles/cadastroDesbravadorModal.module.css";
-import styles from "../../styles/adicionarEventosModal.module.css";
+import styles from "../../styles/eventoFormModal.module.css";
 
 const TIPOS = ["Reunião", "Atividade", "Acampamento", "Passeio", "Cerimônia", "Outro"];
+
+const REPETICOES = [
+  { valor: "", rotulo: "Não repete" },
+  { valor: "SEMANAL", rotulo: "Toda semana" },
+  { valor: "QUINZENAL", rotulo: "A cada 2 semanas" },
+  { valor: "MENSAL", rotulo: "Todo mês" },
+];
+
+function umAnoDepois(chaveData) {
+  return `${Number(chaveData.slice(0, 4)) + 1}${chaveData.slice(4)}`;
+}
 
 function Rotulo({ htmlFor, texto, obrigatorio }) {
   return (
@@ -24,16 +35,41 @@ function Rotulo({ htmlFor, texto, obrigatorio }) {
   );
 }
 
-export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
-  const [form, setForm] = useState(() => ({
-    nome: "",
-    tipo: TIPOS[0],
-    inicio: paraChaveData(dataInicial),
-    fim: "",
-    descricao: "",
-  }));
+function formularioInicial(evento, dataInicial) {
+  if (!evento) {
+    return {
+      nome: "",
+      tipo: TIPOS[0],
+      inicio: paraChaveData(dataInicial),
+      fim: "",
+      repeticao: "",
+      repetirAte: "",
+      descricao: "",
+    };
+  }
+  return {
+    nome: evento.titulo,
+    tipo: evento.tipo || TIPOS[0],
+    inicio: evento.inicio,
+    fim: evento.fim !== evento.inicio ? evento.fim : "",
+    repeticao: evento.repeticao ?? "",
+    repetirAte: evento.repetirAte ?? "",
+    descricao: evento.descricao ?? "",
+  };
+}
+
+export function EventoFormModal({ evento, dataInicial, onFechar, onSalvar }) {
+  const [form, setForm] = useState(() => formularioInicial(evento, dataInicial));
+  const [escopo, setEscopo] = useState("ESTE");
   const [erro, setErro] = useState("");
   const [salvando, setSalvando] = useState(false);
+
+  const tipos = TIPOS.includes(form.tipo) ? TIPOS : [...TIPOS, form.tipo];
+  const regraMudou =
+    Boolean(evento) &&
+    (form.repeticao !== (evento.repeticao ?? "") ||
+      form.repetirAte !== (evento.repetirAte ?? ""));
+  const escopoEfetivo = regraMudou && escopo === "ESTE" ? "SEGUINTES" : escopo;
 
   const alterar = (campo, valor) => {
     setForm((atual) => ({ ...atual, [campo]: valor }));
@@ -53,21 +89,33 @@ export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
       setErro("O término não pode ser antes do início.");
       return;
     }
+    if (form.repeticao && form.repetirAte && form.repetirAte < form.inicio) {
+      setErro("A repetição não pode terminar antes do início.");
+      return;
+    }
+    if (form.repeticao && form.repetirAte > umAnoDepois(form.inicio)) {
+      setErro("A repetição pode durar no máximo um ano. Deixe sem data final para repetir sem fim.");
+      return;
+    }
 
     setSalvando(true);
     try {
-      await criarEvento({
-        nome: form.nome.trim(),
-        tipo: form.tipo,
-        dataInicio: form.inicio,
-        dataFim: form.fim || form.inicio,
-        descricao: form.descricao.trim() || null,
-      });
-      await onCadastrar();
+      await onSalvar(
+        {
+          nome: form.nome.trim(),
+          tipo: form.tipo,
+          dataInicio: form.inicio,
+          dataFim: form.fim || form.inicio,
+          descricao: form.descricao.trim() || null,
+          repeticao: form.repeticao || null,
+          repetirAte: (form.repeticao && form.repetirAte) || null,
+        },
+        escopoEfetivo
+      );
     } catch (erroRequisicao) {
       setErro(
         erroRequisicao.response?.data?.erro ??
-          "Não foi possível adicionar o evento. Tente novamente."
+          "Não foi possível salvar o evento. Tente novamente."
       );
       setSalvando(false);
     }
@@ -83,10 +131,12 @@ export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
         <header className={modalStyles.cabecalho}>
           <div>
             <h2 id="evento-titulo" className={modalStyles.titulo}>
-              Adicionar evento
+              {evento ? "Editar evento" : "Adicionar evento"}
             </h2>
             <p className={`${modalStyles.subtitulo} ${styles.subtitulo}`}>
-              O evento aparece na agenda da tela de início.
+              {evento
+                ? "As mudanças aparecem na agenda da tela de início."
+                : "O evento aparece na agenda da tela de início."}
             </p>
           </div>
           <Button
@@ -107,6 +157,17 @@ export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
           )}
 
           <div className={formStyles.grid}>
+            {evento?.serie && (
+              <div className={`${formStyles.campoSpan2} ${styles.escopo}`}>
+                <EscolhaEscopo
+                  legenda="Aplicar as mudanças a"
+                  valor={escopoEfetivo}
+                  onChange={setEscopo}
+                  semEste={regraMudou}
+                />
+              </div>
+            )}
+
             <div className={formStyles.campoSpan2}>
               <Rotulo htmlFor="evento-nome" texto="Nome do evento" obrigatorio />
               <Input
@@ -124,7 +185,7 @@ export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
                 value={form.tipo}
                 onChange={(e) => alterar("tipo", e.target.value)}
               >
-                {TIPOS.map((tipo) => (
+                {tipos.map((tipo) => (
                   <option key={tipo} value={tipo}>
                     {tipo}
                   </option>
@@ -153,6 +214,34 @@ export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
               />
             </div>
 
+            <div className={formStyles.campo}>
+              <Rotulo htmlFor="evento-repeticao" texto="Repetição" obrigatorio />
+              <Select
+                id="evento-repeticao"
+                value={form.repeticao}
+                onChange={(e) => alterar("repeticao", e.target.value)}
+              >
+                {REPETICOES.map(({ valor, rotulo }) => (
+                  <option key={valor} value={valor}>
+                    {rotulo}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div className={formStyles.campo}>
+              <Rotulo htmlFor="evento-repetir-ate" texto="Repetir até" />
+              <Input
+                id="evento-repetir-ate"
+                type="date"
+                min={form.inicio}
+                max={form.inicio ? umAnoDepois(form.inicio) : undefined}
+                value={form.repetirAte}
+                onChange={(e) => alterar("repetirAte", e.target.value)}
+                disabled={!form.repeticao}
+              />
+            </div>
+
             <div className={formStyles.campoSpan2}>
               <Rotulo htmlFor="evento-descricao" texto="Descrição" />
               <textarea
@@ -177,7 +266,13 @@ export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
             className={styles.botaoRodape}
             onClick={aoSalvar}
             disabled={salvando}
-            texto={salvando ? "Adicionando..." : "Adicionar evento"}
+            texto={
+              salvando
+                ? "Salvando..."
+                : evento
+                  ? "Salvar alterações"
+                  : "Adicionar evento"
+            }
           />
         </footer>
       </div>
@@ -185,4 +280,4 @@ export function AdicionarEventoModal({ dataInicial, onFechar, onCadastrar }) {
   );
 }
 
-export default AdicionarEventoModal;
+export default EventoFormModal;

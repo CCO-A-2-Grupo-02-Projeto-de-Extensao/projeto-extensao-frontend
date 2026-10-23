@@ -112,35 +112,42 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  width: 100%;
   padding: 10px 8px 10px 12px;
+  border: none;
   border-left: 3px solid var(--vinhoVivo);
   border-radius: 6px;
+  color: var(--carvao);
   background-color: var(--superficieSuave);
-}
-
-.botaoExcluir {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  border-radius: 8px;
-  color: var(--textoSecundario);
-  background-color: transparent;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-.botaoExcluir:hover {
-  color: var(--vermelho);
-  background-color: var(--perigoSuave);
+.eventoDoDia:hover {
+  background-color: var(--creme);
 }
 
-.botaoExcluir:focus-visible {
+.eventoDoDia:focus-visible {
   outline: 3px solid var(--ambarOuro);
   outline-offset: -2px;
+}
+
+.feriadoDoDia {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--ambarOuro);
+  border-radius: 6px;
+  background-color: var(--ambarSuave);
+}
+
+.seta {
+  flex-shrink: 0;
+  color: var(--textoSecundario);
 }
 
 .selo {

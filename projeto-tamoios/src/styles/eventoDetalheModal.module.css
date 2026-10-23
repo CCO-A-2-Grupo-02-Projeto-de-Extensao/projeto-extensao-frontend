@@ -1,0 +1,58 @@
+.modal {
+  width: 520px;
+}
+
+.textosCabecalho {
+  min-width: 0;
+}
+
+.subtitulo,
+.repeticao,
+.descricao,
+.semDescricao {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.subtitulo {
+  margin-top: 4px;
+  color: var(--textoSecundario);
+}
+
+.repeticao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--carvao);
+  background-color: var(--superficieSuave);
+}
+
+.rotulo {
+  margin: 0 0 6px;
+  color: var(--vinhoEscuro);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.descricao {
+  color: var(--carvao);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.semDescricao {
+  color: var(--textoSecundario);
+  font-style: italic;
+}
+
+.botaoRodape {
+  flex: 1;
+}

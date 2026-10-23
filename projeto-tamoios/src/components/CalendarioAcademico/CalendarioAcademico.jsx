@@ -1,6 +1,7 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
+import { SeloFeriado } from "../SeloFeriado/SeloFeriado.jsx";
 import { paraChaveData } from "../../utils/datas.js";
 import styles from "../../styles/calendarioAcademico.module.css";
 
@@ -37,6 +38,7 @@ export function CalendarioAcademico({
   onMudarMes,
   onSelecionarData,
   marcados,
+  feriados,
 }) {
   const dias = montarDias(mesExibido);
   const hoje = new Date();
@@ -83,7 +85,9 @@ export function CalendarioAcademico({
           const foraDoMes = data.getMonth() !== mesExibido.getMonth();
           const selecionado = mesmaData(data, dataSelecionada);
           const diaAtual = mesmaData(data, hoje);
-          const marcado = marcados?.has(paraChaveData(data));
+          const chave = paraChaveData(data);
+          const marcado = marcados?.has(chave);
+          const feriado = feriados?.[chave];
 
           return (
             <button
@@ -91,16 +95,19 @@ export function CalendarioAcademico({
               type="button"
               className={`${styles.dia} ${foraDoMes ? styles.foraDoMes : ""} ${
                 selecionado ? styles.selecionado : ""
-              } ${diaAtual ? styles.hoje : ""} ${marcado ? styles.marcado : ""}`}
+              } ${diaAtual ? styles.hoje : ""} ${marcado ? styles.marcado : ""} ${
+                feriado ? styles.feriado : ""
+              }`}
               onClick={() => onSelecionarData(data)}
               aria-pressed={selecionado}
-              aria-label={data.toLocaleDateString("pt-BR", {
+              aria-label={`${data.toLocaleDateString("pt-BR", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
-              })}
+              })}${feriado ? `, feriado: ${feriado}` : ""}`}
             >
               {data.getDate()}
+              {feriado && <SeloFeriado nome={feriado} className={styles.seloFeriado} />}
             </button>
           );
         })}
