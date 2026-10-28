@@ -11,6 +11,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlined";
 import { Input } from "../components/Input/Input.jsx";
 import { Select } from "../components/Select/Select.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
+import { usePreferencias } from "../hooks/usePreferencias.js";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 import { CadastroUsuarioModal } from "../components/CadastroUsuarioModal/CadastroUsuarioModal.jsx";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
@@ -35,7 +36,6 @@ const CARGOS_QUE_CADASTRAM = ["Diretor", "Secretário"];
 // recriar usuarios, entao a exclusao fica bloqueada para todo mundo.
 const CARGO_MAIS_ALTO = "Diretor";
 const TODOS = "todos";
-const TAMANHO_PAGINA = 10;
 
 function lerUsuarioLogado() {
   try {
@@ -46,6 +46,7 @@ function lerUsuarioLogado() {
 }
 
 export function CadastroUsuarioPage() {
+  const { itensPorPagina } = usePreferencias();
   const voltar = useVoltar("/dashboard");
   const { cargos } = useCatalogos();
   const logado = useMemo(() => lerUsuarioLogado(), []);
@@ -119,14 +120,14 @@ export function CadastroUsuarioPage() {
 
   const totalPaginas = Math.max(
     1,
-    Math.ceil(filtrados.length / TAMANHO_PAGINA)
+    Math.ceil(filtrados.length / itensPorPagina)
   );
   // Derivada, e nao sincronizada por efeito: excluir o ultimo item de uma
   // pagina encolhe a lista e deixaria paginaAtual fora do intervalo.
   const pagina = Math.min(paginaAtual, totalPaginas);
   const daPagina = filtrados.slice(
-    (pagina - 1) * TAMANHO_PAGINA,
-    pagina * TAMANHO_PAGINA
+    (pagina - 1) * itensPorPagina,
+    pagina * itensPorPagina
   );
 
   const mudarFiltro = (definir) => (evento) => {

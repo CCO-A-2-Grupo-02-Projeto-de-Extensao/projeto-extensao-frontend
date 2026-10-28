@@ -4,6 +4,7 @@ import { Input } from "../components/Input/Input.jsx";
 import Select from "../components/Select/Select.jsx";
 import { Avatar } from "../components/Avatar/Avatar.jsx";
 import { Pagination } from "../components/Pagination/Pagination.jsx";
+import { usePreferencias } from "../hooks/usePreferencias.js";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 import tabela from "../styles/tabelaBase.module.css";
 import styles from "../styles/chamada.module.css";
@@ -31,8 +32,6 @@ import {
   salvarChamadaCompleta,
   deletarChamadaCompleta,
 } from "../services/chamadasService.js";
-
-const TAMANHO_PAGINA = 15;
 
 function paraDataIso(data) {
   const ano = data.getFullYear();
@@ -102,6 +101,7 @@ function StatCard({ icon: Icon, value, label }) {
 }
 
 export function ChamadaPage() {
+  const { itensPorPagina } = usePreferencias();
   const voltar = useVoltar("/dashboard");
   const agora = new Date();
   const [dataSelecionada, setDataSelecionada] = useEstadoDaTela("dataSelecionada", agora);
@@ -364,15 +364,15 @@ export function ChamadaPage() {
 
   const totalPaginas = Math.max(
     1,
-    Math.ceil(visibleRows.length / TAMANHO_PAGINA)
+    Math.ceil(visibleRows.length / itensPorPagina)
   );
   // Se a lista encolher (filtro, busca), nunca ficamos numa página que não existe.
   const paginaSegura = Math.min(paginaAtual, totalPaginas);
 
   const linhasDaPagina = useMemo(() => {
-    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
-    return visibleRows.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [visibleRows, paginaSegura]);
+    const inicio = (paginaSegura - 1) * itensPorPagina;
+    return visibleRows.slice(inicio, inicio + itensPorPagina);
+  }, [visibleRows, paginaSegura, itensPorPagina]);
 
   const stats = useMemo(() => {
     const total = rows.length;

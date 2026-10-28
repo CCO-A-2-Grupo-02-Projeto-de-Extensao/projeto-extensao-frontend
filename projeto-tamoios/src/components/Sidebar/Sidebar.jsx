@@ -14,6 +14,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { ConfirmacaoModal } from "../ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { Cortina } from "../Cortina/Cortina.jsx";
 import { prefereMenosMovimento } from "../../utils/movimento.js";
+import { usePreferencias } from "../../hooks/usePreferencias.js";
 
 const estiloItem = {
   cursor: "pointer",
@@ -36,6 +37,7 @@ export function Sidebar() {
   const lista = useRef(null);
   const indicador = useRef(null);
   const posicionado = useRef(false);
+  const { confirmarSaida } = usePreferencias();
   const [confirmandoSaida, setConfirmandoSaida] = useState(false);
   const [saindo, setSaindo] = useState(false);
 
@@ -126,7 +128,9 @@ export function Sidebar() {
           <ListItemButton
             className={`${styles.item} ${styles.sair}`}
             sx={estiloItem}
-            onClick={() => setConfirmandoSaida(true)}
+            onClick={() =>
+              confirmarSaida ? setConfirmandoSaida(true) : handleLogout()
+            }
           >
             <ListItemIcon>
               <LogoutIcon className={styles.customIcon} />

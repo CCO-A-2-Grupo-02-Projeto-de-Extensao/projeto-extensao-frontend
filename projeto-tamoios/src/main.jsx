@@ -8,10 +8,11 @@ import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { aplicarTema, lerTema } from "./utils/tema.js";
+import { aplicarTema, lerPreferenciaTema, observarTemaDoSistema } from "./utils/tema.js";
 import { aplicarAcessibilidade, lerAcessibilidade } from "./utils/acessibilidade.js";
 
-aplicarTema(lerTema());
+aplicarTema(lerPreferenciaTema());
+observarTemaDoSistema();
 
 // Antes da primeira pintura, para a escala e o contraste salvos não entrarem
 // como um salto na tela. O VLibras não entra aqui: quem carrega é o

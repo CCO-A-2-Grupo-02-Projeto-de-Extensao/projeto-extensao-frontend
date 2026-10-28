@@ -1,23 +1,20 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { flushSync } from "react-dom";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
-import { aplicarTema, lerTema } from "../../utils/tema.js";
+import { aplicarTema } from "../../utils/tema.js";
+import { useTema } from "../../hooks/useTema.js";
 import { prefereMenosMovimento } from "../../utils/movimento.js";
 import styles from "../../styles/interruptorTema.module.css";
 
 export function InterruptorTema() {
-  const [tema, setTema] = useState(lerTema);
+  const tema = useTema();
   const escuro = tema === "escuro";
   const transicao = useRef(null);
 
   function alternarTema(evento) {
     const novo = escuro ? "claro" : "escuro";
-    const trocar = () =>
-      flushSync(() => {
-        aplicarTema(novo);
-        setTema(novo);
-      });
+    const trocar = () => flushSync(() => aplicarTema(novo));
 
     if (!document.startViewTransition || prefereMenosMovimento()) {
       trocar();

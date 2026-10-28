@@ -24,10 +24,10 @@ import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeEspecialidades.module.css";
 import interna from "../../styles/classeInterna.module.css";
 import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
-
-const TAMANHO_PAGINA = 10;
+import { usePreferencias } from "../../hooks/usePreferencias.js";
 
 export function ClasseEspecialidades({ idClasse }) {
+  const { itensPorPagina } = usePreferencias();
   const [especialidades, setEspecialidades] = useState([]);
   const [disponiveis, setDisponiveis] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -73,14 +73,14 @@ export function ClasseEspecialidades({ idClasse }) {
       );
   }, [especialidades, busca, categoria, ordenacao]);
 
-  const totalPaginas = Math.max(1, Math.ceil(filtradas.length / TAMANHO_PAGINA));
+  const totalPaginas = Math.max(1, Math.ceil(filtradas.length / itensPorPagina));
   // Se a lista encolher (filtro, remoção), nunca ficamos numa página inexistente.
   const paginaSegura = Math.min(pagina, totalPaginas);
 
   const daPagina = useMemo(() => {
-    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
-    return filtradas.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [filtradas, paginaSegura]);
+    const inicio = (paginaSegura - 1) * itensPorPagina;
+    return filtradas.slice(inicio, inicio + itensPorPagina);
+  }, [filtradas, paginaSegura, itensPorPagina]);
 
   const abrirModal = async (acao) => {
     setModal({ acao, carregando: acao === "adicionar" });

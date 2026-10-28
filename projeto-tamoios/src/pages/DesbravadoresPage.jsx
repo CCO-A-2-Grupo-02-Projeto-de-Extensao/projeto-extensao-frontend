@@ -26,8 +26,7 @@ import { useCatalogos } from "../hooks/useCatalogos.js";
 import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import styles from "../styles/desbravadoresPage.module.css";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
-
-const TAMANHO_PAGINA = 10;
+import { usePreferencias } from "../hooks/usePreferencias.js";
 
 const GRUPOS = [
   { categoria: CATEGORIAS.ADMINISTRATIVO, titulo: "Administrativo" },
@@ -39,6 +38,7 @@ export function DesbravadoresPage() {
   const navegar = useNavigate();
   const voltar = useVoltar("/dashboard");
   const { classes } = useCatalogos();
+  const { itensPorPagina } = usePreferencias();
   const [pagina, setPagina] = useState(null);
   const [resumoMembros, setResumoMembros] = useState(null);
   const [todosMembros, setTodosMembros] = useState([]);
@@ -59,7 +59,7 @@ export function DesbravadoresPage() {
 
     getMembrosPaginados({
       pagina: paginaAtual,
-      tamanho: TAMANHO_PAGINA,
+      tamanho: itensPorPagina,
       busca,
       situacao,
       categoria,
@@ -82,7 +82,17 @@ export function DesbravadoresPage() {
     return () => {
       atual = false;
     };
-  }, [paginaAtual, busca, situacao, categoria, classe, ordenacao, versao, setPaginaAtual]);
+  }, [
+    paginaAtual,
+    itensPorPagina,
+    busca,
+    situacao,
+    categoria,
+    classe,
+    ordenacao,
+    versao,
+    setPaginaAtual,
+  ]);
 
   useEffect(() => {
     getResumoMembros()

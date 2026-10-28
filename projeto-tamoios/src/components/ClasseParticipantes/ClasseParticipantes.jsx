@@ -21,8 +21,7 @@ import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeParticipantes.module.css";
 import interna from "../../styles/classeInterna.module.css";
 import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
-
-const TAMANHO_PAGINA = 15;
+import { usePreferencias } from "../../hooks/usePreferencias.js";
 
 const PAPEIS = { TODOS: "todos", INSTRUTORES: "instrutor", ALUNOS: "aluno" };
 
@@ -34,6 +33,7 @@ function ehInstrutor(participante) {
 }
 
 export function ClasseParticipantes({ idClasse }) {
+  const { itensPorPagina } = usePreferencias();
   const navegar = useNavigate();
   const [participantes, setParticipantes] = useState([]);
   const [candidatos, setCandidatos] = useState([]);
@@ -91,15 +91,15 @@ export function ClasseParticipantes({ idClasse }) {
 
   const totalPaginasAlunos = Math.max(
     1,
-    Math.ceil(alunos.length / TAMANHO_PAGINA)
+    Math.ceil(alunos.length / itensPorPagina)
   );
   // Se a lista encolher (busca, remoção), nunca ficamos numa página inexistente.
   const paginaSegura = Math.min(paginaAlunos, totalPaginasAlunos);
 
   const alunosDaPagina = useMemo(() => {
-    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
-    return alunos.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [alunos, paginaSegura]);
+    const inicio = (paginaSegura - 1) * itensPorPagina;
+    return alunos.slice(inicio, inicio + itensPorPagina);
+  }, [alunos, paginaSegura, itensPorPagina]);
 
   const abrirModal = async (tipo, acao) => {
     setModal({ tipo, acao, carregando: acao === "adicionar" });

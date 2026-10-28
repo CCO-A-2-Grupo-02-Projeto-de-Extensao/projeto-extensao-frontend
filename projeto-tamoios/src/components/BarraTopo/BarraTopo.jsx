@@ -2,6 +2,7 @@ import { BuscaGlobal } from "../BuscaGlobal/BuscaGlobal.jsx";
 import { Avatar } from "../Avatar/Avatar.jsx";
 import { InterruptorTema } from "../InterruptorTema/InterruptorTema.jsx";
 import { MenuAcessibilidade } from "../MenuAcessibilidade/MenuAcessibilidade.jsx";
+import { MenuConfiguracoes } from "../MenuConfiguracoes/MenuConfiguracoes.jsx";
 import styles from "../../styles/barraTopo.module.css";
 
 function lerUsuario() {
@@ -21,8 +22,9 @@ export function BarraTopo() {
       <BuscaGlobal />
 
       <div className={styles.acoes}>
-        <MenuAcessibilidade />
         <InterruptorTema />
+        <MenuAcessibilidade />
+        <MenuConfiguracoes />
 
         <div className={styles.usuario} title={usuario.email}>
           <div className={styles.usuarioTextos}>

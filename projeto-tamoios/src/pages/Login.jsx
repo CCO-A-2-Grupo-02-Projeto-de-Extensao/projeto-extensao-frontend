@@ -13,6 +13,7 @@ import { EsqueceuSenhaModal } from "../components/EsqueceuSenhaModal/EsqueceuSen
 import { Cortina } from "../components/Cortina/Cortina.jsx";
 import { InterruptorTema } from "../components/InterruptorTema/InterruptorTema.jsx";
 import { MenuAcessibilidade } from "../components/MenuAcessibilidade/MenuAcessibilidade.jsx";
+import { lerPreferencias } from "../utils/preferencias.js";
 import { prefereMenosMovimento } from "../utils/movimento.js";
 
 function Login() {
@@ -40,7 +41,7 @@ function Login() {
       localStorage.setItem("usuario", JSON.stringify(data));
 
       if (prefereMenosMovimento() || !botao) {
-        navigate("/dashboard");
+        navigate(lerPreferencias().paginaInicial);
         return;
       }
       const r = botao.getBoundingClientRect();
@@ -119,7 +120,11 @@ function Login() {
         <Cortina
           variante="abrir"
           origem={origemEntrada}
-          onFim={() => navigate("/dashboard", { state: { entrada: true } })}
+          onFim={() =>
+            navigate(lerPreferencias().paginaInicial, {
+              state: { entrada: true },
+            })
+          }
         />
       )}
       {revelando && (

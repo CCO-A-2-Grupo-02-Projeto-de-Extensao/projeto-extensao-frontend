@@ -23,12 +23,12 @@ import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/classeUnidades.module.css";
 import interna from "../../styles/classeInterna.module.css";
 import { Esqueleto } from "../Esqueleto/Esqueleto.jsx";
-
-const TAMANHO_PAGINA = 10;
+import { usePreferencias } from "../../hooks/usePreferencias.js";
 
 const SEXOS = { TODOS: "todos" };
 
 export function ClasseUnidades({ idClasse, nomeClasse }) {
+  const { itensPorPagina } = usePreferencias();
   const [unidades, setUnidades] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -78,14 +78,14 @@ export function ClasseUnidades({ idClasse, nomeClasse }) {
       );
   }, [unidades, busca, sexo, ordenacao]);
 
-  const totalPaginas = Math.max(1, Math.ceil(filtradas.length / TAMANHO_PAGINA));
+  const totalPaginas = Math.max(1, Math.ceil(filtradas.length / itensPorPagina));
   // Se a lista encolher (filtro, exclusão), nunca ficamos numa página inexistente.
   const paginaSegura = Math.min(pagina, totalPaginas);
 
   const daPagina = useMemo(() => {
-    const inicio = (paginaSegura - 1) * TAMANHO_PAGINA;
-    return filtradas.slice(inicio, inicio + TAMANHO_PAGINA);
-  }, [filtradas, paginaSegura]);
+    const inicio = (paginaSegura - 1) * itensPorPagina;
+    return filtradas.slice(inicio, inicio + itensPorPagina);
+  }, [filtradas, paginaSegura, itensPorPagina]);
 
   // O modal se fecha sozinho depois de criar; ao editar ele fica aberto, e aqui
   // só recarregamos a tabela por trás dele.

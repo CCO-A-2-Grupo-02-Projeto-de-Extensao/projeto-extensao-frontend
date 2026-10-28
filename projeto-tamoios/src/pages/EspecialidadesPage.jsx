@@ -26,12 +26,12 @@ import { TODAS_CATEGORIAS } from "../utils/especialidadeCategorias.js";
 import styles from "../styles/especialidadesPage.module.css";
 import detalhe from "../styles/desbravadorDetalhePage.module.css";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
-
-const TAMANHO_PAGINA = 10;
+import { usePreferencias } from "../hooks/usePreferencias.js";
 
 export function EspecialidadesPage() {
   const location = useLocation();
   const voltar = useVoltar("/dashboard");
+  const { itensPorPagina } = usePreferencias();
   const buscaInicial = location.state?.busca ?? "";
   const [resultado, setResultado] = useState(null);
   const [versao, setVersao] = useState(0);
@@ -55,7 +55,7 @@ export function EspecialidadesPage() {
 
     getEspecialidadesPaginadas({
       pagina: paginaAtual,
-      tamanho: TAMANHO_PAGINA,
+      tamanho: itensPorPagina,
       busca,
       categoria,
       ordenacao,
@@ -76,7 +76,15 @@ export function EspecialidadesPage() {
     return () => {
       atual = false;
     };
-  }, [paginaAtual, busca, categoria, ordenacao, versao, setPaginaAtual]);
+  }, [
+    paginaAtual,
+    itensPorPagina,
+    busca,
+    categoria,
+    ordenacao,
+    versao,
+    setPaginaAtual,
+  ]);
 
   const carregar = () => setVersao((valor) => valor + 1);
 
