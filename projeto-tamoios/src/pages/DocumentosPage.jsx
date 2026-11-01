@@ -104,9 +104,7 @@ export function DocumentosPage() {
             usuario?.idUsuario,
         );
 
-        return Number.isSafeInteger(idPessoa) && idPessoa > 0
-          ? idPessoa
-          : null;
+        return Number.isSafeInteger(idPessoa) && idPessoa > 0 ? idPessoa : null;
       } catch {
         return null;
       }
@@ -126,7 +124,7 @@ export function DocumentosPage() {
         setCarregando(true);
         setErro("");
 
-        const resposta = await api.get(`/documentos/pessoa/${idPessoa}`);
+        const resposta = await api.get(`/documentos/tipo/publico`);
 
         if (!ativo) {
           return;
@@ -175,10 +173,9 @@ export function DocumentosPage() {
     setErro("");
 
     try {
-      const resposta = await api.get(
-        `/documentos/${documento.id}/visualizar`,
-        { responseType: "blob" },
-      );
+      const resposta = await api.get(`/documentos/${documento.id}/visualizar`, {
+        responseType: "blob",
+      });
       const url = URL.createObjectURL(resposta.data);
 
       novaAba.location.href = url;
@@ -197,10 +194,9 @@ export function DocumentosPage() {
     setErro("");
 
     try {
-      const resposta = await api.get(
-        `/documentos/${documento.id}/visualizar`,
-        { responseType: "blob" },
-      );
+      const resposta = await api.get(`/documentos/${documento.id}/visualizar`, {
+        responseType: "blob",
+      });
       const url = URL.createObjectURL(resposta.data);
       const link = window.document.createElement("a");
 
@@ -300,11 +296,7 @@ export function DocumentosPage() {
 
         {carregando && (
           <div className={styles.carregando}>
-            <Esqueleto
-              linhas={4}
-              altura={76}
-              rotulo="Carregando documentos"
-            />
+            <Esqueleto linhas={4} altura={76} rotulo="Carregando documentos" />
           </div>
         )}
 
@@ -314,7 +306,9 @@ export function DocumentosPage() {
               <DescriptionOutlinedIcon aria-hidden="true" />
             </span>
             <h3>Nenhum documento por aqui</h3>
-            <p>Os documentos vinculados ao seu cadastro aparecerão nesta lista.</p>
+            <p>
+              Os documentos vinculados ao seu cadastro aparecerão nesta lista.
+            </p>
           </div>
         )}
 
