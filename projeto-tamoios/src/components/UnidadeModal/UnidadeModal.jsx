@@ -2,9 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import PersonRemoveAlt1Icon from "@mui/icons-material/PersonRemoveAlt1";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { Select } from "../Select/Select.jsx";
 import { Input } from "../Input/Input.jsx";
+import { Button } from "../Button/Button.jsx";
+import { Avatar } from "../Avatar/Avatar.jsx";
+import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
+import { normalizar } from "../../services/buscaGlobalService.js";
 
 import {
   atualizarUnidade,
@@ -20,6 +25,7 @@ import {
   cabeNaUnidade,
 } from "../../utils/regrasUnidade.js";
 
+import casca from "../../styles/cascaModal.module.css";
 import styles from "../../styles/unidadeModal.module.css";
 
 const FORM_VAZIO = {
@@ -85,6 +91,7 @@ export function UnidadeModal({
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+  const fecharAoClicarFora = useFecharAoClicarFora(onFechar);
 
   // O modal continua aberto depois de salvar, então a lista precisa ser
   // recarregável — não basta a carga inicial.
@@ -146,11 +153,11 @@ export function UnidadeModal({
   ].filter(Boolean);
 
   const desbravadoresVisiveis = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
+    const alvo = normalizar(busca);
 
-    return [...participantes]
+    return participantes
       .filter((pessoa) => pessoa.categoria === "aluno")
-      .filter((pessoa) => pessoa.nome.toLowerCase().includes(termo))
+      .filter((pessoa) => !alvo || normalizar(pessoa.nome).includes(alvo))
       .sort((a, b) =>
         ordenacao === "az"
           ? a.nome.localeCompare(b.nome)
@@ -302,157 +309,78 @@ export function UnidadeModal({
     ]
   );
 
-  return (
-    <div className={styles.overlay} onMouseDown={onFechar}>
-      <div
-        className={edicao ? styles.modal : styles.modalSimples}
-        onMouseDown={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-label={edicao ? "Editar unidade" : "Criar unidade"}
+  const linhaPessoa = (pessoa, entrando) => (
+    <div key={pessoa.id} className={casca.linha}>
+      <Avatar nome={pessoa.nome} tamanho={32} />
+      <span className={casca.linhaTextos}>
+        <span className={casca.linhaNome}>{pessoa.nome}</span>
+        <span className={casca.linhaDetalhe}>
+          {entrando
+            ? pessoa.unidade || "Sem unidade"
+            : pessoa.classe || "Sem classe"}
+        </span>
+      </span>
+
+      {!entrando && foraDoPerfil.some((fora) => fora.id === pessoa.id) && (
+        <span
+          className={styles.linhaAlerta}
+          title="Fora do sexo ou da faixa etária desta unidade"
+        >
+          <WarningAmberIcon sx={{ fontSize: 18 }} />
+        </span>
+      )}
+
+      <Button
+        variante="icone"
+        className={styles.botaoLinha}
+        onClick={() => mover(pessoa, entrando)}
+        disabled={movendo !== null}
+        aria-label={
+          entrando
+            ? `Adicionar ${pessoa.nome} à unidade`
+            : `Remover ${pessoa.nome} da unidade`
+        }
+        title={entrando ? "Adicionar à unidade" : "Remover da unidade"}
       >
-        {edicao && (
-          <section className={styles.painelLista}>
-            <h2 className={styles.titulo}>
-              Lista de Desbravadores {nomeClasse ? `Classe ${nomeClasse}` : ""}
-            </h2>
-
-            <div className={styles.filtros}>
-              <div className={styles.campoOrdenacao}>
-                <Select
-                  value={ordenacao}
-                  onChange={(e) => setOrdenacao(e.target.value)}
-                  aria-label="Ordenação"
-                >
-                  <option value="az">A-Z</option>
-                  <option value="za">Z-A</option>
-                </Select>
-              </div>
-
-              <div className={styles.campoBusca}>
-                <Input
-                  type="search"
-                  placeholder="Buscar"
-                  value={busca}
-                  onChange={(e) => setBusca(e.target.value)}
-                  aria-label="Buscar desbravador por nome"
-                />
-              </div>
-            </div>
-
-            <div className={styles.grupoLista}>
-              <h3 className={styles.tituloLista}>
-                Nesta unidade ({naUnidade.length})
-              </h3>
-
-              <div className={styles.lista}>
-                {naUnidade.length === 0 && (
-                  <p className={styles.vazio}>
-                    Nenhum desbravador nesta unidade ainda.
-                  </p>
-                )}
-
-                {naUnidade.map((pessoa) => (
-                  <div key={pessoa.id} className={styles.linha}>
-                    <span className={styles.linhaNome}>{pessoa.nome}</span>
-
-                    {foraDoPerfil.some((fora) => fora.id === pessoa.id) ? (
-                      <span
-                        className={styles.linhaAlerta}
-                        title="Fora do sexo ou da faixa etária desta unidade"
-                      >
-                        <WarningAmberIcon sx={{ fontSize: 16 }} />
-                      </span>
-                    ) : (
-                      <span className={styles.linhaDetalhe}>
-                        {pessoa.classe || "Sem classe"}
-                      </span>
-                    )}
-
-                    <button
-                      type="button"
-                      className={styles.botaoLinha}
-                      onClick={() => mover(pessoa, false)}
-                      disabled={movendo !== null}
-                      aria-label={`Remover ${pessoa.nome} da unidade`}
-                      title="Remover da unidade"
-                    >
-                      <PersonRemoveAlt1Icon sx={{ fontSize: 18 }} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.grupoLista}>
-              <h3 className={styles.tituloLista}>
-                Disponíveis para entrar ({disponiveis.length})
-              </h3>
-
-              <div className={styles.lista}>
-                {disponiveis.length === 0 && (
-                  <p className={styles.vazio}>
-                    {faltando.length > 0
-                      ? `Selecione ${faltando.join(" e ")} da unidade para ver os desbravadores.`
-                      : "Nenhum desbravador da classe cabe no perfil desta unidade."}
-                  </p>
-                )}
-
-                {disponiveis.map((pessoa) => (
-                  <div key={pessoa.id} className={styles.linha}>
-                    <span className={styles.linhaNome}>{pessoa.nome}</span>
-                    <span className={styles.linhaDetalhe}>
-                      {pessoa.unidade || "Sem unidade"}
-                    </span>
-
-                    <button
-                      type="button"
-                      className={styles.botaoLinha}
-                      onClick={() => mover(pessoa, true)}
-                      disabled={movendo !== null}
-                      aria-label={`Adicionar ${pessoa.nome} à unidade`}
-                      title="Adicionar à unidade"
-                    >
-                      <PersonAddAlt1Icon sx={{ fontSize: 18 }} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+        {entrando ? (
+          <PersonAddAlt1Icon sx={{ fontSize: 18 }} />
+        ) : (
+          <PersonRemoveAlt1Icon sx={{ fontSize: 18 }} />
         )}
+      </Button>
+    </div>
+  );
 
-        <aside className={styles.painelFormulario}>
-          <button
-            type="button"
-            className={styles.fechar}
-            onClick={onFechar}
-            aria-label="Fechar"
-          >
-            ×
-          </button>
+  return (
+    <div className={casca.overlay} {...fecharAoClicarFora}>
+      <div
+        className={`${casca.modal} ${edicao ? styles.modal : styles.modalSimples}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-unidade"
+      >
+        <div className={casca.cabecalho}>
+          <div>
+            <h2 id="titulo-unidade" className={casca.titulo}>
+              {edicao ? "Editar unidade" : "Criar unidade"}
+            </h2>
+            {nomeClasse && (
+              <span className={casca.subtitulo}>Classe {nomeClasse}</span>
+            )}
+          </div>
+          <Button variante="fechar" onClick={onFechar} aria-label="Fechar">
+            <CloseIcon />
+          </Button>
+        </div>
 
-          <h3 className={styles.tituloFormulario}>
-            {edicao ? "Editar Unidade" : "Criar Unidade"}
-          </h3>
+        <div className={casca.corpo}>
+          {erro && <p className={casca.erro}>{erro}</p>}
+          {sucesso && <p className={casca.sucesso}>{sucesso}</p>}
 
-          {erro && <p className={styles.erro}>{erro}</p>}
-          {sucesso && <p className={styles.sucesso}>{sucesso}</p>}
-
-          {edicao && foraDoPerfil.length > 0 && (
-            <div className={styles.alerta}>
-              <WarningAmberIcon fontSize="small" />
-              <span>
-                Fora do perfil desta unidade:{" "}
-                {foraDoPerfil.map((pessoa) => pessoa.nome).join(", ")}. Ajuste o
-                sexo ou a faixa etária, ou remova essas pessoas da unidade.
-              </span>
-            </div>
-          )}
-
-          <div className={styles.campos}>
+          <div className={edicao ? styles.campos : styles.camposSimples}>
             {edicao ? (
               <label className={styles.campo}>
-                Unidade Selecionada
+                Unidade selecionada
                 <Select
                   value={idUnidadeSelecionada}
                   onChange={(e) => selecionarUnidade(e.target.value)}
@@ -466,7 +394,7 @@ export function UnidadeModal({
               </label>
             ) : (
               <label className={styles.campo}>
-                Nome da Unidade
+                Nome da unidade
                 <Input
                   type="text"
                   placeholder="Nome da unidade"
@@ -492,7 +420,7 @@ export function UnidadeModal({
             </label>
 
             <label className={styles.campo}>
-              Faixa Etária
+              Faixa etária
               <Select
                 value={formulario.faixaEtaria}
                 onChange={(e) => alterarCampo("faixaEtaria", e.target.value)}
@@ -507,7 +435,7 @@ export function UnidadeModal({
             </label>
 
             <label className={styles.campo}>
-              Conselheiro da Unidade
+              Conselheiro da unidade
               <Select
                 value={formulario.idConselheiro}
                 onChange={(e) => alterarCampo("idConselheiro", e.target.value)}
@@ -522,32 +450,107 @@ export function UnidadeModal({
             </label>
           </div>
 
+          {edicao && foraDoPerfil.length > 0 && (
+            <div className={casca.alerta}>
+              <WarningAmberIcon fontSize="small" />
+              <span>
+                Fora do perfil desta unidade:{" "}
+                {foraDoPerfil.map((pessoa) => pessoa.nome).join(", ")}. Ajuste o
+                sexo ou a faixa etária, ou remova essas pessoas da unidade.
+              </span>
+            </div>
+          )}
+
           {edicao && (
-            <p className={styles.ocupacao}>
+            <>
+              <div className={casca.filtros}>
+                <div className={casca.campoOrdenacao}>
+                  <Select
+                    value={ordenacao}
+                    onChange={(e) => setOrdenacao(e.target.value)}
+                    aria-label="Ordenação"
+                  >
+                    <option value="az">A-Z</option>
+                    <option value="za">Z-A</option>
+                  </Select>
+                </div>
+                <div className={casca.campoBusca}>
+                  <Input
+                    type="search"
+                    placeholder="Buscar por nome"
+                    value={busca}
+                    onChange={(e) => setBusca(e.target.value)}
+                    aria-label="Buscar desbravador por nome"
+                  />
+                </div>
+              </div>
+
+              <div className={styles.listas}>
+                <section className={styles.grupoLista}>
+                  <h3 className={casca.secaoTitulo}>
+                    Nesta unidade ({naUnidade.length})
+                  </h3>
+                  <div className={casca.lista}>
+                    {naUnidade.length === 0 && (
+                      <p className={casca.vazio}>
+                        Nenhum desbravador nesta unidade ainda.
+                      </p>
+                    )}
+                    {naUnidade.map((pessoa) => linhaPessoa(pessoa, false))}
+                  </div>
+                </section>
+
+                <section className={styles.grupoLista}>
+                  <h3 className={casca.secaoTitulo}>
+                    Disponíveis para entrar ({disponiveis.length})
+                  </h3>
+                  <div className={casca.lista}>
+                    {disponiveis.length === 0 && (
+                      <p className={casca.vazio}>
+                        {faltando.length > 0
+                          ? `Selecione ${faltando.join(" e ")} da unidade para ver os desbravadores.`
+                          : "Nenhum desbravador da classe cabe no perfil desta unidade."}
+                      </p>
+                    )}
+                    {disponiveis.map((pessoa) => linhaPessoa(pessoa, true))}
+                  </div>
+                </section>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className={casca.rodape}>
+          {edicao && (
+            <span className={casca.resumo}>
               {ocupacao} de {MAXIMO_DESBRAVADORES} desbravadores
               {ocupacao < MINIMO_DESBRAVADORES
                 ? ` — a unidade deve ter ao menos ${MINIMO_DESBRAVADORES}`
                 : ""}
-            </p>
+            </span>
           )}
 
-          <div className={styles.botoes}>
-            <button
-              type="button"
-              className={styles.botaoPrimario}
+          <div className={casca.botoes}>
+            <Button
+              variante="secundario"
+              onClick={onFechar}
+              texto={edicao ? "Fechar" : "Cancelar"}
+            />
+            <Button
               onClick={salvar}
               disabled={salvando || movendo !== null}
-            >
-              {salvando
-                ? edicao
-                  ? "Salvando..."
-                  : "Criando..."
-                : edicao
-                  ? "Salvar Unidade"
-                  : "Criar Unidade"}
-            </button>
+              texto={
+                salvando
+                  ? edicao
+                    ? "Salvando..."
+                    : "Criando..."
+                  : edicao
+                    ? "Salvar unidade"
+                    : "Criar unidade"
+              }
+            />
           </div>
-        </aside>
+        </div>
       </div>
     </div>
   );

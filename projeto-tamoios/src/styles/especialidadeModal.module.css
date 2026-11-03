@@ -1,61 +1,10 @@
-.overlay {
-  composes: fundo from "./animacoes.module.css";
-  position: fixed;
-  inset: 0;
-  background-color: rgba(31, 25, 26, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 1000;
-}
-
 .modal {
-  composes: janela from "./animacoes.module.css";
-  width: 100%;
-  max-width: 520px;
-  background-color: var(--cremeClaro);
-  border-radius: 12px;
-  box-shadow: var(--sombraModal);
-  overflow: hidden;
-}
-
-.cabecalho {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 24px;
-  border-bottom: 3px solid var(--vinhoVivo);
-}
-
-.cabecalho h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--vinhoEscuro);
-}
-
-.fechar {
-  composes: botao fechar from "./button.module.css";
-}
-
-.fechar:active {
-  transform: scale(0.94);
-}
-
-.fechar:focus-visible {
-  outline: 2px solid var(--vinhoEscuro);
-  outline-offset: 2px;
-}
-
-.formulario {
-  padding: 24px;
+  max-width: 560px;
 }
 
 .campo {
   display: flex;
   flex-direction: column;
-  margin-bottom: 18px;
 }
 
 .campo label {
@@ -70,8 +19,8 @@
 .campo textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid var(--cinza);
-  border-radius: 7px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
   padding: 11px 12px;
   font-family: inherit;
   font-size: 14px;
@@ -118,38 +67,4 @@
 
 .previaImagem span {
   color: var(--textoSuave);
-}
-
-.botoes {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-
-.botaoCancelar {
-  composes: botao secundario from "./button.module.css";
-  flex: 1;
-}
-
-.botaoSalvar {
-  composes: botao primario from "./button.module.css";
-  flex: 1;
-}
-
-@media (max-width: 600px) {
-  .modal {
-    max-width: 100%;
-  }
-
-  .formulario {
-    padding: 18px;
-  }
-
-  .botoes {
-    flex-direction: column-reverse;
-  }
-
-  
 }

@@ -229,13 +229,15 @@ export function EspecialidadesPage() {
         )}
       </section>
 
-      <EspecialidadeModal
-        aberto={modalAberto}
-        especialidade={especialidadeSelecionada}
-        salvando={salvando}
-        onFechar={fecharModal}
-        onSalvar={salvarEspecialidade}
-      />
+      {modalAberto && (
+        <EspecialidadeModal
+          key={especialidadeSelecionada?.id ?? "nova"}
+          especialidade={especialidadeSelecionada}
+          salvando={salvando}
+          onFechar={fecharModal}
+          onSalvar={salvarEspecialidade}
+        />
+      )}
 
       <ConfirmacaoModal
         aberto={Boolean(aExcluir)}

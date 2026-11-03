@@ -347,10 +347,10 @@ export function ClasseParticipantes({ idClasse }) {
           titulo={`${
             modal.acao === "adicionar" ? "Adicionar" : "Remover"
           } ${modal.tipo === "instrutor" ? "Instrutor" : "Desbravador"}`}
-          tituloSelecionados={
+          subtitulo={
             modal.acao === "adicionar"
-              ? "Selecionados para adicionar"
-              : "Selecionados para remover"
+              ? "Quem for marcado entra nesta classe."
+              : "Quem for marcado sai desta classe. O cadastro continua no sistema."
           }
           itens={itensDoModal}
           onFechar={() => setModal(null)}

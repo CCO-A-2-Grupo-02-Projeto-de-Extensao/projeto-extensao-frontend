@@ -598,7 +598,7 @@ export function DesempenhoClubeModal({ membro, onFechar }) {
       {escolhendoExtra && (
         <SelecaoModal
           titulo="Adicionar especialidades"
-          tituloSelecionados={`Concluídas em ${anoSelecionado}`}
+          subtitulo={`As marcadas entram como concluídas em ${anoSelecionado}.`}
           rotuloConfirmar="Adicionar"
           itens={catalogo
             .filter((item) => !concluidaPorEspecialidade.has(item.id))

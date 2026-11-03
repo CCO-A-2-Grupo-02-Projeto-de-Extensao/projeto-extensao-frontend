@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { Insignia } from "../Insignia/Insignia.jsx";
+import { Button } from "../Button/Button.jsx";
+import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
 import {
   CATEGORIAS_ESPECIALIDADES,
   TODAS_CATEGORIAS,
 } from "../../utils/especialidadeCategorias.js";
 
+import casca from "../../styles/cascaModal.module.css";
 import styles from "../../styles/especialidadeModal.module.css";
 
 const VALOR_INICIAL = {
@@ -15,33 +19,27 @@ const VALOR_INICIAL = {
   imagem: "",
 };
 
+function formularioDa(especialidade) {
+  if (!especialidade) return VALOR_INICIAL;
+
+  return {
+    nome: especialidade.nome || "",
+    categoria: especialidade.categoria || TODAS_CATEGORIAS,
+    descricao: especialidade.descricao || "",
+    imagem: especialidade.imagem || "",
+  };
+}
+
 export function EspecialidadeModal({
-  aberto,
   especialidade,
   salvando = false,
   onFechar,
   onSalvar,
 }) {
-  const [formulario, setFormulario] = useState(VALOR_INICIAL);
+  const [formulario, setFormulario] = useState(() => formularioDa(especialidade));
+  const fecharAoClicarFora = useFecharAoClicarFora(onFechar);
 
   const modoEdicao = Boolean(especialidade);
-
-  useEffect(() => {
-    if (especialidade) {
-      setFormulario({
-        nome: especialidade.nome || "",
-        categoria: especialidade.categoria || TODAS_CATEGORIAS,
-        descricao: especialidade.descricao || "",
-        imagem: especialidade.imagem || "",
-      });
-    } else {
-      setFormulario(VALOR_INICIAL);
-    }
-  }, [especialidade, aberto]);
-
-  if (!aberto) {
-    return null;
-  }
 
   const alterarCampo = (campo, valor) => {
     setFormulario((atual) => ({
@@ -77,22 +75,31 @@ export function EspecialidadeModal({
   };
 
   return (
-    <div className={styles.overlay} onMouseDown={onFechar}>
-      <div className={styles.modal} onMouseDown={(e) => e.stopPropagation()}>
-        <div className={styles.cabecalho}>
-          <h2>{modoEdicao ? "Editar Disciplina" : "Adicionar Disciplina"}</h2>
-
-          <button
-            type="button"
-            className={styles.fechar}
-            onClick={onFechar}
-            aria-label="Fechar"
-          >
-            ×
-          </button>
+    <div className={casca.overlay} {...fecharAoClicarFora}>
+      <form
+        className={`${casca.modal} ${styles.modal}`}
+        onSubmit={enviarFormulario}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-especialidade"
+      >
+        <div className={casca.cabecalho}>
+          <div>
+            <h2 id="titulo-especialidade" className={casca.titulo}>
+              {modoEdicao ? "Editar Disciplina" : "Adicionar Disciplina"}
+            </h2>
+            <span className={casca.subtitulo}>
+              {modoEdicao
+                ? "Altere os dados e salve para atualizar o catálogo."
+                : "Preencha os dados para incluir no catálogo."}
+            </span>
+          </div>
+          <Button variante="fechar" onClick={onFechar} aria-label="Fechar">
+            <CloseIcon />
+          </Button>
         </div>
 
-        <form className={styles.formulario} onSubmit={enviarFormulario}>
+        <div className={casca.corpo}>
           <div className={styles.campo}>
             <label htmlFor="nome-especialidade">Nome</label>
 
@@ -156,26 +163,19 @@ export function EspecialidadeModal({
               rows={5}
             />
           </div>
+        </div>
 
-          <div className={styles.botoes}>
-            <button
-              type="button"
-              className={styles.botaoCancelar}
-              onClick={onFechar}
-            >
-              Cancelar
-            </button>
-
-            <button
+        <div className={casca.rodape}>
+          <div className={casca.botoes}>
+            <Button variante="secundario" onClick={onFechar} texto="Cancelar" />
+            <Button
               type="submit"
-              className={styles.botaoSalvar}
               disabled={salvando}
-            >
-              {salvando ? "Salvando..." : modoEdicao ? "Salvar" : "Adicionar"}
-            </button>
+              texto={salvando ? "Salvando..." : modoEdicao ? "Salvar" : "Adicionar"}
+            />
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }

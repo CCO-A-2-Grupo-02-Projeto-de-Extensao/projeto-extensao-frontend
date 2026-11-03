@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import CloseIcon from "@mui/icons-material/Close";
 
+import { Button } from "../Button/Button.jsx";
+import { Avatar } from "../Avatar/Avatar.jsx";
+import { useFecharAoClicarFora } from "../../hooks/useFecharAoClicarFora.js";
 import { getDesbravadoresDaUnidade } from "../../services/classesService.js";
 import {
   MAXIMO_DESBRAVADORES,
   idadeEm,
 } from "../../utils/regrasUnidade.js";
 
+import casca from "../../styles/cascaModal.module.css";
 import styles from "../../styles/unidadeDetalheModal.module.css";
 
 function Campo({ rotulo, valor }) {
@@ -24,6 +29,7 @@ export function UnidadeDetalheModal({ unidade, onFechar }) {
   const [desbravadores, setDesbravadores] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const fecharAoClicarFora = useFecharAoClicarFora(onFechar);
 
   useEffect(() => {
     getDesbravadoresDaUnidade(unidade.id)
@@ -33,71 +39,76 @@ export function UnidadeDetalheModal({ unidade, onFechar }) {
   }, [unidade.id]);
 
   return (
-    <div className={styles.overlay} onMouseDown={onFechar}>
+    <div className={casca.overlay} {...fecharAoClicarFora}>
       <div
-        className={styles.modal}
-        onMouseDown={(e) => e.stopPropagation()}
+        className={`${casca.modal} ${styles.modal}`}
         role="dialog"
-        aria-label={`Unidade ${unidade.nome}`}
+        aria-modal="true"
+        aria-labelledby="titulo-unidade-detalhe"
       >
-        <button
-          type="button"
-          className={styles.fechar}
-          onClick={onFechar}
-          aria-label="Fechar"
-        >
-          ×
-        </button>
-
-        <h2 className={styles.titulo}>{unidade.nome}</h2>
-
-        <div className={styles.grade}>
-          <Campo rotulo="Sexo" valor={unidade.sexo} />
-          <Campo rotulo="Faixa Etária" valor={unidade.faixaEtaria} />
-          <Campo rotulo="Conselheiro" valor={unidade.conselheiro} />
-          <Campo
-            rotulo="Desbravadores"
-            valor={`${unidade.quantidadeDesbravadores} de ${MAXIMO_DESBRAVADORES}`}
-          />
+        <div className={casca.cabecalho}>
+          <div>
+            <h2 id="titulo-unidade-detalhe" className={casca.titulo}>
+              {unidade.nome}
+            </h2>
+            <span className={casca.subtitulo}>
+              {unidade.quantidadeDesbravadores} de {MAXIMO_DESBRAVADORES}{" "}
+              desbravadores
+            </span>
+          </div>
+          <Button variante="fechar" onClick={onFechar} aria-label="Fechar">
+            <CloseIcon />
+          </Button>
         </div>
 
-        {unidade.inconsistencias.length > 0 && (
-          <div className={styles.alerta}>
-            <WarningAmberIcon fontSize="small" />
-            <ul className={styles.listaAlerta}>
-              {unidade.inconsistencias.map((problema) => (
-                <li key={problema}>{problema}</li>
-              ))}
-            </ul>
+        <div className={casca.corpo}>
+          <div className={styles.grade}>
+            <Campo rotulo="Sexo" valor={unidade.sexo} />
+            <Campo rotulo="Faixa etária" valor={unidade.faixaEtaria} />
+            <Campo rotulo="Conselheiro" valor={unidade.conselheiro} />
           </div>
-        )}
 
-        <h3 className={styles.subtitulo}>Desbravadores</h3>
-
-        {erro && <p className={styles.erro}>{erro}</p>}
-
-        <div className={styles.lista}>
-          {carregando && <p className={styles.vazio}>Carregando...</p>}
-
-          {!carregando && desbravadores.length === 0 && (
-            <p className={styles.vazio}>Nenhum desbravador nesta unidade.</p>
+          {unidade.inconsistencias.length > 0 && (
+            <div className={casca.alerta}>
+              <WarningAmberIcon fontSize="small" />
+              <ul className={styles.listaAlerta}>
+                {unidade.inconsistencias.map((problema) => (
+                  <li key={problema}>{problema}</li>
+                ))}
+              </ul>
+            </div>
           )}
 
-          {desbravadores.map((pessoa) => {
-            const idade = idadeEm(pessoa.dataNascimento);
+          {erro && <p className={casca.erro}>{erro}</p>}
 
-            return (
-              <div key={pessoa.id} className={styles.linha}>
-                <span className={styles.linhaNome}>{pessoa.nome}</span>
-                <span className={styles.linhaDetalhe}>
-                  {pessoa.classe || "Sem classe"}
-                </span>
-                <span className={styles.linhaIdade}>
-                  {idade === null ? "—" : `${idade} anos`}
-                </span>
-              </div>
-            );
-          })}
+          <h3 className={casca.secaoTitulo}>Desbravadores</h3>
+
+          <div className={casca.lista}>
+            {carregando && <p className={casca.vazio}>Carregando...</p>}
+
+            {!carregando && desbravadores.length === 0 && (
+              <p className={casca.vazio}>Nenhum desbravador nesta unidade.</p>
+            )}
+
+            {desbravadores.map((pessoa) => {
+              const idade = idadeEm(pessoa.dataNascimento);
+
+              return (
+                <div key={pessoa.id} className={casca.linha}>
+                  <Avatar nome={pessoa.nome} tamanho={32} />
+                  <span className={casca.linhaTextos}>
+                    <span className={casca.linhaNome}>{pessoa.nome}</span>
+                    <span className={casca.linhaDetalhe}>
+                      {pessoa.classe || "Sem classe"}
+                    </span>
+                  </span>
+                  <span className={styles.idade}>
+                    {idade === null ? "—" : `${idade} anos`}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

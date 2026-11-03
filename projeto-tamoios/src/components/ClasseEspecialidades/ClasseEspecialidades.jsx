@@ -279,10 +279,10 @@ export function ClasseEspecialidades({ idClasse }) {
               ? "Remover Especialidade"
               : "Adicionar Especialidade"
           }
-          tituloSelecionados={
+          subtitulo={
             modal.acao === "remover"
-              ? "Especialidades a serem removidas"
-              : "Especialidades a serem adicionadas"
+              ? "As especialidades marcadas deixam de fazer parte desta classe."
+              : "As especialidades marcadas passam a fazer parte desta classe."
           }
           itens={itensDoModal}
           onFechar={() => setModal(null)}
