@@ -40,6 +40,51 @@ function paraDataIso(data) {
   return `${ano}-${mes}-${dia}`;
 }
 
+async function buscarDadosDaData(data) {
+  const [membrosResult, chamadaResult] = await Promise.allSettled([
+    getMembros(),
+    buscarChamadaPorData(paraDataIso(data)),
+  ]);
+
+  if (membrosResult.status === "rejected") {
+    console.error("Erro ao carregar membros:", membrosResult.reason);
+    throw new Error("Não foi possível carregar a lista de membros.");
+  }
+
+  if (chamadaResult.status === "rejected") {
+    console.error("Erro ao buscar chamada:", chamadaResult.reason);
+  }
+
+  const chamada =
+    chamadaResult.status === "fulfilled" ? chamadaResult.value?.chamada ?? null : null;
+
+  let presencas = [];
+  if (chamada) {
+    try {
+      presencas = await getPresencasPorChamada(chamada.idChamada);
+    } catch (err) {
+      console.error("Erro ao carregar presenças:", err);
+    }
+  }
+
+  const presencaPorPessoaId = new Map(presencas.map((p) => [p.idPessoa, p]));
+
+  const linhas = membrosResult.value
+    .filter((m) => m.ativo !== false)
+    .map((membro) => {
+      const presencaRegistrada = presencaPorPessoaId.get(membro.id);
+      return {
+        id: membro.id,
+        name: membro.nome,
+        role: membro.papel || membro.categoria || "Desbravador",
+        present: presencaRegistrada ? presencaRegistrada.presente : true,
+        idPresenca: presencaRegistrada ? presencaRegistrada.id : null,
+      };
+    });
+
+  return { chamada, linhas };
+}
+
 function paraDataBr(data) {
   const dia = String(data.getDate()).padStart(2, "0");
   const mes = String(data.getMonth() + 1).padStart(2, "0");
@@ -123,92 +168,25 @@ export function ChamadaPage() {
   // Só a linha clicada anima o ícone ("pop"); carregar ou paginar não dispara.
   const [ultimoAlterado, setUltimoAlterado] = useState(null);
 
-  const carregarDadosDaData = async (data) => {
-    setCarregando(true);
-    setErro(null);
-    setUltimoAlterado(null);
-
-    try {
-      const dataIso = paraDataIso(data);
-
-      // Carrega membros e chamada em paralelo; trata erros independentemente
-      let membros = [];
-      let resultadoChamada = null;
-
-      const [membrosResult, chamadaResult] = await Promise.allSettled([
-        getMembros(),
-        buscarChamadaPorData(dataIso),
-      ]);
-
-      if (membrosResult.status === "fulfilled") {
-        membros = membrosResult.value;
-      } else {
-        console.error("Erro ao carregar membros:", membrosResult.reason);
-        setErro("Não foi possível carregar a lista de membros.");
-        setCarregando(false);
-        return;
-      }
-
-      if (chamadaResult.status === "fulfilled") {
-        resultadoChamada = chamadaResult.value;
-      } else {
-        console.error("Erro ao buscar chamada:", chamadaResult.reason);
-        // Não bloqueia o carregamento — trata como "sem chamada registrada"
-        resultadoChamada = null;
-      }
-
-      const membrosAtivos = membros.filter((m) => m.ativo !== false);
-
-      if (resultadoChamada?.chamada) {
-        const chamada = resultadoChamada.chamada;
-        setChamadaAtual(chamada);
-
-        let presencas = [];
-        try {
-          presencas = await getPresencasPorChamada(chamada.idChamada);
-        } catch (err) {
-          console.error("Erro ao carregar presenças:", err);
-          // Exibe os membros sem presenças — o usuário pode salvar normalmente
-        }
-
-        const presencaPorPessoaId = new Map();
-        presencas.forEach((p) => {
-          presencaPorPessoaId.set(p.idPessoa, p);
-        });
-
-        const linhasMapeadas = membrosAtivos.map((membro) => {
-          const presencaRegistrada = presencaPorPessoaId.get(membro.id);
-          return {
-            id: membro.id,
-            name: membro.nome,
-            role: membro.papel || membro.categoria || "Desbravador",
-            present: presencaRegistrada ? presencaRegistrada.presente : true,
-            idPresenca: presencaRegistrada ? presencaRegistrada.id : null,
-          };
-        });
-
-        setRows(linhasMapeadas);
-      } else {
-        setChamadaAtual(null);
-        const linhasMapeadas = membrosAtivos.map((membro) => ({
-          id: membro.id,
-          name: membro.nome,
-          role: membro.papel || membro.categoria || "Desbravador",
-          present: true,
-          idPresenca: null,
-        }));
-        setRows(linhasMapeadas);
-      }
-    } catch (err) {
-      console.error("Erro ao carregar dados da chamada:", err);
-      setErro("Não foi possível carregar os dados da chamada.");
-    } finally {
-      setCarregando(false);
-    }
-  };
-
   useEffect(() => {
-    carregarDadosDaData(dataSelecionada);
+    let ativo = true;
+
+    buscarDadosDaData(dataSelecionada)
+      .then(({ chamada, linhas }) => {
+        if (!ativo) return;
+        setChamadaAtual(chamada);
+        setRows(linhas);
+      })
+      .catch((err) => {
+        if (ativo) setErro(err.message);
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false);
+      });
+
+    return () => {
+      ativo = false;
+    };
   }, [dataSelecionada]);
 
   const aoMudarPagina = (pagina) => {
@@ -320,6 +298,9 @@ export function ChamadaPage() {
   };
 
   const handleSelecionarData = (data) => {
+    setCarregando(true);
+    setErro(null);
+    setUltimoAlterado(null);
     setDataSelecionada(data);
     setPaginaAtual(1);
     if (data.getMonth() !== mesExibido.getMonth()) {

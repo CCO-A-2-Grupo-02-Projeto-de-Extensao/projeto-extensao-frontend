@@ -1,5 +1,3 @@
-import styles from "../../styles/nomePagina.module.css";
-
 export function NomePagina(props) {
   return (
     <div>

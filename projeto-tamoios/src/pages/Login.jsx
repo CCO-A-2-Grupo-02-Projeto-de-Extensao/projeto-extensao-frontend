@@ -114,7 +114,6 @@ function Login() {
       <EsqueceuSenhaModal
         aberto={modalEsqueceuSenhaAberto}
         onFechar={() => setModalEsqueceuSenhaAberto(false)}
-        //onCadastrar={aoCadastrarMembro}
       />
       {origemEntrada && (
         <Cortina
