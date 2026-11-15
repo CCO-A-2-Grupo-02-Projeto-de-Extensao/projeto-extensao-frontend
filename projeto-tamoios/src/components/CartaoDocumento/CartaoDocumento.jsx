@@ -9,6 +9,7 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import PlaceIcon from "@mui/icons-material/Place";
 import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import SchoolIcon from "@mui/icons-material/School";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import styles from "../../styles/desbravadorDetalhePage.module.css";
@@ -23,6 +24,7 @@ const ICONES_DOCUMENTO = {
   comprovanteEndereco: PlaceIcon,
   fichaMedica: MedicalInformationIcon,
   autorizacaoClube: AssignmentTurnedInIcon,
+  termoConsentimento: VerifiedUserIcon,
   boletimEscolar: SchoolIcon,
   declaracaoPais: FamilyRestroomIcon,
 };

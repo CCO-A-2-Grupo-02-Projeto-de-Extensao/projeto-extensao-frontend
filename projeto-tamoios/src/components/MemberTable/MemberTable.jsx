@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/material";
 import { StatusBadge } from "../StatusBadge/StatusBadge.jsx";
 import tabela from "../../styles/tabelaBase.module.css";
 import styles from "../../styles/memberTable.module.css";
@@ -31,6 +32,21 @@ function LinhaMembro({ membro, onSelecionar }) {
         </span>
       </td>
       <td>
+        {membro.categoria !== "aluno" ? (
+          <span className={styles.semConsentimento}>—</span>
+        ) : membro.consentimentoEm ? (
+          <span className={`${styles.tagSituacao} ${styles.tagAtivo}`}>
+            Registrado
+          </span>
+        ) : (
+          <Tooltip arrow title="Falta a autorização do responsável (LGPD)">
+            <span className={`${styles.tagSituacao} ${styles.tagPendente}`}>
+              Pendente
+            </span>
+          </Tooltip>
+        )}
+      </td>
+      <td>
         <StatusBadge enviados={enviados} total={DOCUMENTOS.length} />
       </td>
     </tr>
@@ -49,6 +65,7 @@ export function MemberTable({ titulo, membros, onSelecionarMembro }) {
             <th>Nome/Sobrenome</th>
             <th>Papéis</th>
             <th>Situação</th>
+            <th>Consentimento</th>
             <th>% Documentação</th>
           </tr>
         </thead>

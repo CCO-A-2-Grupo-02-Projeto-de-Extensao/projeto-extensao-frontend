@@ -89,6 +89,11 @@ export const DOCUMENTO_FOTO = { id: "foto", titulo: "Foto" };
 
 export const DOCUMENTO_FICHA_MEDICA = { id: "fichaMedica", titulo: "Ficha Médica" };
 
+export const DOCUMENTO_TERMO_CONSENTIMENTO = {
+  id: "termoConsentimento",
+  titulo: "Termo assinado",
+};
+
 export const CAMPO_NOME = {
   name: "nome",
   label: "Nome completo",

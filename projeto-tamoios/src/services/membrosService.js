@@ -46,6 +46,9 @@ function paraMembro(pessoa) {
     telefoneResponsavel2: pessoa.telefoneResponsavel2,
     rgResponsavel2: pessoa.rgResponsavel2,
     cpfResponsavel2: pessoa.cpfResponsavel2,
+    consentimentoResponsavel: pessoa.consentimentoResponsavel,
+    consentimentoEm: pessoa.consentimentoEm,
+    consentimentoVersao: pessoa.consentimentoVersao,
   };
 }
 
@@ -137,6 +140,16 @@ export async function desativarPessoa(idPessoa) {
 
 export async function reativarPessoa(idPessoa) {
   await api.patch(`/pessoas/${idPessoa}/reativar`);
+}
+
+export async function registrarConsentimento(idPessoa, nomeResponsavel) {
+  const { data } = await api.put(`/pessoas/${idPessoa}/consentimento`, { nomeResponsavel });
+  return paraMembro(data);
+}
+
+export async function revogarConsentimento(idPessoa) {
+  const { data } = await api.delete(`/pessoas/${idPessoa}/consentimento`);
+  return paraMembro(data);
 }
 
 // Só é chamado quando o cargo escolhido tem login (Administrativo/Instrutor).

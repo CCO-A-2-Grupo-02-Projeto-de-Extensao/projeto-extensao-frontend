@@ -18,6 +18,7 @@ import { FotoEnquadrada } from "../components/FotoEnquadrada/FotoEnquadrada.jsx"
 import { CartaoDocumento } from "../components/CartaoDocumento/CartaoDocumento.jsx";
 import { SecaoSaude } from "../components/SecaoSaude/SecaoSaude.jsx";
 import { MedicacaoModal } from "../components/MedicacaoModal/MedicacaoModal.jsx";
+import { ConsentimentoLgpd } from "../components/ConsentimentoLgpd/ConsentimentoLgpd.jsx";
 import {
   ENQUADRAMENTO_PADRAO,
   normalizarEnquadramento,
@@ -50,6 +51,7 @@ import {
   DOCUMENTOS,
   DOCUMENTO_FICHA_MEDICA,
   DOCUMENTO_FOTO,
+  DOCUMENTO_TERMO_CONSENTIMENTO,
   MAX_RESPONSAVEIS,
   calcularSpans,
   contarResponsaveis,
@@ -723,6 +725,20 @@ function ConteudoDesbravador({ idPessoa }) {
         </div>
 
         <aside className={styles.colunaLateral}>
+          {membro.categoria === "aluno" && (
+            <ConsentimentoLgpd
+              membro={membro}
+              responsaveis={responsaveis.map(({ nome }) => nome).filter(Boolean)}
+              termo={documentos[DOCUMENTO_TERMO_CONSENTIMENTO.id] ?? null}
+              onAtualizar={(atualizado) =>
+                setMembro((atual) => ({ ...atual, ...atualizado }))
+              }
+              onAbrirTermo={() => aoAbrirDocumento(DOCUMENTO_TERMO_CONSENTIMENTO)}
+              onEnviarTermo={() => setDocumentoSelecionado(DOCUMENTO_TERMO_CONSENTIMENTO)}
+              onRemoverTermo={() => setDocumentoARemover(DOCUMENTO_TERMO_CONSENTIMENTO)}
+            />
+          )}
+
           <section className={styles.documentos}>
             <div className={styles.documentosCabecalho}>
               <div>
