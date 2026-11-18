@@ -1,5 +1,6 @@
 .paginacao {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 8px;
@@ -8,8 +9,14 @@
 
 .paginaBotao,
 .setaBotao {
-  width: 32px;
+  /* flex-shrink: 0 — sem isso os botões encolhem até o número sumir quando a
+     barra tem muitas páginas. */
+  flex: 0 0 auto;
+  /* min-width em vez de width fixo: com muitas páginas o rótulo chega a três
+     dígitos e precisa caber sem deformar o círculo. */
+  min-width: 32px;
   height: 32px;
+  padding: 0 6px;
   margin: 0;
   border: 1px solid var(--bordaForte);
   border-radius: 9999px;
@@ -36,4 +43,17 @@
 .setaBotao:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.elipse {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  opacity: 0.55;
+  font-size: 14px;
+  user-select: none;
 }
