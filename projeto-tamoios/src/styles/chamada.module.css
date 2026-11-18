@@ -46,6 +46,103 @@
   margin: 0;
 }
 
+/* Filtros de grupo (categoria, classe, unidade, turma). */
+.groupFiltersRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Barra com o que está filtrando a lista. Só aparece com filtro ativo. */
+.activeFiltersBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1rem;
+  background-color: var(--superficieSuave);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+}
+
+.activeFiltersLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--carvao);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.activeFiltersChips {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.3rem 0.25rem 0.75rem;
+  background: var(--branco);
+  border: 1px solid var(--bordaForte);
+  border-radius: 999px;
+  color: var(--carvao);
+  font-size: 0.85rem;
+}
+
+.filterChipTipo {
+  color: color-mix(in srgb, var(--carvao) 70%, transparent);
+}
+
+.filterChipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--carvao);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.filterChipRemove:hover {
+  background: var(--creme);
+}
+
+.filterChipRemove svg {
+  font-size: 1rem;
+}
+
+.activeFiltersCount {
+  color: color-mix(in srgb, var(--carvao) 75%, transparent);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.activeFiltersClear {
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--vinhoFundo);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .contentGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 24rem;
@@ -290,6 +387,10 @@
 @media (max-width: 900px) {
   .filtersRow {
     grid-template-columns: 1fr;
+  }
+
+  .groupFiltersRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sideColumn {

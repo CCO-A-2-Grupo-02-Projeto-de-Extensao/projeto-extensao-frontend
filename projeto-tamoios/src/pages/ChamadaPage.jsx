@@ -23,15 +23,94 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import SentimentDissatisfiedRoundedIcon from "@mui/icons-material/SentimentDissatisfiedRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
 import { useVoltar } from "../hooks/useVoltar.js";
 
-import { getMembros } from "../services/membrosService.js";
+import { getMembros, CATEGORIAS } from "../services/membrosService.js";
 import {
   buscarChamadaPorData,
   getPresencasPorChamada,
   salvarChamadaCompleta,
   deletarChamadaCompleta,
 } from "../services/chamadasService.js";
+
+// Valores do filtro que não são um grupo real.
+const TODOS = "todos";
+const SEM_GRUPO = "__sem_grupo__";
+
+const ROTULOS_CATEGORIA = {
+  [CATEGORIAS.ADMINISTRATIVO]: "Administrativo",
+  [CATEGORIAS.INSTRUTOR]: "Instrutores",
+  [CATEGORIAS.ALUNO]: "Alunos",
+};
+
+// Cada filtro de grupo sabe ler o seu valor na linha e como se chama na barra.
+// O valor é sempre string (é o que o <select> devolve); ausente vira null.
+const FILTROS = [
+  {
+    chave: "categoria",
+    rotulo: "Categoria",
+    todos: "Todas as categorias",
+    valorDe: (row) => row.categoria || null,
+    nomeDe: (row) => ROTULOS_CATEGORIA[row.categoria] ?? row.categoria,
+    semRotulo: "Sem categoria",
+  },
+  {
+    chave: "classe",
+    rotulo: "Classe",
+    todos: "Todas as classes",
+    valorDe: (row) => (row.idClasse != null ? String(row.idClasse) : null),
+    nomeDe: (row) => row.classe,
+    semRotulo: "Sem classe",
+  },
+  {
+    chave: "unidade",
+    rotulo: "Unidade",
+    todos: "Todas as unidades",
+    valorDe: (row) => (row.idUnidade != null ? String(row.idUnidade) : null),
+    nomeDe: (row) => row.unidade,
+    semRotulo: "Sem unidade",
+  },
+];
+
+const FILTRO_CLASSE = FILTROS.find((filtro) => filtro.chave === "classe");
+const FILTRO_UNIDADE = FILTROS.find((filtro) => filtro.chave === "unidade");
+
+// Monta as opções de um filtro a partir dos membros carregados: só aparece
+// o que existe de verdade, e "Sem ..." só se houver alguém nessa situação.
+function montarOpcoes(rows, filtro) {
+  const porValor = new Map();
+  let temSem = false;
+
+  rows.forEach((row) => {
+    const valor = filtro.valorDe(row);
+    if (valor === null) {
+      temSem = true;
+    } else if (!porValor.has(valor)) {
+      porValor.set(valor, filtro.nomeDe(row) || valor);
+    }
+  });
+
+  const opcoes = [...porValor.entries()]
+    .map(([valor, nome]) => ({ valor, nome }))
+    .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR", { numeric: true }));
+
+  if (temSem) opcoes.push({ valor: SEM_GRUPO, nome: filtro.semRotulo });
+  return opcoes;
+}
+
+function passaNoFiltro(row, filtro, selecionado) {
+  if (selecionado === TODOS) return true;
+  const valor = filtro.valorDe(row);
+  return selecionado === SEM_GRUPO ? valor === null : valor === selecionado;
+}
+
+// Membros da classe escolhida (ou todos, se nenhuma). As unidades oferecidas
+// no filtro saem daqui: só as que têm gente nessa classe.
+function membrosDaClasse(rows, classe) {
+  return rows.filter((row) => passaNoFiltro(row, FILTRO_CLASSE, classe));
+}
 
 function paraDataIso(data) {
   const ano = data.getFullYear();
@@ -77,6 +156,11 @@ async function buscarDadosDaData(data) {
         id: membro.id,
         name: membro.nome,
         role: membro.papel || membro.categoria || "Desbravador",
+        categoria: membro.categoria,
+        classe: membro.classe,
+        idClasse: membro.idClasse,
+        unidade: membro.unidade,
+        idUnidade: membro.idUnidade,
         present: presencaRegistrada ? presencaRegistrada.presente : true,
         idPresenca: presencaRegistrada ? presencaRegistrada.id : null,
       };
@@ -165,6 +249,9 @@ export function ChamadaPage() {
   const [presenceFilter, setPresenceFilter] = useEstadoDaTela("presenceFilter", "todos");
   const [search, setSearch] = useEstadoDaTela("search", "");
   const [paginaAtual, setPaginaAtual] = useEstadoDaTela("paginaAtual", 1);
+  const [filtroCategoria, setFiltroCategoria] = useEstadoDaTela("filtroCategoria", TODOS);
+  const [filtroClasse, setFiltroClasse] = useEstadoDaTela("filtroClasse", TODOS);
+  const [filtroUnidade, setFiltroUnidade] = useEstadoDaTela("filtroUnidade", TODOS);
   // Só a linha clicada anima o ícone ("pop"); carregar ou paginar não dispara.
   const [ultimoAlterado, setUltimoAlterado] = useState(null);
 
@@ -323,8 +410,79 @@ export function ChamadaPage() {
     setPaginaAtual(1);
   };
 
+  const valoresFiltro = {
+    categoria: filtroCategoria,
+    classe: filtroClasse,
+    unidade: filtroUnidade,
+  };
+  const setadoresFiltro = {
+    categoria: setFiltroCategoria,
+    classe: setFiltroClasse,
+    unidade: setFiltroUnidade,
+  };
+
+  const aoMudarFiltroGrupo = (chave, valor) => {
+    setadoresFiltro[chave](valor);
+    // Trocou a classe: se a unidade escolhida não existe nela, limpa a unidade.
+    if (chave === "classe" && filtroUnidade !== TODOS) {
+      const continuaValida = montarOpcoes(
+        membrosDaClasse(rows, valor),
+        FILTRO_UNIDADE
+      ).some((opcao) => opcao.valor === filtroUnidade);
+      if (!continuaValida) setFiltroUnidade(TODOS);
+    }
+    setUltimoAlterado(null);
+    setPaginaAtual(1);
+  };
+
+  const limparFiltrosGrupo = () => {
+    FILTROS.forEach(({ chave }) => setadoresFiltro[chave](TODOS));
+    setUltimoAlterado(null);
+    setPaginaAtual(1);
+  };
+
+  const opcoesPorFiltro = useMemo(() => {
+    const doClasse = membrosDaClasse(rows, filtroClasse);
+    return Object.fromEntries(
+      FILTROS.map((filtro) => [
+        filtro.chave,
+        montarOpcoes(filtro.chave === "unidade" ? doClasse : rows, filtro),
+      ])
+    );
+  }, [rows, filtroClasse]);
+
+  const filtrosAtivos = FILTROS.filter(
+    ({ chave }) => valoresFiltro[chave] !== TODOS
+  ).map((filtro) => {
+    const selecionado = valoresFiltro[filtro.chave];
+    const opcao = opcoesPorFiltro[filtro.chave].find(
+      (item) => item.valor === selecionado
+    );
+    return {
+      chave: filtro.chave,
+      rotulo: filtro.rotulo,
+      // Se a opção sumiu (ex.: ninguém mais nessa unidade), mostra o valor cru.
+      nome: opcao ? opcao.nome : selecionado,
+    };
+  });
+
+  const temFiltroGrupo = filtrosAtivos.length > 0;
+
+  // Membros do grupo escolhido (só categoria/classe/unidade). Os cards
+  // de KPI contam em cima deste conjunto; busca e presença refinam só a lista.
+  const rowsDoGrupo = useMemo(
+    () =>
+      rows.filter((row) =>
+        FILTROS.every((filtro) =>
+          passaNoFiltro(row, filtro, valoresFiltro[filtro.chave])
+        )
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [rows, filtroCategoria, filtroClasse, filtroUnidade]
+  );
+
   const visibleRows = useMemo(() => {
-    let result = rows.filter((row) =>
+    let result = rowsDoGrupo.filter((row) =>
       row.name.toLowerCase().includes(search.trim().toLowerCase())
     );
 
@@ -341,7 +499,7 @@ export function ChamadaPage() {
     );
 
     return result;
-  }, [rows, order, presenceFilter, search]);
+  }, [rowsDoGrupo, order, presenceFilter, search]);
 
   const totalPaginas = Math.max(
     1,
@@ -356,13 +514,13 @@ export function ChamadaPage() {
   }, [visibleRows, paginaSegura, itensPorPagina]);
 
   const stats = useMemo(() => {
-    const total = rows.length;
-    const presentes = rows.filter((row) => row.present).length;
+    const total = rowsDoGrupo.length;
+    const presentes = rowsDoGrupo.filter((row) => row.present).length;
     return [
       {
         icon: GroupRoundedIcon,
         value: String(total),
-        label: "Desbravadores totais",
+        label: temFiltroGrupo ? "Desbravadores no filtro" : "Desbravadores totais",
       },
       {
         icon: CheckCircleRoundedIcon,
@@ -375,7 +533,7 @@ export function ChamadaPage() {
         label: "Faltantes hoje",
       },
     ];
-  }, [rows]);
+  }, [rowsDoGrupo, temFiltroGrupo]);
 
   const diasCalendario = useMemo(
     () => montarDiasCalendario(mesExibido),
@@ -445,7 +603,7 @@ export function ChamadaPage() {
         <div className={styles.filtersRow}>
           <div className={styles.filterSelectWrap}>
             <Select
-              defaultValue="alfabetica"
+              value={order}
               style={{ margin: 0 }}
               onChange={(event) => aoMudarOrdem(event.target.value)}
             >
@@ -456,7 +614,7 @@ export function ChamadaPage() {
 
           <div className={styles.filterSelectWrapSmall}>
             <Select
-              defaultValue="todos"
+              value={presenceFilter}
               style={{ margin: 0 }}
               onChange={(event) => aoMudarFiltroPresenca(event.target.value)}
             >
@@ -475,6 +633,70 @@ export function ChamadaPage() {
             />
           </div>
         </div>
+
+        <div className={styles.groupFiltersRow}>
+          {FILTROS.map((filtro) => (
+            <div key={filtro.chave} className={styles.filterSelectWrap}>
+              <Select
+                aria-label={filtro.rotulo}
+                value={valoresFiltro[filtro.chave]}
+                style={{ margin: 0 }}
+                disabled={carregando}
+                onChange={(event) =>
+                  aoMudarFiltroGrupo(filtro.chave, event.target.value)
+                }
+              >
+                <option value={TODOS}>{filtro.todos}</option>
+                {opcoesPorFiltro[filtro.chave].map((opcao) => (
+                  <option key={opcao.valor} value={opcao.valor}>
+                    {opcao.nome}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          ))}
+        </div>
+
+        {temFiltroGrupo && (
+          <div
+            className={styles.activeFiltersBar}
+            role="status"
+            aria-live="polite"
+          >
+            <span className={styles.activeFiltersLabel}>
+              <FilterListRoundedIcon fontSize="small" />
+              Filtrando por
+            </span>
+
+            <div className={styles.activeFiltersChips}>
+              {filtrosAtivos.map((filtro) => (
+                <span key={filtro.chave} className={styles.filterChip}>
+                  <span className={styles.filterChipTipo}>{filtro.rotulo}:</span>
+                  <strong>{filtro.nome}</strong>
+                  <button
+                    type="button"
+                    className={styles.filterChipRemove}
+                    aria-label={`Remover filtro ${filtro.rotulo}: ${filtro.nome}`}
+                    onClick={() => aoMudarFiltroGrupo(filtro.chave, TODOS)}
+                  >
+                    <CloseRoundedIcon />
+                  </button>
+                </span>
+              ))}
+            </div>
+
+            <span className={styles.activeFiltersCount}>
+              {rowsDoGrupo.length} de {rows.length}
+            </span>
+            <button
+              type="button"
+              className={styles.activeFiltersClear}
+              onClick={limparFiltrosGrupo}
+            >
+              Limpar filtros
+            </button>
+          </div>
+        )}
 
         {erro && <div className={styles.mensagemErro}>{erro}</div>}
 
