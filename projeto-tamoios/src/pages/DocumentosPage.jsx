@@ -11,9 +11,14 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { ConfirmacaoModal } from "../components/ConfirmacaoModal/ConfirmacaoModal.jsx";
 import { Esqueleto } from "../components/Esqueleto/Esqueleto.jsx";
 import api from "../services/api.js";
-import { removerDocumento } from "../services/documentosService.js";
 import styles from "../styles/documentoPage.module.css";
 import detalhe from "../styles/desbravadorDetalhePage.module.css";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import UploadDocumentoModal from "../components/UploadDocumentoModal/UploadDocumentoModal.jsx";
+import {
+  enviarDocumento,
+  removerDocumento,
+} from "../services/documentosService.js";
 
 function obterIniciais(nome = "") {
   const nomeSemExtensao = nome.replace(/\.[^.]+$/, "");
@@ -84,15 +89,27 @@ export function DocumentosPage() {
   const [busca, setBusca] = useEstadoDaTela("busca", "");
   const [documentoParaExcluir, setDocumentoParaExcluir] = useState(null);
   const [acaoEmAndamento, setAcaoEmAndamento] = useState(null);
+  const [documentoSelecionado, setDocumentoSelecionado] = useState(null);
+
+  const aoSalvarDocumento = async (arquivo) => {
+    const salvo = await enviarDocumento(1, "publico", arquivo);
+
+    setDocumentos((atual) => ({ ...atual, [documentoSelecionado.id]: salvo }));
+    alert(`Documento "${salvo.nome}" enviado com sucesso!`);
+    window.location.reload();
+  };
 
   useEffect(() => {
     let ativo = true;
 
-    function obterIdPessoa() {
+    async function carregarDocumentos() {
       const usuarioSalvo = localStorage.getItem("usuario");
 
       if (!usuarioSalvo) {
-        return null;
+        setCarregando(false);
+        setErro("Nenhum usuário válido foi encontrado no navegador.");
+        setDocumentos([]);
+        return;
       }
 
       try {
@@ -104,23 +121,13 @@ export function DocumentosPage() {
             usuario?.idUsuario,
         );
 
-        return Number.isSafeInteger(idPessoa) && idPessoa > 0 ? idPessoa : null;
-      } catch {
-        return null;
-      }
-    }
+        if (!Number.isSafeInteger(idPessoa) || idPessoa <= 0) {
+          setCarregando(false);
+          setErro("Nenhum usuário válido foi encontrado no navegador.");
+          setDocumentos([]);
+          return;
+        }
 
-    async function carregarDocumentos() {
-      const idPessoa = obterIdPessoa();
-
-      if (!idPessoa) {
-        setCarregando(false);
-        setErro("Nenhum usuário válido foi encontrado no navegador.");
-        setDocumentos([]);
-        return;
-      }
-
-      try {
         setCarregando(true);
         setErro("");
 
@@ -263,7 +270,7 @@ export function DocumentosPage() {
           </p>
           <h1 className={detalhe.titulo}>Documentos</h1>
           <p className={detalhe.subtitulo}>
-            Acesse e organize os documentos vinculados ao seu cadastro.
+            Acesse e organize os documentos públicos do clube Tamoios.
           </p>
         </div>
       </header>
@@ -276,6 +283,16 @@ export function DocumentosPage() {
               Visualize ou baixe seus documentos com segurança.
             </p>
           </div>
+          <button
+            type="button"
+            className={styles.botaoVisualizar}
+            aria-label={`Adicionar documento`}
+            onClick={() => setDocumentoSelecionado(true)}
+            title="Adicionar documento"
+          >
+            <FileUploadOutlinedIcon aria-hidden="true" />
+            <span>Adicionar Documento</span>
+          </button>
           <label className={styles.busca}>
             <SearchOutlinedIcon aria-hidden="true" />
             <input
@@ -398,6 +415,13 @@ export function DocumentosPage() {
         perigo
         onConfirmar={confirmarExclusao}
         onCancelar={() => setDocumentoParaExcluir(null)}
+      />
+
+      <UploadDocumentoModal
+        aberto={Boolean(documentoSelecionado)}
+        documento={documentoSelecionado}
+        onFechar={() => setDocumentoSelecionado(false)}
+        onSalvar={aoSalvarDocumento}
       />
     </section>
   );
